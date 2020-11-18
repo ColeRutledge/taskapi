@@ -17,9 +17,16 @@ from app.models import Base
 # alembic -c .\migrations\alembic.ini revision --autogenerate -m 'users teams projects'
 # alembic -c .\migrations\alembic.ini upgrade head
 
+
+# ######### IMPORTING SETTINGS OBJ TO OVERWRITE DB_URL ######### #
+# this allows us to prevent exposure of the sqlalchemy.url in the .ini
+from app.config import Settings
+db = Settings().db_url
+
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
 config = context.config
+config.set_main_option('sqlalchemy.url', db)
 
 # Interpret the config file for Python logging.
 # This line sets up loggers basically.
