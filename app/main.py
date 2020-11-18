@@ -1,4 +1,12 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
+from functools import lru_cache
+from . import config
+
+
+@lru_cache()
+def get_settings():
+    return config.Settings()
+
 
 app = FastAPI()
 
@@ -6,6 +14,14 @@ app = FastAPI()
 @app.get("/")
 def read_root():
     return {"Hello": "World"}
+
+
+@app.get('/info')
+async def info(settings: config.Settings = Depends(get_settings)):
+    return {
+        'app_name': settings.app_name,
+        'admin_email': settings.admin_email,
+    }
 
 
 @app.get("/items/{item_id}")
