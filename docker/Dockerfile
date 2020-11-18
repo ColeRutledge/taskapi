@@ -1,3 +1,12 @@
+#### DOCKER COMMANDS ####
+
+# command to build image setting build context with -f
+# docker build -t fastapi -f .\docker\Dockerfile .
+
+# command to start container with image in detached mode. will remove on fail/exit
+# docker run -d --rm --name asana_api -p 80:80 fastapi
+
+
 FROM python:3.9
 
 # some of the additional packages required if using a slim build
@@ -13,7 +22,6 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 COPY ./pyproject.toml ./poetry.lock* ./
 RUN poetry install --no-root --no-dev
 
-
 COPY ./docker/start.sh /start.sh
 RUN chmod +x /start.sh
 
@@ -21,7 +29,6 @@ COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
 
 COPY ./docker/start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
-
 
 COPY ./app /app
 WORKDIR /app/
@@ -33,12 +40,3 @@ EXPOSE 80
 # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Gunicorn with Uvicorn
 CMD ["/start.sh"]
-
-
-#### DOCKER COMMANDS ####
-
-# command to build image setting build context with -f
-# docker build -t fastapi -f .\docker\Dockerfile .
-
-# command to start container with image in detached mode. will remove on fail/exit
-# docker run -d --rm --name asana_api -p 80:80 fastapi
