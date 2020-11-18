@@ -6,16 +6,16 @@ from sqlalchemy import pool
 from alembic import context
 
 # ######### ADDING ROOT TO SYS PATH FOR MIGRATIONS ######### #
-# import os
+import os
 import sys
-from pathlib import Path
-path = Path().cwd() / 'app'
-# BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(path)
-# print(BASE_DIR)
+BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+sys.path.append(BASE_DIR)
 from app.models import Base
 ##############################################################
 
+# sample revision & upgrade command given relative path to .ini
+# alembic -c .\migrations\alembic.ini revision --autogenerate -m 'users teams projects'
+# alembic -c .\migrations\alembic.ini upgrade head
 
 # this is the Alembic Config object, which provides
 # access to the values within the .ini file in use.
