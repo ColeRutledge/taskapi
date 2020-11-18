@@ -21,6 +21,7 @@ async def info(settings: config.Settings = Depends(get_settings)):
     return {
         'app_name': settings.app_name,
         'admin_email': settings.admin_email,
+        'db_url': settings.db_url,
     }
 
 
