@@ -1,5 +1,6 @@
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
+from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
 
 
@@ -11,10 +12,17 @@ Base = declarative_base()
 #     DB_Column('followed_id', Integer, ForeignKey('users.id')),
 # )
 
-# class DateMixin:
+
+class TimestampMixin(object):
+    created_on = DB_Column(DateTime, server_default=func.now())
+    updated_on = DB_Column(
+        DateTime,
+        server_default=func.now(),
+        server_onupdate=func.now()
+    )
 
 
-class User(Base):
+class User(Base, TimestampMixin):
     __tablename__ = 'users'
 
     id = DB_Column(Integer, primary_key=True, index=True)
@@ -27,7 +35,7 @@ class User(Base):
     team = relationship('Team', back_populates='users')
 
 
-class Team(Base):
+class Team(Base, TimestampMixin):
     __tablename__ = 'teams'
 
     id = DB_Column(Integer, primary_key=True, index=True)
@@ -41,7 +49,7 @@ class Team(Base):
     )
 
 
-class Project(Base):
+class Project(Base, TimestampMixin):
     __tablename__ = 'projects'
 
     id = DB_Column(Integer, primary_key=True, index=True)
@@ -56,7 +64,7 @@ class Project(Base):
     )
 
 
-class Column(Base):
+class Column(Base, TimestampMixin):
     __tablename__ = 'columns'
 
     id = DB_Column(Integer, primary_key=True, index=True)
@@ -68,7 +76,7 @@ class Column(Base):
     tasks = relationship('Task', back_populates='column', cascade='all, delete-orphan')
 
 
-class Task(Base):
+class Task(Base, TimestampMixin):
     __tablename__ = 'tasks'
 
     id = DB_Column(Integer, primary_key=True, index=True)
