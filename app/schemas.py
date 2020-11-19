@@ -3,13 +3,20 @@ from pydantic import BaseModel
 from datetime import datetime
 
 
-class Team(BaseModel):
-    id: int
+# ######### TEAM ######### #
+
+class TeamBase(BaseModel):
     team_name: str
+
+
+class Team(TeamBase):
+    id: int
 
     class Config:
         orm_mode = True
 
+
+# ######### USER ######### #
 
 class UserBase(BaseModel):
     first_name: str
@@ -29,51 +36,46 @@ class User(UserBase):
         orm_mode = True
 
 
-# class User(BaseModel):
-#     id: int
-#     first_name: str
-#     last_name: str
-#     email: str
-#     hashed_password: str
-#     team_id: Optional[int] = None
+# ######### PROJECT ######### #
 
-#     class Config:
-#         orm_mode = True
-
-
-class Project(BaseModel):
-    id: int
+class ProjectBase(BaseModel):
     project_name: str
     team_id: int
+
+
+class Project(ProjectBase):
+    id: int
 
     class Config:
         orm_mode = True
 
 
-class Column(BaseModel):
-    id: int
+# ######### COLUMN ######### #
+
+class ColumnBase(BaseModel):
     column_name: str
     column_pos: int
     project_id: int
 
+
+class Column(ColumnBase):
+    id: int
+
     class Config:
         orm_mode = True
 
 
-class Task(BaseModel):
-    id: int
+# ######### TASK ######### #
+
+class TaskBase(BaseModel):
     task_description: str
     due_date: Optional[datetime] = None
     column_id: int
     column_idx: int
 
+
+class Task(TaskBase):
+    id: int
+
     class Config:
         orm_mode = True
-
-
-# class TeamBase(BaseModel):
-#     team_name: str
-
-
-# class Team(TeamBase):
-#     id: int
