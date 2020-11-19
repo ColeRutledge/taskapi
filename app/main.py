@@ -1,8 +1,8 @@
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI
 from functools import lru_cache
-from sqlalchemy.orm.session import Session
-from . import config, models, schemas, crud
-from app.db import engine, get_db
+from . import config, models
+from app.db import engine
+from app.routers import users
 
 
 @lru_cache()
@@ -12,27 +12,4 @@ def get_settings():
 
 models.Base.metadata.create_all(bind=engine)
 app = FastAPI()
-
-
-@app.get("/")
-def read_root():
-    return {"Hello": "World"}
-
-
-@app.get('/users/', response_model=list[schemas.User])
-def get_users(db: Session = Depends(get_db)):
-    return crud.get_users(db=db)
-
-
-@app.post('/users/', response_model=schemas.User)
-def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
-    return crud.create_user(db=db, user=user)
-
-
-@app.get('/info')
-async def info(settings: config.Settings = Depends(get_settings)):
-    return {
-        'app_name': settings.app_name,
-        'admin_email': settings.admin_email,
-        'db_url': settings.db_url,
-    }
+app.include_router(users.router)
