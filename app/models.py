@@ -1,4 +1,4 @@
-from sqlalchemy.ext.declarative import declarative_base
+from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
@@ -6,20 +6,27 @@ from sqlalchemy.orm import relationship
 
 Base = declarative_base()
 
-# followers = Table(
-#     'teams',
-#     DB_Column('follower_id', Integer, ForeignKey('users.id')),
-#     DB_Column('followed_id', Integer, ForeignKey('users.id')),
-# )
-
 
 class TimestampMixin(object):
-    created_on = DB_Column(DateTime, server_default=func.now())
-    updated_on = DB_Column(
-        DateTime,
-        server_default=func.now(),
-        server_onupdate=func.now()
-    )
+    # by using declared_attr here, we can force
+    # created_on and updated_on to end of db table
+    @declared_attr
+    def created_on(cls):
+        return DB_Column(DateTime, server_default=func.now())
+
+    @declared_attr
+    def updated_on(cls):
+        return DB_Column(
+            DateTime,
+            server_default=func.now(),
+            server_onupdate=func.now()
+        )
+    # created_on = DB_Column(DateTime, server_default=func.now())
+    # updated_on = DB_Column(
+    #     DateTime,
+    #     server_default=func.now(),
+    #     server_onupdate=func.now()
+    # )
 
 
 class User(Base, TimestampMixin):

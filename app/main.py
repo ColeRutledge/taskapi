@@ -20,7 +20,7 @@ def read_root():
 
 
 @app.post('/users/', response_model=schemas.User)
-def create_user(user: schemas.User, db: Session = Depends(get_db)):
+def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     return crud.create_user(db=db, user=user)
 
 

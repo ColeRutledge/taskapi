@@ -11,16 +11,34 @@ class Team(BaseModel):
         orm_mode = True
 
 
-class User(BaseModel):
-    id: int
+class UserBase(BaseModel):
     first_name: str
     last_name: str
     email: str
+
+
+class UserCreate(UserBase):
     password: str
+
+
+class User(UserBase):
+    id: int
     team_id: Optional[int] = None
 
     class Config:
         orm_mode = True
+
+
+# class User(BaseModel):
+#     id: int
+#     first_name: str
+#     last_name: str
+#     email: str
+#     hashed_password: str
+#     team_id: Optional[int] = None
+
+#     class Config:
+#         orm_mode = True
 
 
 class Project(BaseModel):
@@ -52,25 +70,10 @@ class Task(BaseModel):
     class Config:
         orm_mode = True
 
+
 # class TeamBase(BaseModel):
 #     team_name: str
 
 
 # class Team(TeamBase):
 #     id: int
-
-
-# class UserBase(BaseModel):
-#     first_name: str
-#     last_name: str
-#     email: str
-
-
-# class UserCreate(BaseModel):
-#     password: str
-
-
-# class User(UserBase):
-#     id: int
-#     team_id: Optional[int] = None
-#     team: Team
