@@ -15,7 +15,7 @@ from app.models import Base
 
 # ############## REVISION & UPGRADE COMMANDS ############## #
 
-# sample revision & upgrade command given relative path to .ini
+# sample revision & upgrade command given relative path to alembic.ini
 # alembic -c .\migrations\alembic.ini revision --autogenerate -m 'users teams projects'
 # alembic -c .\migrations\alembic.ini upgrade head
 

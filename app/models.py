@@ -1,5 +1,5 @@
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import Column, ForeignKey, String, Integer, Table
+from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.orm import relationship
 
 
@@ -7,38 +7,74 @@ Base = declarative_base()
 
 # followers = Table(
 #     'teams',
-#     Column('follower_id', Integer, ForeignKey('users.id')),
-#     Column('followed_id', Integer, ForeignKey('users.id')),
+#     DB_Column('follower_id', Integer, ForeignKey('users.id')),
+#     DB_Column('followed_id', Integer, ForeignKey('users.id')),
 # )
+
+# class DateMixin:
 
 
 class User(Base):
     __tablename__ = 'users'
 
-    id = Column(Integer, primary_key=True, index=True)
-    first_name = Column(String(20), nullable=False)
-    last_name = Column(String(50), nullable=False)
-    email = Column(String, unique=True, index=True, nullable=False)
-    hashed_password = Column(String)
-    team_id = Column(Integer, ForeignKey('teams.id'))
+    id = DB_Column(Integer, primary_key=True, index=True)
+    first_name = DB_Column(String(20), nullable=False)
+    last_name = DB_Column(String(50), nullable=False)
+    email = DB_Column(String, unique=True, index=True, nullable=False)
+    hashed_password = DB_Column(String)
+    team_id = DB_Column(Integer, ForeignKey('teams.id'))
 
     team = relationship('Team', back_populates='users')
 
 
 class Team(Base):
     __tablename__ = 'teams'
-    id = Column(Integer, primary_key=True, index=True)
-    team_name = Column(String(50), unique=True, index=True, nullable=False)
+
+    id = DB_Column(Integer, primary_key=True, index=True)
+    team_name = DB_Column(String(50), unique=True, index=True, nullable=False)
 
     users = relationship('User', back_populates='team')
-    projects = relationship('Project', back_populates='team', cascade='all, delete-orphan')
+    projects = relationship(
+        'Project',
+        back_populates='team',
+        cascade='all, delete-orphan',
+    )
 
 
 class Project(Base):
     __tablename__ = 'projects'
 
-    id = Column(Integer, primary_key=True, index=True)
-    project_name = Column(String(50), unique=True, index=True, nullable=False)
-    team_id = Column(Integer, ForeignKey('teams.id'), nullable=False)
+    id = DB_Column(Integer, primary_key=True, index=True)
+    project_name = DB_Column(String(50), unique=True, index=True, nullable=False)
+    team_id = DB_Column(Integer, ForeignKey('teams.id'), nullable=False)
 
     team = relationship('Team', back_populates='projects')
+    columns = relationship(
+        'Column',
+        back_populates='project',
+        cascade='all, delete-orphan',
+    )
+
+
+class Column(Base):
+    __tablename__ = 'columns'
+
+    id = DB_Column(Integer, primary_key=True, index=True)
+    column_name = DB_Column(String(50), unique=True, index=True, nullable=False)
+    column_pos = DB_Column(Integer, nullable=False)
+    project_id = DB_Column(Integer, ForeignKey('projects.id'), nullable=False)
+
+    project = relationship('Project', back_populates='columns')
+    tasks = relationship('Task', back_populates='column', cascade='all, delete-orphan')
+
+
+class Task(Base):
+    __tablename__ = 'tasks'
+
+    id = DB_Column(Integer, primary_key=True, index=True)
+    task_description = DB_Column(String(255), nullable=False)
+    due_date = DB_Column(DateTime)
+    column_id = DB_Column(Integer, ForeignKey('columns.id'), nullable=False)
+    column_idx = DB_Column(Integer, nullable=False)
+
+    column = relationship('Column', back_populates='tasks')
