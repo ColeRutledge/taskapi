@@ -1,6 +1,6 @@
 from typing import Optional
 from pydantic import BaseModel
-from sqlalchemy.sql.sqltypes import DateTime
+from datetime import datetime
 
 
 class Team(BaseModel):
@@ -45,7 +45,7 @@ class Column(BaseModel):
 class Task(BaseModel):
     id: int
     task_description: str
-    due_date: Optional[DateTime] = None
+    due_date: Optional[datetime] = None
     column_id: int
     column_idx: int
 

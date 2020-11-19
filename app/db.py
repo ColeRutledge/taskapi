@@ -1,10 +1,9 @@
-from typing import final
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker
-import os
+from app.config import Settings
 
 
-SQLALCHEMY_DATABASE_URL = os.environ('DATABASE_URL')
+SQLALCHEMY_DATABASE_URL = Settings().db_url
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
