@@ -70,6 +70,16 @@ def create_team(db: Session, team: schemas.TeamBase):
     return db_team
 
 
+def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
+    db.query(models.Team)\
+      .filter_by(id=model.id)\
+      .update({'team_name': schema.team_name or model.team_name},
+              synchronize_session=False)
+
+    db.commit()
+    return model
+
+
 def delete_team(db: Session, team: models.Team):
     db.delete(team)
     db.commit()
