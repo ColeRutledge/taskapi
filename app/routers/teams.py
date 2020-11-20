@@ -24,5 +24,5 @@ def get_team(team_id: int, db: Session = Depends(get_db)):
 
 
 @router.post('/', response_model=schemas.Team)
-def create_user(team: schemas.TeamBase, db: Session = Depends(get_db)):
+def create_team(team: schemas.TeamBase, db: Session = Depends(get_db)):
     return crud.create_team(db=db, team=team)

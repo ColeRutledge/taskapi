@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Project])
-def get_teams(db: Session = Depends(get_db)):
+def get_projects(db: Session = Depends(get_db)):
     return crud.get_projects(db=db)
 
 
@@ -24,5 +24,5 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.post('/', response_model=schemas.Project)
-def create_user(project: schemas.ProjectBase, db: Session = Depends(get_db)):
+def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
     return crud.create_project(db=db, project=project)
