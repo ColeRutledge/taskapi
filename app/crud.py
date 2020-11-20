@@ -54,6 +54,12 @@ def create_team(db: Session, team: schemas.TeamBase):
     return db_team
 
 
+def delete_team(db: Session, team: models.Team):
+    db.delete(team)
+    db.commit()
+    return team
+
+
 # ############################ PROJECT CRUD ############################ #
 
 def get_project(db: Session, project_id: int):
@@ -70,6 +76,12 @@ def create_project(db: Session, project: schemas.ProjectBase):
     db.commit()
     db.refresh(db_project)
     return db_project
+
+
+def delete_project(db: Session, project: models.Project):
+    db.delete(project)
+    db.commit()
+    return project
 
 
 # ############################ COLUMN CRUD ############################# #
@@ -90,6 +102,12 @@ def create_column(db: Session, column: schemas.ColumnBase):
     return db_column
 
 
+def delete_column(db: Session, column: models.Column):
+    db.delete(column)
+    db.commit()
+    return column
+
+
 # ############################ TASK CRUD ############################### #
 
 def get_task(db: Session, task_id: int):
@@ -106,3 +124,9 @@ def create_task(db: Session, task: schemas.TaskBase):
     db.commit()
     db.refresh(db_task)
     return db_task
+
+
+def delete_task(db: Session, task: models.Task):
+    db.delete(task)
+    db.commit()
+    return task
