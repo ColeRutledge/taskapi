@@ -36,5 +36,4 @@ def delete_team(team_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail='Team not found',
         )
-    crud.delete_team(db, team=db_team)
-    return db_team
+    return crud.delete_team(db, team=db_team)

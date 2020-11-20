@@ -36,5 +36,4 @@ def delete_task(task_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail='Task not found',
         )
-    crud.delete_task(db, task=db_task)
-    return db_task
+    return crud.delete_task(db, task=db_task)

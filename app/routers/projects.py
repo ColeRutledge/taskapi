@@ -36,5 +36,4 @@ def delete_project(project_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail='Project not found',
         )
-    crud.delete_project(db, project=db_project)
-    return db_project
+    return crud.delete_project(db, project=db_project)

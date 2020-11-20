@@ -28,6 +28,14 @@ class UserCreate(UserBase):
     password: str
 
 
+class UserUpdate(UserCreate):
+    first_name: Optional[str] = None
+    last_name: Optional[str] = None
+    email: Optional[str] = None
+    password: Optional[str] = None
+    team_id: Optional[int] = None
+
+
 class User(UserBase):
     id: int
     team_id: Optional[int] = None

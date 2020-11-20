@@ -1,5 +1,5 @@
 from sqlalchemy.orm import Session
-from . import models, schemas
+from app import models, schemas
 
 
 # ############################# USER CRUD ############################## #
@@ -28,6 +28,22 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
+    fake_hashed_password = schema.password + 'notreallyhashed' \
+        if schema.password else model.hashed_password
+
+    db.query(models.User)\
+      .filter_by(id=model.id)\
+      .update({'first_name': schema.first_name or model.first_name,
+               'last_name': schema.last_name or model.last_name,
+               'email': schema.email or model.email,
+               'hashed_password': fake_hashed_password,
+               'team_id': schema.team_id or model.team_id}, synchronize_session=False)
+
+    db.commit()
+    return model
 
 
 def delete_user(db: Session, user: models.User):

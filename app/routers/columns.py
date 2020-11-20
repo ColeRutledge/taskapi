@@ -36,5 +36,4 @@ def delete_column(column_id: int, db: Session = Depends(get_db)):
             status_code=404,
             detail='Column not found',
         )
-    crud.delete_column(db, column=db_column)
-    return db_column
+    return crud.delete_column(db, column=db_column)
