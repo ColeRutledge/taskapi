@@ -47,10 +47,56 @@ def create_team(db: Session, team: schemas.TeamBase):
     db.refresh(db_team)
     return db_team
 
+
 # ############################ PROJECT CRUD ############################ #
+
+def get_project(db: Session, project_id: int):
+    return db.query(models.Project).filter(models.Project.id == project_id).first()
+
+
+def get_projects(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Project).offset(skip).limit(limit).all()
+
+
+def create_project(db: Session, project: schemas.ProjectBase):
+    db_project = models.Project(**project.dict())
+    db.add(db_project)
+    db.commit()
+    db.refresh(db_project)
+    return db_project
 
 
 # ############################ COLUMN CRUD ############################# #
 
+def get_column(db: Session, column_id: int):
+    return db.query(models.Column).filter(models.Column.id == column_id).first()
+
+
+def get_columns(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Column).offset(skip).limit(limit).all()
+
+
+def create_column(db: Session, column: schemas.ColumnBase):
+    db_column = models.Column(**column.dict())
+    db.add(db_column)
+    db.commit()
+    db.refresh(db_column)
+    return db_column
+
 
 # ############################ TASK CRUD ############################### #
+
+def get_task(db: Session, task_id: int):
+    return db.query(models.Task).filter(models.Task.id == task_id).first()
+
+
+def get_tasks(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Task).offset(skip).limit(limit).all()
+
+
+def create_task(db: Session, task: schemas.TaskBase):
+    db_task = models.Task(**task.dict())
+    db.add(db_task)
+    db.commit()
+    db.refresh(db_task)
+    return db_task
