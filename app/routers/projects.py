@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException
+from fastapi import APIRouter, Depends, HTTPException, Body
 from app.db import get_db
 from app import crud, schemas
 from sqlalchemy.orm.session import Session
@@ -26,6 +26,21 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 @router.post('/', response_model=schemas.Project)
 def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
     return crud.create_project(db=db, project=project)
+
+
+@router.put('/{project_id}', response_model=schemas.Project)
+def update_project(
+    project_id: int,
+    project: schemas.ProjectBase = Body(..., embed=True),
+    db: Session = Depends(get_db),
+):
+    db_project = crud.get_project(db, project_id=project_id)
+    if db_project is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Project not found',
+        )
+    return crud.update_project(db, schema=project, model=db_project)
 
 
 @router.delete('/{project_id}', response_model=schemas.Project)

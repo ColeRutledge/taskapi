@@ -33,7 +33,6 @@ def create_user(db: Session, user: schemas.UserCreate):
 def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
     fake_hashed_password = schema.password + 'notreallyhashed' \
         if schema.password else model.hashed_password
-
     db.query(models.User)\
       .filter_by(id=model.id)\
       .update({'first_name': schema.first_name or model.first_name,
@@ -41,7 +40,6 @@ def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
                'email': schema.email or model.email,
                'hashed_password': fake_hashed_password,
                'team_id': schema.team_id or model.team_id}, synchronize_session=False)
-
     db.commit()
     return model
 
@@ -75,7 +73,6 @@ def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
       .filter_by(id=model.id)\
       .update({'team_name': schema.team_name or model.team_name},
               synchronize_session=False)
-
     db.commit()
     return model
 
@@ -104,6 +101,15 @@ def create_project(db: Session, project: schemas.ProjectBase):
     return db_project
 
 
+def update_project(db: Session, schema: schemas.ProjectBase, model: models.Project):
+    db.query(models.Project)\
+      .filter_by(id=model.id)\
+      .update({'project_name': schema.project_name or model.project_name},
+              synchronize_session=False)
+    db.commit()
+    return model
+
+
 def delete_project(db: Session, project: models.Project):
     db.delete(project)
     db.commit()
@@ -128,6 +134,15 @@ def create_column(db: Session, column: schemas.ColumnBase):
     return db_column
 
 
+def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column):
+    db.query(models.Column)\
+      .filter_by(id=model.id)\
+      .update({'column_name': schema.column_name or model.column_name},
+              synchronize_session=False)
+    db.commit()
+    return model
+
+
 def delete_column(db: Session, column: models.Column):
     db.delete(column)
     db.commit()
@@ -150,6 +165,15 @@ def create_task(db: Session, task: schemas.TaskBase):
     db.commit()
     db.refresh(db_task)
     return db_task
+
+
+def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
+    db.query(models.Task)\
+      .filter_by(id=model.id)\
+      .update({'task_name': schema.task_name or model.task_name},
+              synchronize_session=False)
+    db.commit()
+    return model
 
 
 def delete_task(db: Session, task: models.Task):
