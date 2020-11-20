@@ -30,6 +30,12 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
+def delete_user(db: Session, user: models.User):
+    db.delete(user)
+    db.commit()
+    return user
+
+
 # ############################ TEAM CRUD ############################### #
 
 def get_team(db: Session, team_id: int):
