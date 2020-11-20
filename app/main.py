@@ -1,8 +1,8 @@
-from fastapi import FastAPI
-from functools import lru_cache
 from . import config, models
 from app.db import engine
 from app.routers import users
+from fastapi import FastAPI
+from functools import lru_cache
 
 
 @lru_cache()
