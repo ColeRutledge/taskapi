@@ -2,6 +2,8 @@ from sqlalchemy.orm import Session
 from . import models, schemas
 
 
+# ############################# USER CRUD ############################## #
+
 def get_user(db: Session, user_id: int):
     return db.query(models.User).filter(models.User.id == user_id).first()
 
@@ -26,3 +28,29 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+# ############################ TEAM CRUD ############################### #
+
+def get_team(db: Session, team_id: int):
+    return db.query(models.Team).filter(models.Team.id == team_id).first()
+
+
+def get_teams(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Team).offset(skip).limit(limit).all()
+
+
+def create_team(db: Session, team: schemas.TeamBase):
+    db_team = models.Team(**team.dict())
+    db.add(db_team)
+    db.commit()
+    db.refresh(db_team)
+    return db_team
+
+# ############################ PROJECT CRUD ############################ #
+
+
+# ############################ COLUMN CRUD ############################# #
+
+
+# ############################ TASK CRUD ############################### #
