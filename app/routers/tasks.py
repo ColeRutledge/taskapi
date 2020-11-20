@@ -26,3 +26,15 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 @router.post('/', response_model=schemas.Task)
 def create_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
     return crud.create_task(db=db, task=task)
+
+
+@router.delete('/{task_id}', response_model=schemas.Task)
+def delete_task(task_id: int, db: Session = Depends(get_db)):
+    db_task = crud.get_task(db, task_id=task_id)
+    if db_task is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Task not found',
+        )
+    crud.delete_task(db, task=db_task)
+    return db_task
