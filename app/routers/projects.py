@@ -23,6 +23,17 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
     return db_project
 
 
+@router.get('/{project_id}/columns', response_model=list[schemas.Column])
+def get_project_columns(project_id: int, db: Session = Depends(get_db)):
+    db_project = crud.get_project(db, project_id=project_id)
+    if db_project is None:
+        raise HTTPException(
+            status_code=404,
+            detail='Project not found',
+        )
+    return db_project.columns
+
+
 @router.post('/', response_model=schemas.Project)
 def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
     return crud.create_project(db=db, project=project)
