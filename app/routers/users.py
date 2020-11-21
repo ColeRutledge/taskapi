@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.User])
-def get_users(db: Session = Depends(get_db)):
+def get_all_users(db: Session = Depends(get_db)):
     return crud.get_users(db=db)
 
 

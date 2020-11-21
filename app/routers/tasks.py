@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Task])
-def get_tasks(db: Session = Depends(get_db)):
+def get_all_tasks(db: Session = Depends(get_db)):
     return crud.get_tasks(db=db)
 
 

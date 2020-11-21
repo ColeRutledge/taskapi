@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Team])
-def get_teams(db: Session = Depends(get_db)):
+def get_all_teams(db: Session = Depends(get_db)):
     return crud.get_teams(db=db)
 
 

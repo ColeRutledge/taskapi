@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Column])
-def get_columns(db: Session = Depends(get_db)):
+def get_all_columns(db: Session = Depends(get_db)):
     return crud.get_columns(db=db)
 
 

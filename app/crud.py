@@ -170,7 +170,7 @@ def create_task(db: Session, task: schemas.TaskBase):
 def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
     db.query(models.Task)\
       .filter_by(id=model.id)\
-      .update({'task_name': schema.task_name or model.task_name},
+      .update({'task_description': schema.task_description or model.task_description},
               synchronize_session=False)
     db.commit()
     return model

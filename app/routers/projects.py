@@ -8,7 +8,7 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Project])
-def get_projects(db: Session = Depends(get_db)):
+def get_all_projects(db: Session = Depends(get_db)):
     return crud.get_projects(db=db)
 
 
