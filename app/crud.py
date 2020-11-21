@@ -39,7 +39,8 @@ def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
                'last_name': schema.last_name or model.last_name,
                'email': schema.email or model.email,
                'hashed_password': fake_hashed_password,
-               'team_id': schema.team_id or model.team_id}, synchronize_session=False)
+               'team_id': schema.team_id or model.team_id},
+              synchronize_session=False)
     db.commit()
     return model
 
