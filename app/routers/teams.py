@@ -15,7 +15,8 @@ def get_all_teams(db: Session = Depends(get_db)):
 
 @router.get('/{team_id}', response_model=schemas.Team)
 def get_team(team_id: int, db: Session = Depends(get_db)):
-    db_team = crud.get_team(db, team_id=team_id)
+    db_team = crud.read(db=db, id=team_id, model=models.Team)
+    # db_team = crud.get_team(db, team_id=team_id)
     if db_team is None:
         raise HTTPException(
             status_code=404,

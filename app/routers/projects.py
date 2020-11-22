@@ -14,7 +14,8 @@ def get_all_projects(db: Session = Depends(get_db)):
 
 @router.get('/{project_id}', response_model=schemas.Project)
 def get_project(project_id: int, db: Session = Depends(get_db)):
-    db_project: schemas.Project = crud.get_project(db, project_id=project_id)
+    db_project = crud.read(db=db, id=project_id, model=models.Project)
+    # db_project: schemas.Project = crud.get_project(db, project_id=project_id)
     if db_project is None:
         raise HTTPException(
             status_code=404,

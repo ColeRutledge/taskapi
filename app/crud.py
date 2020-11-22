@@ -14,6 +14,19 @@ def create(db: Session, **kwargs):
     return db_model
 
 
+def read(db: Session, **kwargs):
+    model = kwargs.get('model', None)
+    id = kwargs.get('id', None)
+    return db.query(model).filter(id == model.id).first()
+
+
+def delete(db: Session, **kwargs):
+    resource = kwargs.get('item', None)
+    db.delete(resource)
+    db.commit()
+    return resource
+
+
 # ############################# USER CRUD ############################## #
 
 def create_user(db: Session, user: schemas.UserCreate):

@@ -14,7 +14,8 @@ def get_all_tasks(db: Session = Depends(get_db)):
 
 @router.get('/{task_id}', response_model=schemas.Task)
 def get_task(task_id: int, db: Session = Depends(get_db)):
-    db_task = crud.get_task(db, task_id=task_id)
+    db_task = crud.read(db=db, id=task_id, model=models.Task)
+    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
