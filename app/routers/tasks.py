@@ -36,7 +36,8 @@ def update_Task(
     task: schemas.TaskUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    db_task = crud.get_task(db, task_id=task_id)
+    db_task = crud.read(db=db, id=task_id, model=models.Task)
+    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
@@ -47,10 +48,12 @@ def update_Task(
 
 @router.delete('/{task_id}', response_model=schemas.Task)
 def delete_task(task_id: int, db: Session = Depends(get_db)):
-    db_task = crud.get_task(db, task_id=task_id)
+    db_task = crud.read(db=db, id=task_id, model=models.Task)
+    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
             detail='Task not found',
         )
-    return crud.delete_task(db, task=db_task)
+    return crud.delete(db=db, resource=db_task)
+    # return crud.delete_task(db, task=db_task)

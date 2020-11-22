@@ -27,7 +27,8 @@ def get_team(team_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{team_id}/projects', response_model=list[schemas.Project])
 def get_team_projects(team_id: int, db: Session = Depends(get_db)):
-    db_team = crud.get_team(db, team_id=team_id)
+    db_team = crud.read(db=db, id=team_id, model=models.Team)
+    # db_team = crud.get_team(db, team_id=team_id)
     if db_team is None:
         raise HTTPException(
             status_code=404,
@@ -38,7 +39,8 @@ def get_team_projects(team_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{team_id}/users', response_model=list[schemas.User])
 def get_team_users(team_id: int, db: Session = Depends(get_db)):
-    db_team = crud.get_team(db, team_id=team_id)
+    db_team = crud.read(db=db, id=team_id, model=models.Team)
+    # db_team = crud.get_team(db, team_id=team_id)
     if db_team is None:
         raise HTTPException(
             status_code=404,
@@ -70,10 +72,12 @@ def update_team(
 
 @router.delete('/{team_id}', response_model=schemas.Team)
 def delete_team(team_id: int, db: Session = Depends(get_db)):
-    db_team = crud.get_team(db, team_id=team_id)
+    db_team = crud.read(db=db, id=team_id, model=models.Team)
+    # db_team = crud.get_team(db, team_id=team_id)
     if db_team is None:
         raise HTTPException(
             status_code=404,
             detail='Team not found',
         )
-    return crud.delete_team(db, team=db_team)
+    return crud.delete(db=db, resource=db_team)
+    # return crud.delete_team(db, team=db_team)

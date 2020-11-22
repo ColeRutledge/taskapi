@@ -21,7 +21,7 @@ def read(db: Session, **kwargs):
 
 
 def delete(db: Session, **kwargs):
-    resource = kwargs.get('item', None)
+    resource = kwargs.get('resource', None)
     db.delete(resource)
     db.commit()
     return resource

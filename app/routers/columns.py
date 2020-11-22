@@ -49,7 +49,8 @@ def update_column(
     column: schemas.ColumnUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    db_column = crud.get_column(db, column_id=column_id)
+    db_column = crud.read(db=db, id=column_id, model=models.Column)
+    # db_column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -60,10 +61,12 @@ def update_column(
 
 @router.delete('/{column_id}', response_model=schemas.Column)
 def delete_column(column_id: int, db: Session = Depends(get_db)):
-    db_column = crud.get_column(db, column_id=column_id)
+    db_column = crud.read(db=db, id=column_id, model=models.Column)
+    # db_column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
             detail='Column not found',
         )
-    return crud.delete_column(db, column=db_column)
+    return crud.delete(db=db, resource=db_column)
+    # return crud.delete_column(db, column=db_column)
