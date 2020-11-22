@@ -1,5 +1,6 @@
 # Project Files
 app.db
+.vscode
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
