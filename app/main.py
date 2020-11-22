@@ -11,7 +11,9 @@ def get_settings():
 
 
 models.Base.metadata.create_all(bind=engine)
+
 app = FastAPI()
+
 app.include_router(users.router, tags=['Users'], prefix='/users')
 app.include_router(teams.router, tags=['Teams'], prefix='/teams')
 app.include_router(projects.router, tags=['Projects'], prefix='/projects')
