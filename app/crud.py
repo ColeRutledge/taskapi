@@ -2,7 +2,7 @@ from sqlalchemy.orm import Session
 from app import models, schemas
 
 
-# ############################# CRUD ################################### #
+# ############################ CRUD #################################### #
 
 def create(db: Session, body, model):
     db_model = model(**body.dict())
@@ -26,7 +26,7 @@ def delete(db: Session, resource):
     return resource
 
 
-# ############################# USER CRUD ############################## #
+# ############################ USER CRUD ############################### #
 
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password + 'notreallyhashed'
@@ -42,16 +42,16 @@ def create_user(db: Session, user: schemas.UserCreate):
     return db_user
 
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
+# def get_user(db: Session, user_id: int):
+#     return db.query(models.User).filter(models.User.id == user_id).first()
 
 
 def get_user_by_email(db: Session, email: str):
     return db.query(models.User).filter(models.User.email == email).first()
 
 
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
+# def get_users(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.User).offset(skip).limit(limit).all()
 
 
 def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
@@ -69,10 +69,10 @@ def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
     return model
 
 
-def delete_user(db: Session, user: models.User):
-    db.delete(user)
-    db.commit()
-    return user
+# def delete_user(db: Session, user: models.User):
+#     db.delete(user)
+#     db.commit()
+#     return user
 
 
 # ############################ TEAM CRUD ############################### #

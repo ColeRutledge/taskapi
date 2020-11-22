@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.db import get_db
-from app import crud, schemas
+from app import crud, schemas, models
 from sqlalchemy.orm.session import Session
 
 
@@ -9,12 +9,12 @@ router = APIRouter()
 
 @router.get('/', response_model=list[schemas.User])
 def get_all_users(db: Session = Depends(get_db)):
-    return crud.get_users(db=db)
+    return crud.read_all(db=db, model=models.User)
 
 
 @router.get('/{user_id}', response_model=schemas.User)
 def get_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
         raise HTTPException(
             status_code=404,
@@ -25,11 +25,11 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{user_id}/team', response_model=schemas.Team)
 def get_user_team(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
         raise HTTPException(
             status_code=404,
-            detail='Project not found',
+            detail='User not found',
         )
     return db_user.team
 
@@ -40,7 +40,7 @@ def update_user(
     user: schemas.UserUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
         raise HTTPException(
             status_code=404,
@@ -51,13 +51,13 @@ def update_user(
 
 @router.delete('/{user_id}', response_model=schemas.User)
 def delete_user(user_id: int, db: Session = Depends(get_db)):
-    db_user = crud.get_user(db, user_id=user_id)
+    db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
         raise HTTPException(
             status_code=404,
             detail='User not found',
         )
-    return crud.delete_user(db, user=db_user)
+    return crud.delete(db=db, resource=db_user)
 
 
 @router.post('/', response_model=schemas.User)
