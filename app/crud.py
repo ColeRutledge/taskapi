@@ -1,6 +1,8 @@
-from app import models, schemas
 from app.models import User, Team, Project, Column, Task
-from app.schemas import ColumnBase, ProjectBase, TaskBase, TeamBase, UserCreate
+from app.schemas import (
+    ColumnBase, ProjectBase, TaskBase, TeamBase, UserCreate, UserUpdate
+)
+from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import Union
 
@@ -36,9 +38,9 @@ def delete(db: Session, resource: Model):
 
 # ############################ USER CRUD ############################### #
 
-def create_user(db: Session, user: schemas.UserCreate):
+def create_user(db: Session, user: UserCreate):
     fake_hashed_password = user.password + 'notreallyhashed'
-    db_user = models.User(
+    db_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
@@ -55,17 +57,17 @@ def create_user(db: Session, user: schemas.UserCreate):
 
 
 def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
+    return db.query(User).filter(func.lower(User.email) == func.lower(email)).first()
 
 
 # def get_users(db: Session, skip: int = 0, limit: int = 100):
 #     return db.query(models.User).offset(skip).limit(limit).all()
 
 
-def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
+def update_user(db: Session, schema: UserUpdate, model: User):
     fake_hashed_password = schema.password + 'notreallyhashed' \
         if schema.password else model.hashed_password
-    db.query(models.User)\
+    db.query(User)\
       .filter_by(id=model.id)\
       .update({'first_name': schema.first_name or model.first_name,
                'last_name': schema.last_name or model.last_name,
@@ -101,8 +103,8 @@ def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
 #     return db.query(models.Team).offset(skip).limit(limit).all()
 
 
-def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
-    db.query(models.Team)\
+def update_team(db: Session, schema: TeamBase, model: Team):
+    db.query(Team)\
       .filter_by(id=model.id)\
       .update({'team_name': schema.team_name or model.team_name},
               synchronize_session=False)
@@ -134,8 +136,8 @@ def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
 #     return db.query(models.Project).offset(skip).limit(limit).all()
 
 
-def update_project(db: Session, schema: schemas.ProjectBase, model: models.Project):
-    db.query(models.Project)\
+def update_project(db: Session, schema: ProjectBase, model: Project):
+    db.query(Project)\
       .filter_by(id=model.id)\
       .update({'project_name': schema.project_name or model.project_name,
                'team_id': schema.team_id or model.team_id},
@@ -168,8 +170,8 @@ def update_project(db: Session, schema: schemas.ProjectBase, model: models.Proje
 #     return db.query(models.Column).offset(skip).limit(limit).all()
 
 
-def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column):
-    db.query(models.Column)\
+def update_column(db: Session, schema: ColumnBase, model: Column):
+    db.query(Column)\
       .filter_by(id=model.id)\
       .update({'column_name': schema.column_name or model.column_name,
                'column_pos': schema.column_pos or model.column_pos,
@@ -203,8 +205,8 @@ def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column)
 #     return db.query(models.Task).offset(skip).limit(limit).all()
 
 
-def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
-    db.query(models.Task)\
+def update_task(db: Session, schema: TaskBase, model: Task):
+    db.query(Task)\
       .filter_by(id=model.id)\
       .update({'task_description': schema.task_description or model.task_description,
                'due_date': schema.due_date or model.due_date,
