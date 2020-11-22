@@ -4,18 +4,6 @@ from app import models, schemas
 
 # ############################# USER CRUD ############################## #
 
-def get_user(db: Session, user_id: int):
-    return db.query(models.User).filter(models.User.id == user_id).first()
-
-
-def get_user_by_email(db: Session, email: str):
-    return db.query(models.User).filter(models.User.email == email).first()
-
-
-def get_users(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.User).offset(skip).limit(limit).all()
-
-
 def create_user(db: Session, user: schemas.UserCreate):
     fake_hashed_password = user.password + 'notreallyhashed'
     db_user = models.User(
@@ -28,6 +16,18 @@ def create_user(db: Session, user: schemas.UserCreate):
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def get_user(db: Session, user_id: int):
+    return db.query(models.User).filter(models.User.id == user_id).first()
+
+
+def get_user_by_email(db: Session, email: str):
+    return db.query(models.User).filter(models.User.email == email).first()
+
+
+def get_users(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.User).offset(skip).limit(limit).all()
 
 
 def update_user(db: Session, schema: schemas.UserUpdate, model: models.User):
@@ -53,20 +53,20 @@ def delete_user(db: Session, user: models.User):
 
 # ############################ TEAM CRUD ############################### #
 
-def get_team(db: Session, team_id: int):
-    return db.query(models.Team).filter(models.Team.id == team_id).first()
-
-
-def get_teams(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Team).offset(skip).limit(limit).all()
-
-
 def create_team(db: Session, team: schemas.TeamBase):
     db_team = models.Team(**team.dict())
     db.add(db_team)
     db.commit()
     db.refresh(db_team)
     return db_team
+
+
+def get_team(db: Session, team_id: int):
+    return db.query(models.Team).filter(models.Team.id == team_id).first()
+
+
+def get_teams(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Team).offset(skip).limit(limit).all()
 
 
 def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
@@ -86,20 +86,20 @@ def delete_team(db: Session, team: models.Team):
 
 # ############################ PROJECT CRUD ############################ #
 
-def get_project(db: Session, project_id: int):
-    return db.query(models.Project).filter(models.Project.id == project_id).first()
-
-
-def get_projects(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Project).offset(skip).limit(limit).all()
-
-
 def create_project(db: Session, project: schemas.ProjectBase):
     db_project = models.Project(**project.dict())
     db.add(db_project)
     db.commit()
     db.refresh(db_project)
     return db_project
+
+
+def get_project(db: Session, project_id: int):
+    return db.query(models.Project).filter(models.Project.id == project_id).first()
+
+
+def get_projects(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Project).offset(skip).limit(limit).all()
 
 
 def update_project(db: Session, schema: schemas.ProjectBase, model: models.Project):
@@ -119,20 +119,20 @@ def delete_project(db: Session, project: models.Project):
 
 # ############################ COLUMN CRUD ############################# #
 
-def get_column(db: Session, column_id: int):
-    return db.query(models.Column).filter(models.Column.id == column_id).first()
-
-
-def get_columns(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Column).offset(skip).limit(limit).all()
-
-
 def create_column(db: Session, column: schemas.ColumnBase):
     db_column = models.Column(**column.dict())
     db.add(db_column)
     db.commit()
     db.refresh(db_column)
     return db_column
+
+
+def get_column(db: Session, column_id: int):
+    return db.query(models.Column).filter(models.Column.id == column_id).first()
+
+
+def get_columns(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Column).offset(skip).limit(limit).all()
 
 
 def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column):
@@ -152,20 +152,20 @@ def delete_column(db: Session, column: models.Column):
 
 # ############################ TASK CRUD ############################### #
 
-def get_task(db: Session, task_id: int):
-    return db.query(models.Task).filter(models.Task.id == task_id).first()
-
-
-def get_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Task).offset(skip).limit(limit).all()
-
-
 def create_task(db: Session, task: schemas.TaskBase):
     db_task = models.Task(**task.dict())
     db.add(db_task)
     db.commit()
     db.refresh(db_task)
     return db_task
+
+
+def get_task(db: Session, task_id: int):
+    return db.query(models.Task).filter(models.Task.id == task_id).first()
+
+
+def get_tasks(db: Session, skip: int = 0, limit: int = 100):
+    return db.query(models.Task).offset(skip).limit(limit).all()
 
 
 def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
