@@ -42,7 +42,7 @@ def create_column(column: schemas.ColumnBase, db: Session = Depends(get_db)):
 @router.put('/{column_id}', response_model=schemas.Column)
 def update_column(
     column_id: int,
-    column: schemas.ColumnBase = Body(..., embed=True),
+    column: schemas.ColumnUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
     db_column = crud.get_column(db, column_id=column_id)

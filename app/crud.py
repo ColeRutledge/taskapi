@@ -105,7 +105,8 @@ def get_projects(db: Session, skip: int = 0, limit: int = 100):
 def update_project(db: Session, schema: schemas.ProjectBase, model: models.Project):
     db.query(models.Project)\
       .filter_by(id=model.id)\
-      .update({'project_name': schema.project_name or model.project_name},
+      .update({'project_name': schema.project_name or model.project_name,
+               'team_id': schema.team_id or model.team_id},
               synchronize_session=False)
     db.commit()
     return model
@@ -138,7 +139,9 @@ def get_columns(db: Session, skip: int = 0, limit: int = 100):
 def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column):
     db.query(models.Column)\
       .filter_by(id=model.id)\
-      .update({'column_name': schema.column_name or model.column_name},
+      .update({'column_name': schema.column_name or model.column_name,
+               'column_pos': schema.column_pos or model.column_pos,
+               'project_id': schema.project_id or model.project_id},
               synchronize_session=False)
     db.commit()
     return model

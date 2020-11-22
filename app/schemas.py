@@ -66,6 +66,12 @@ class ColumnBase(BaseModel):
     project_id: int
 
 
+class ColumnUpdate(BaseModel):
+    column_name: Optional[str] = None
+    column_pos: Optional[int] = None
+    project_id: Optional[int] = None
+
+
 class Column(ColumnBase):
     id: int
 

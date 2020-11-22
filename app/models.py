@@ -71,7 +71,7 @@ class Project(Base, TimestampMixin):
     )
 
     def get_project_data(self):
-        return [{column.column_name: [task for task in column.tasks]}
+        return [{column.column_name: column.tasks}
                 for column in self.columns]
 
 
