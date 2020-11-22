@@ -174,7 +174,10 @@ def get_tasks(db: Session, skip: int = 0, limit: int = 100):
 def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
     db.query(models.Task)\
       .filter_by(id=model.id)\
-      .update({'task_description': schema.task_description or model.task_description},
+      .update({'task_description': schema.task_description or model.task_description,
+               'due_date': schema.due_date or model.due_date,
+               'column_id': schema.column_id or model.column_id,
+               'column_idx': schema.column_idx or model.column_idx},
               synchronize_session=False)
     db.commit()
     return model

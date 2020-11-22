@@ -88,6 +88,13 @@ class TaskBase(BaseModel):
     column_idx: int
 
 
+class TaskUpdate(BaseModel):
+    task_description: Optional[str] = None
+    due_date: Optional[datetime] = None
+    column_id: Optional[int] = None
+    column_idx: Optional[int] = None
+
+
 class Task(TaskBase):
     id: int
 

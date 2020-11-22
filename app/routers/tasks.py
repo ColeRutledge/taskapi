@@ -31,7 +31,7 @@ def create_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
 @router.put('/{task_id}', response_model=schemas.Task)
 def update_Task(
     task_id: int,
-    task: schemas.TaskBase = Body(..., embed=True),
+    task: schemas.TaskUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
     db_task = crud.get_task(db, task_id=task_id)
