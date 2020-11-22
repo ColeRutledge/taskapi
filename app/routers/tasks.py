@@ -25,7 +25,7 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
 @router.post('/', response_model=schemas.Task)
 def create_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
-    return crud.create(db=db, body=task, schema=schemas.TaskBase, model=models.Task)
+    return crud.create(db=db, body=task, model=models.Task)
 
 
 @router.put('/{task_id}', response_model=schemas.Task)

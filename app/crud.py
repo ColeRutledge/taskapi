@@ -4,9 +4,7 @@ from app import models, schemas
 
 # ############################# CRUD ################################### #
 
-def create(db: Session, **kwargs):
-    body = kwargs.get('body', None)
-    model = kwargs.get('model', None)
+def create(db: Session, body, model):
     db_model = model(**body.dict())
     db.add(db_model)
     db.commit()
@@ -14,19 +12,15 @@ def create(db: Session, **kwargs):
     return db_model
 
 
-def read(db: Session, **kwargs):
-    model = kwargs.get('model', None)
-    id = kwargs.get('id', None)
+def read(db: Session, id: int, model):
     return db.query(model).filter(id == model.id).first()
 
 
-def read_all(db: Session, skip: int = 0, limit: int = 100, **kwargs):
-    model = kwargs.get('model', None)
+def read_all(db: Session, model, skip: int = 0, limit: int = 100):
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def delete(db: Session, **kwargs):
-    resource = kwargs.get('resource', None)
+def delete(db: Session, resource):
     db.delete(resource)
     db.commit()
     return resource
