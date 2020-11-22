@@ -20,6 +20,11 @@ def read(db: Session, **kwargs):
     return db.query(model).filter(id == model.id).first()
 
 
+def read_all(db: Session, skip: int = 0, limit: int = 100, **kwargs):
+    model = kwargs.get('model', None)
+    return db.query(model).offset(skip).limit(limit).all()
+
+
 def delete(db: Session, **kwargs):
     resource = kwargs.get('resource', None)
     db.delete(resource)
@@ -86,12 +91,12 @@ def delete_user(db: Session, user: models.User):
 #     return db_team
 
 
-def get_team(db: Session, team_id: int):
-    return db.query(models.Team).filter(models.Team.id == team_id).first()
+# def get_team(db: Session, team_id: int):
+#     return db.query(models.Team).filter(models.Team.id == team_id).first()
 
 
-def get_teams(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Team).offset(skip).limit(limit).all()
+# def get_teams(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.Team).offset(skip).limit(limit).all()
 
 
 def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
@@ -103,10 +108,10 @@ def update_team(db: Session, schema: schemas.TeamBase, model: models.Team):
     return model
 
 
-def delete_team(db: Session, team: models.Team):
-    db.delete(team)
-    db.commit()
-    return team
+# def delete_team(db: Session, team: models.Team):
+#     db.delete(team)
+#     db.commit()
+#     return team
 
 
 # ############################ PROJECT CRUD ############################ #
@@ -119,12 +124,12 @@ def delete_team(db: Session, team: models.Team):
 #     return db_project
 
 
-def get_project(db: Session, project_id: int):
-    return db.query(models.Project).filter(models.Project.id == project_id).first()
+# def get_project(db: Session, project_id: int):
+#     return db.query(models.Project).filter(models.Project.id == project_id).first()
 
 
-def get_projects(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Project).offset(skip).limit(limit).all()
+# def get_projects(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.Project).offset(skip).limit(limit).all()
 
 
 def update_project(db: Session, schema: schemas.ProjectBase, model: models.Project):
@@ -137,10 +142,10 @@ def update_project(db: Session, schema: schemas.ProjectBase, model: models.Proje
     return model
 
 
-def delete_project(db: Session, project: models.Project):
-    db.delete(project)
-    db.commit()
-    return project
+# def delete_project(db: Session, project: models.Project):
+#     db.delete(project)
+#     db.commit()
+#     return project
 
 
 # ############################ COLUMN CRUD ############################# #
@@ -153,12 +158,12 @@ def delete_project(db: Session, project: models.Project):
 #     return db_column
 
 
-def get_column(db: Session, column_id: int):
-    return db.query(models.Column).filter(models.Column.id == column_id).first()
+# def get_column(db: Session, column_id: int):
+#     return db.query(models.Column).filter(models.Column.id == column_id).first()
 
 
-def get_columns(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Column).offset(skip).limit(limit).all()
+# def get_columns(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.Column).offset(skip).limit(limit).all()
 
 
 def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column):
@@ -172,10 +177,10 @@ def update_column(db: Session, schema: schemas.ColumnBase, model: models.Column)
     return model
 
 
-def delete_column(db: Session, column: models.Column):
-    db.delete(column)
-    db.commit()
-    return column
+# def delete_column(db: Session, column: models.Column):
+#     db.delete(column)
+#     db.commit()
+#     return column
 
 
 # ############################ TASK CRUD ############################### #
@@ -188,12 +193,12 @@ def delete_column(db: Session, column: models.Column):
 #     return db_task
 
 
-def get_task(db: Session, task_id: int):
-    return db.query(models.Task).filter(models.Task.id == task_id).first()
+# def get_task(db: Session, task_id: int):
+#     return db.query(models.Task).filter(models.Task.id == task_id).first()
 
 
-def get_tasks(db: Session, skip: int = 0, limit: int = 100):
-    return db.query(models.Task).offset(skip).limit(limit).all()
+# def get_tasks(db: Session, skip: int = 0, limit: int = 100):
+#     return db.query(models.Task).offset(skip).limit(limit).all()
 
 
 def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
@@ -208,7 +213,7 @@ def update_task(db: Session, schema: schemas.TaskBase, model: models.Task):
     return model
 
 
-def delete_task(db: Session, task: models.Task):
-    db.delete(task)
-    db.commit()
-    return task
+# def delete_task(db: Session, task: models.Task):
+#     db.delete(task)
+#     db.commit()
+#     return task

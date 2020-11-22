@@ -10,7 +10,8 @@ router = APIRouter()
 
 @router.get('/', response_model=list[schemas.Team])
 def get_all_teams(db: Session = Depends(get_db)):
-    return crud.get_teams(db=db)
+    return crud.read_all(db=db, model=models.Team)
+    # return crud.get_teams(db=db)
 
 
 @router.get('/{team_id}', response_model=schemas.Team)

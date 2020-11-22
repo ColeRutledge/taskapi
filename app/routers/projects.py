@@ -9,7 +9,8 @@ router = APIRouter()
 
 @router.get('/', response_model=list[schemas.Project])
 def get_all_projects(db: Session = Depends(get_db)):
-    return crud.get_projects(db=db)
+    return crud.read_all(db=db, model=models.Project)
+    # return crud.get_projects(db=db)
 
 
 @router.get('/{project_id}', response_model=schemas.Project)

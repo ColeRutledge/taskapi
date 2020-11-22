@@ -9,7 +9,8 @@ router = APIRouter()
 
 @router.get('/', response_model=list[schemas.Task])
 def get_all_tasks(db: Session = Depends(get_db)):
-    return crud.get_tasks(db=db)
+    return crud.read_all(db=db, model=models.Task)
+    # return crud.get_tasks(db=db)
 
 
 @router.get('/{task_id}', response_model=schemas.Task)
