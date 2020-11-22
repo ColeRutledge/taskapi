@@ -10,13 +10,11 @@ router = APIRouter()
 @router.get('/', response_model=list[schemas.Project])
 def get_all_projects(db: Session = Depends(get_db)):
     return crud.read_all(db=db, model=models.Project)
-    # return crud.get_projects(db=db)
 
 
 @router.get('/{project_id}', response_model=schemas.Project)
 def get_project(project_id: int, db: Session = Depends(get_db)):
-    db_project = crud.read(db=db, id=project_id, model=models.Project)
-    # db_project: schemas.Project = crud.get_project(db, project_id=project_id)
+    db_project: models.Project = crud.read(db=db, id=project_id, model=models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
@@ -27,8 +25,7 @@ def get_project(project_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{project_id}/data')
 def get_project_data(project_id: int, db: Session = Depends(get_db)):
-    db_project = crud.read(db=db, id=project_id, model=models.Project)
-    # db_project: models.Project = crud.get_project(db, project_id=project_id)
+    db_project: models.Project = crud.read(db=db, id=project_id, model=models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
@@ -39,8 +36,7 @@ def get_project_data(project_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{project_id}/columns', response_model=list[schemas.Column])
 def get_project_columns(project_id: int, db: Session = Depends(get_db)):
-    db_project = crud.read(db=db, id=project_id, model=models.Project)
-    # db_project = crud.get_project(db, project_id=project_id)
+    db_project: models.Project = crud.read(db=db, id=project_id, model=models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
@@ -54,7 +50,6 @@ def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
     return crud.create(
         db=db, body=project, schema=schemas.ProjectBase, model=models.Project
     )
-    # return crud.create_project(db=db, project=project)
 
 
 @router.put('/{project_id}', response_model=schemas.Project)
@@ -63,8 +58,7 @@ def update_project(
     project: schemas.ProjectBase = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    db_project = crud.read(db=db, id=project_id, model=models.Project)
-    # db_project = crud.get_project(db, project_id=project_id)
+    db_project: models.Project = crud.read(db=db, id=project_id, model=models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
@@ -75,12 +69,10 @@ def update_project(
 
 @router.delete('/{project_id}', response_model=schemas.Project)
 def delete_project(project_id: int, db: Session = Depends(get_db)):
-    db_project = crud.read(db=db, id=project_id, model=models.Project)
-    # db_project = crud.get_project(db, project_id=project_id)
+    db_project: models.Project = crud.read(db=db, id=project_id, model=models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
             detail='Project not found',
         )
     return crud.delete(db=db, resource=db_project)
-    # return crud.delete_project(db, project=db_project)

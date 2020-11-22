@@ -10,13 +10,11 @@ router = APIRouter()
 @router.get('/', response_model=list[schemas.Task])
 def get_all_tasks(db: Session = Depends(get_db)):
     return crud.read_all(db=db, model=models.Task)
-    # return crud.get_tasks(db=db)
 
 
 @router.get('/{task_id}', response_model=schemas.Task)
 def get_task(task_id: int, db: Session = Depends(get_db)):
     db_task = crud.read(db=db, id=task_id, model=models.Task)
-    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
@@ -28,7 +26,6 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 @router.post('/', response_model=schemas.Task)
 def create_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
     return crud.create(db=db, body=task, schema=schemas.TaskBase, model=models.Task)
-    # return crud.create_task(db=db, task=task)
 
 
 @router.put('/{task_id}', response_model=schemas.Task)
@@ -38,7 +35,6 @@ def update_Task(
     db: Session = Depends(get_db),
 ):
     db_task = crud.read(db=db, id=task_id, model=models.Task)
-    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
@@ -50,11 +46,9 @@ def update_Task(
 @router.delete('/{task_id}', response_model=schemas.Task)
 def delete_task(task_id: int, db: Session = Depends(get_db)):
     db_task = crud.read(db=db, id=task_id, model=models.Task)
-    # db_task = crud.get_task(db, task_id=task_id)
     if db_task is None:
         raise HTTPException(
             status_code=404,
             detail='Task not found',
         )
     return crud.delete(db=db, resource=db_task)
-    # return crud.delete_task(db, task=db_task)

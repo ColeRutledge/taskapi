@@ -10,7 +10,6 @@ router = APIRouter()
 @router.get('/', response_model=list[schemas.Column])
 def get_all_columns(db: Session = Depends(get_db)):
     return crud.read_all(db=db, model=models.Column)
-    # return crud.get_columns(db=db)
 
 
 @router.get('/{column_id}', response_model=schemas.Column)
@@ -27,7 +26,6 @@ def get_column(column_id: int, db: Session = Depends(get_db)):
 @router.get('/{column_id}/tasks', response_model=list[schemas.Task])
 def get_column_tasks(column_id: int, db: Session = Depends(get_db)):
     db_column = crud.read(db=db, id=column_id, model=models.Column)
-    # db_column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -41,7 +39,6 @@ def create_column(column: schemas.ColumnBase, db: Session = Depends(get_db)):
     return crud.create(
         db=db, body=column, schema=schemas.ColumnBase, model=models.Column
     )
-    # return crud.create_column(db=db, column=column)
 
 
 @router.put('/{column_id}', response_model=schemas.Column)
@@ -51,7 +48,6 @@ def update_column(
     db: Session = Depends(get_db),
 ):
     db_column = crud.read(db=db, id=column_id, model=models.Column)
-    # db_column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -63,11 +59,9 @@ def update_column(
 @router.delete('/{column_id}', response_model=schemas.Column)
 def delete_column(column_id: int, db: Session = Depends(get_db)):
     db_column = crud.read(db=db, id=column_id, model=models.Column)
-    # db_column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
             detail='Column not found',
         )
     return crud.delete(db=db, resource=db_column)
-    # return crud.delete_column(db, column=db_column)
