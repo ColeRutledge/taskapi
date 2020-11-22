@@ -1,10 +1,18 @@
-from sqlalchemy.orm import Session
 from app import models, schemas
+from app.models import User, Team, Project, Column, Task
+from app.schemas import ColumnBase, ProjectBase, TaskBase, TeamBase, UserCreate
+from sqlalchemy.orm import Session
+from typing import Union
+
+
+# creating custom union types for all needed db models and pydantic schemas
+Model = Union[User, Team, Project, Column, Task]
+Schema = Union[UserCreate, TeamBase, ProjectBase, ColumnBase, TaskBase]
 
 
 # ############################ CRUD #################################### #
 
-def create(db: Session, body, model):
+def create(db: Session, body: Schema, model: Model):
     db_model = model(**body.dict())
     db.add(db_model)
     db.commit()
@@ -12,15 +20,15 @@ def create(db: Session, body, model):
     return db_model
 
 
-def read(db: Session, id: int, model):
+def read(db: Session, id: int, model: Model):
     return db.query(model).filter(id == model.id).first()
 
 
-def read_all(db: Session, model, skip: int = 0, limit: int = 100):
+def read_all(db: Session, model: Model, skip: int = 0, limit: int = 100):
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def delete(db: Session, resource):
+def delete(db: Session, resource: Model):
     db.delete(resource)
     db.commit()
     return resource

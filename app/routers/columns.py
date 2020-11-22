@@ -14,7 +14,7 @@ def get_all_columns(db: Session = Depends(get_db)):
 
 @router.get('/{column_id}', response_model=schemas.Column)
 def get_column(column_id: int, db: Session = Depends(get_db)):
-    db_column = crud.get_column(db, column_id=column_id)
+    db_column: models.Column = crud.get_column(db, column_id=column_id)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -25,7 +25,7 @@ def get_column(column_id: int, db: Session = Depends(get_db)):
 
 @router.get('/{column_id}/tasks', response_model=list[schemas.Task])
 def get_column_tasks(column_id: int, db: Session = Depends(get_db)):
-    db_column = crud.read(db=db, id=column_id, model=models.Column)
+    db_column: models.Column = crud.read(db=db, id=column_id, model=models.Column)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -45,7 +45,7 @@ def update_column(
     column: schemas.ColumnUpdate = Body(..., embed=True),
     db: Session = Depends(get_db),
 ):
-    db_column = crud.read(db=db, id=column_id, model=models.Column)
+    db_column: models.Column = crud.read(db=db, id=column_id, model=models.Column)
     if db_column is None:
         raise HTTPException(
             status_code=404,
@@ -56,7 +56,7 @@ def update_column(
 
 @router.delete('/{column_id}', response_model=schemas.Column)
 def delete_column(column_id: int, db: Session = Depends(get_db)):
-    db_column = crud.read(db=db, id=column_id, model=models.Column)
+    db_column: models.Column = crud.read(db=db, id=column_id, model=models.Column)
     if db_column is None:
         raise HTTPException(
             status_code=404,
