@@ -1,3 +1,4 @@
+from app import models
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.db import get_db
 from app import crud, schemas
@@ -47,7 +48,8 @@ def get_team_users(team_id: int, db: Session = Depends(get_db)):
 
 @router.post('/', response_model=schemas.Team)
 def create_team(team: schemas.TeamBase, db: Session = Depends(get_db)):
-    return crud.create_team(db=db, team=team)
+    return crud.create(db=db, body=team, schema=schemas.TeamBase, model=models.Team)
+    # return crud.create_team(db=db, team=team)
 
 
 @router.put('/{team_id}', response_model=schemas.Team)

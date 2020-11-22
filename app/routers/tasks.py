@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.db import get_db
-from app import crud, schemas
+from app import crud, schemas, models
 from sqlalchemy.orm.session import Session
 
 
@@ -25,7 +25,8 @@ def get_task(task_id: int, db: Session = Depends(get_db)):
 
 @router.post('/', response_model=schemas.Task)
 def create_task(task: schemas.TaskBase, db: Session = Depends(get_db)):
-    return crud.create_task(db=db, task=task)
+    return crud.create(db=db, body=task, schema=schemas.TaskBase, model=models.Task)
+    # return crud.create_task(db=db, task=task)
 
 
 @router.put('/{task_id}', response_model=schemas.Task)

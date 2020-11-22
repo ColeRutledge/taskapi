@@ -1,6 +1,6 @@
 from fastapi import APIRouter, Depends, HTTPException, Body
 from app.db import get_db
-from app import crud, schemas
+from app import crud, schemas, models
 from sqlalchemy.orm.session import Session
 
 
@@ -36,7 +36,10 @@ def get_column_tasks(column_id: int, db: Session = Depends(get_db)):
 
 @router.post('/', response_model=schemas.Column)
 def create_column(column: schemas.ColumnBase, db: Session = Depends(get_db)):
-    return crud.create_column(db=db, column=column)
+    return crud.create(
+        db=db, body=column, schema=schemas.ColumnBase, model=models.Column
+    )
+    # return crud.create_column(db=db, column=column)
 
 
 @router.put('/{column_id}', response_model=schemas.Column)

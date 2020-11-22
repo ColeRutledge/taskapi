@@ -47,7 +47,10 @@ def get_project_columns(project_id: int, db: Session = Depends(get_db)):
 
 @router.post('/', response_model=schemas.Project)
 def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
-    return crud.create_project(db=db, project=project)
+    return crud.create(
+        db=db, body=project, schema=schemas.ProjectBase, model=models.Project
+    )
+    # return crud.create_project(db=db, project=project)
 
 
 @router.put('/{project_id}', response_model=schemas.Project)
