@@ -1,5 +1,5 @@
 from typing import Optional
-from pydantic import BaseModel
+from pydantic import BaseModel  # create_model
 from datetime import datetime
 
 
@@ -87,3 +87,16 @@ class Task(TaskBase):
 
     class Config:
         orm_mode = True
+
+
+# class ColumnTasks(BaseModel):
+#     Column.column_name: create_model('')
+
+
+# class ProjectData(Project):
+#     data: list[ColumnTasks]
+
+
+# class Plant(BaseModel):
+#     daytime: Optional[create_model('DayTime', sunrise=(int, ...), sunset=(int, ...))] = None  # noqa
+#     type: str

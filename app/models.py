@@ -70,6 +70,10 @@ class Project(Base, TimestampMixin):
         cascade='all, delete-orphan',
     )
 
+    def get_project_data(self):
+        return [{column.column_name: [task for task in column.tasks]}
+                for column in self.columns]
+
 
 class Column(Base, TimestampMixin):
     __tablename__ = 'columns'
