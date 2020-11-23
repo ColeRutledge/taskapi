@@ -3,8 +3,15 @@ from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTim
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
 
+from passlib.context import CryptContext
+# from app.auth.auth_utils import pwd_context
+from fastapi import Depends
+from sqlalchemy.orm.session import Session
+from app.db import get_db
+
 
 Base = declarative_base()
+pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 class TimestampMixin(object):
@@ -40,6 +47,29 @@ class User(Base, TimestampMixin):
     team_id = DB_Column(Integer, ForeignKey('teams.id'))
 
     team = relationship('Team', back_populates='users')
+
+    # utility function to hash a password coming from the user.
+    def get_password_hash(self, password):
+        return pwd_context.hash(password)
+
+    @staticmethod
+    def get_user_by_email(db: Session, email: str):
+        return db.query(User)\
+                 .filter(func.lower(User.email) == func.lower(email))\
+                 .first()
+
+    # utility function to authenticate and return a user. OAuth spec
+    # requires username vs email while crud is looking up a user via email
+    @staticmethod
+    def authenticate_user(username: str, password: str,
+                          db: Session = Depends(get_db)):
+        user: User = User.get_user_by_email(db=db, email=username)
+        if not user:
+            return False
+        if not pwd_context.verify(password, user.hashed_password):
+            # if not self.verify_password(password, user.hashed_password):
+            return False
+        return user
 
 
 class Team(Base, TimestampMixin):

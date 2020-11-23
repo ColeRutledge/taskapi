@@ -46,6 +46,7 @@ class UserUpdate(UserCreate):
     email: Optional[str] = None
     password: Optional[str] = None
     team_id: Optional[int] = None
+    disabled: Optional[bool] = None
 
 
 class User(UserBase):
