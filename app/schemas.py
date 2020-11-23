@@ -10,8 +10,9 @@ class Token(BaseModel):
     token_type: str
 
 
+# OAuth spec requires username vs email
 class TokenData(BaseModel):
-    email: Optional[str] = None
+    username: Optional[str] = None
 
 
 # ######### TEAM ######### #
@@ -50,6 +51,7 @@ class UserUpdate(UserCreate):
 class User(UserBase):
     id: int
     team_id: Optional[int] = None
+    disabled: Optional[bool] = None
 
     class Config:
         orm_mode = True
