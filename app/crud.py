@@ -2,10 +2,9 @@ from app.models import User, Team, Project, Column, Task
 from app.schemas import (
     ColumnBase, ProjectBase, TaskBase, TeamBase, UserCreate, UserUpdate
 )
-# from sqlalchemy import func
 from sqlalchemy.orm import Session
 from typing import Union
-# from app.auth.auth_utils import get_password_hash
+
 
 # creating custom union types for all needed db models and pydantic schemas
 Model = Union[User, Team, Project, Column, Task]
@@ -39,17 +38,12 @@ def delete(db: Session, resource: Model):
 # ############################ USER CRUD ############################### #
 
 def create_user(db: Session, user: UserCreate):
-    # verify_password, get_password_hash
-    # fake_hashed_password = user.password + 'notreallyhashed'
-    # hashed_password = get_password_hash(user.password)
     db_user = User(
         first_name=user.first_name,
         last_name=user.last_name,
         email=user.email,
-        # hashed_password=fake_hashed_password,
     )
-    hashed_password = db_user.get_password_hash(user.password)
-    db_user.hashed_password = hashed_password
+    db_user.hashed_password = db_user.get_password_hash(user.password)
     db.add(db_user)
     db.commit()
     db.refresh(db_user)

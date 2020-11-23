@@ -1,13 +1,11 @@
+from app.db import get_db
+from fastapi import Depends
+from passlib.context import CryptContext
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
-
-from passlib.context import CryptContext
-# from app.auth.auth_utils import pwd_context
-from fastapi import Depends
 from sqlalchemy.orm.session import Session
-from app.db import get_db
 
 
 Base = declarative_base()
@@ -48,7 +46,6 @@ class User(Base, TimestampMixin):
 
     team = relationship('Team', back_populates='users')
 
-    # utility function to hash a password coming from the user.
     def get_password_hash(self, password):
         return pwd_context.hash(password)
 
@@ -67,7 +64,6 @@ class User(Base, TimestampMixin):
         if not user:
             return False
         if not pwd_context.verify(password, user.hashed_password):
-            # if not self.verify_password(password, user.hashed_password):
             return False
         return user
 

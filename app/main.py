@@ -10,15 +10,15 @@ def get_settings():
     return config.Settings()
 
 
-models.Base.metadata.create_all(bind=engine)
-
 app = FastAPI()
 app_config = get_settings()
+models.Base.metadata.create_all(bind=engine)
+
 
 from app.auth import auth_router
+app.include_router(auth_router.router, tags=['Auth'])
 app.include_router(users.router, tags=['Users'], prefix='/users')
 app.include_router(teams.router, tags=['Teams'], prefix='/teams')
 app.include_router(projects.router, tags=['Projects'], prefix='/projects')
 app.include_router(columns.router, tags=['Columns'], prefix='/columns')
 app.include_router(tasks.router, tags=['Tasks'], prefix='/tasks')
-app.include_router(auth_router.router, tags=['Auth'])
