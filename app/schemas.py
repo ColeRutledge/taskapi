@@ -50,6 +50,7 @@ class UserUpdate(UserCreate):
 
 class User(UserBase):
     id: int
+    hashed_password: str
     team_id: Optional[int] = None
     disabled: Optional[bool] = None
 

@@ -1,6 +1,6 @@
 from datetime import timedelta
 from fastapi.exceptions import HTTPException
-from app.auth.auth_utils import authenticate_user, create_access_token
+from app.auth.auth_utils import authenticate_user, create_access_token, get_current_user
 from fastapi import APIRouter, Depends, status
 from app import schemas
 from app.db import get_db
@@ -25,7 +25,12 @@ async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(
         )
     access_token_expires = timedelta(minutes=TOKEN_EXPIRES)
     access_token = create_access_token(
-        data={'sub': user.email},
+        data={'sub': user.email},   # 'sub' is a jwt specification
         expires_delta=access_token_expires,
     )
     return {'access_token': access_token, 'token_type': 'bearer'}
+
+
+@router.get('/users/me', response_model=schemas.User)
+def read_users_me(current_user: schemas.User = Depends(get_current_user)):
+    return current_user
