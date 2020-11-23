@@ -1,3 +1,4 @@
+from app.crud import get_user_by_email
 from app import crud, schemas, models
 from datetime import datetime, timedelta
 from typing import Optional
@@ -25,7 +26,11 @@ def get_password_hash(password):
 
 
 # And another one to authenticate and return a user.
-def authenticate_user(db: Session, email: str, password: str):
+def authenticate_user(
+    email: str,
+    password: str,
+    db: Session = Depends(get_db),
+):
     user: models.User = crud.get_user_by_email(db=db, email=email)
     if not user:
         return False
@@ -48,3 +53,29 @@ def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
         expire = datetime.utcnow() + timedelta(minutes=15)
     data_to_encode.update({'exp': expire})
     return jwt.encode(data_to_encode, app_config.secret_key, app_config.algorithm)
+
+
+def get_current_user(
+    db: Session = Depends(get_db),
+    token: str = Depends(oauth2_scheme)
+):
+    credentials_exception = HTTPException(
+        status_code=status.HTTP_401_UNAUTHORIZED,
+        detail='Could not validate credentials',
+        headers={'WWW-Authenticate': 'Bearer'},
+    )
+    try:
+        payload = jwt.decode(
+            token, app_config.secret_key,
+            algorithms=[app_config.algorithm],
+        )
+        email: str = payload.get('sub')
+        if email is None:
+            raise credentials_exception
+        token_data = schemas.TokenData(email=email)
+    except JWTError:
+        raise credentials_exception
+    user = get_user_by_email(db=db, email=token_data.email)
+    if user is None:
+        raise credentials_exception
+    return user
