@@ -3,6 +3,17 @@ from pydantic import BaseModel  # create_model
 from datetime import datetime
 
 
+# ######### AUTH ######### #
+
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+
+
+class TokenData(BaseModel):
+    username: Optional[str] = None
+
+
 # ######### TEAM ######### #
 
 class TeamBase(BaseModel):
