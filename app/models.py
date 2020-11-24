@@ -3,9 +3,9 @@ from fastapi import Depends
 from passlib.context import CryptContext
 from sqlalchemy.ext.declarative import declarative_base, declared_attr
 from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
-from sqlalchemy.sql.expression import func
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import Session
+from sqlalchemy.sql.expression import func
 
 
 Base = declarative_base()
