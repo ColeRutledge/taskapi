@@ -1,18 +1,19 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, status
-from app.db import get_db
 from app import crud, schemas, models
+from app.db import get_db
+from fastapi import APIRouter, Depends, HTTPException, Body, status
 from sqlalchemy.orm.session import Session
 
 
 router = APIRouter()
+from app.auth.auth_utils import get_current_user as gcu
 
 
-@router.get('/', response_model=list[schemas.User])
+@router.get('/', response_model=list[schemas.User], dependencies=[Depends(gcu)])
 def get_all_users(db: Session = Depends(get_db)):
     return crud.read_all(db=db, model=models.User)
 
 
-@router.get('/{user_id}', response_model=schemas.User)
+@router.get('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])
 def get_user(user_id: int, db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
@@ -23,7 +24,7 @@ def get_user(user_id: int, db: Session = Depends(get_db)):
     return db_user
 
 
-@router.get('/{user_id}/team', response_model=schemas.Team)
+@router.get('/{user_id}/team', response_model=schemas.Team, dependencies=[Depends(gcu)])
 def get_user_team(user_id: int, db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
@@ -34,7 +35,7 @@ def get_user_team(user_id: int, db: Session = Depends(get_db)):
     return db_user.team
 
 
-@router.put('/{user_id}', response_model=schemas.User)
+@router.put('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])
 def update_user(
     user_id: int,
     user: schemas.UserUpdate = Body(..., embed=True),
@@ -49,7 +50,7 @@ def update_user(
     return crud.update_user(db, schema=user, model=db_user)
 
 
-@router.delete('/{user_id}', response_model=schemas.User)
+@router.delete('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])
 def delete_user(user_id: int, db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
