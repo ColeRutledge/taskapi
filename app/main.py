@@ -10,7 +10,11 @@ def get_settings():
     return config.Settings()
 
 
-app = FastAPI()
+app = FastAPI(
+    title='Asana FastAPI',
+    version='2.5.0',
+    description='FastAPI Python server for an Asana clone',
+)
 app_config = get_settings()
 models.Base.metadata.create_all(bind=engine)
 
