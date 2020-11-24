@@ -6,7 +6,7 @@ from app.models import User
 from datetime import timedelta
 from fastapi import APIRouter, Depends, status
 from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordRequestForm
+from fastapi.security import OAuth2PasswordRequestForm as OAuthForm
 from sqlalchemy.orm.session import Session
 
 
@@ -15,8 +15,7 @@ router = APIRouter()
 
 
 @router.post('/token', response_model=schemas.Token)
-async def login_for_access_token(form_data: OAuth2PasswordRequestForm = Depends(),
-                                 db: Session = Depends(get_db)):
+async def login(form_data: OAuthForm = Depends(), db: Session = Depends(get_db)):
     user = User.authenticate_user(form_data.username, form_data.password, db=db)
     if not user:
         raise HTTPException(

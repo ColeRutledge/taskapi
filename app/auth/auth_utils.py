@@ -5,7 +5,6 @@ from typing import Optional
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
-# from passlib.context import CryptContext
 from sqlalchemy.orm.session import Session
 from app.db import get_db
 from app.main import app_config
@@ -14,29 +13,7 @@ from app.main import app_config
 SECRET_KEY = app_config.secret_key
 ALGORITHM = app_config.algorithm
 
-# pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
-
-
-# utility function to verify if a received password matches the hash stored.
-# def verify_password(plain_password, hashed_password):
-#     return pwd_context.verify(plain_password, hashed_password)
-
-
-# utility function to hash a password coming from the user.
-# def get_password_hash(password):
-#     return pwd_context.hash(password)
-
-
-# utility function to authenticate and return a user. OAuth spec
-# requires username vs email while crud is looking up a user via email
-# def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
-#     user: models.User = crud.get_user_by_email(db=db, email=username)
-#     if not user:
-#         return False
-#     if not verify_password(password, user.hashed_password):
-#         return False
-#     return user
 
 
 def create_access_token(data: dict, expires_delta: Optional[timedelta] = None):
@@ -72,3 +49,26 @@ def get_current_active_user(current_user: schemas.User = Depends(get_current_use
     if current_user.disabled:
         raise HTTPException(status_code=400, detail='Inactive user')
     return current_user
+
+
+# ########## MOVED TO USER MODEL ########## #
+
+# utility function to verify if a received password matches the hash stored.
+# def verify_password(plain_password, hashed_password):
+#     return pwd_context.verify(plain_password, hashed_password)
+
+
+# utility function to hash a password coming from the user.
+# def get_password_hash(password):
+#     return pwd_context.hash(password)
+
+
+# utility function to authenticate and return a user. OAuth spec
+# requires username vs email while crud is looking up a user via email
+# def authenticate_user(username: str, password: str, db: Session = Depends(get_db)):
+#     user: models.User = crud.get_user_by_email(db=db, email=username)
+#     if not user:
+#         return False
+#     if not verify_password(password, user.hashed_password):
+#         return False
+#     return user
