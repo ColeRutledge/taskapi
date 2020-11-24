@@ -9,7 +9,8 @@ tags_metadata = [
     },
     {
         "name": "Teams",
-        "description": "Routes to manage **team** creation, updates, and deletion.",
+        "description": "Routes to manage **team** creation, updates, and deletion."
+                       "Includes route to fetch all projects belonging to team.",
     },
     {
         "name": "Projects",
@@ -18,7 +19,8 @@ tags_metadata = [
     },
     {
         "name": "Columns",
-        "description": "Routes to manage **column** creation, updates, and deletion.",
+        "description": "Routes to manage **column** creation, updates, and deletion."
+                       "Includes route to fetch all tasks belonging to column.",
     },
     {
         "name": "Tasks",
