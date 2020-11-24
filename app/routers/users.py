@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
+from fastapi import APIRouter, Depends, HTTPException, Body, status
 from app.db import get_db
 from app import crud, schemas, models
 from sqlalchemy.orm.session import Session
@@ -60,7 +60,7 @@ def delete_user(user_id: int, db: Session = Depends(get_db)):
     return crud.delete(db=db, resource=db_user)
 
 
-@router.post('/', response_model=schemas.User)
+@router.post('/', response_model=schemas.User, status_code=status.HTTP_201_CREATED)
 def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
     db_user = models.User.get_user_by_email(db, email=user.email)
     if db_user:

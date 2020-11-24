@@ -1,7 +1,6 @@
-from app import models
-from fastapi import APIRouter, Depends, HTTPException, Body
+from app import models, crud, schemas
 from app.db import get_db
-from app import crud, schemas
+from fastapi import APIRouter, Depends, HTTPException, Body, status
 from sqlalchemy.orm.session import Session
 
 
@@ -46,7 +45,7 @@ def get_team_users(team_id: int, db: Session = Depends(get_db)):
     return db_team.users
 
 
-@router.post('/', response_model=schemas.Team)
+@router.post('/', response_model=schemas.Team, status_code=status.HTTP_201_CREATED)
 def create_team(team: schemas.TeamBase, db: Session = Depends(get_db)):
     return crud.create(db=db, body=team, model=models.Team)
 

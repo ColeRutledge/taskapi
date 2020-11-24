@@ -1,7 +1,7 @@
 from app.db import get_db
 from fastapi import Depends
 from passlib.context import CryptContext
-from sqlalchemy.ext.declarative import declarative_base, declared_attr
+from sqlalchemy.ext.declarative import declarative_base  # declared_attr
 from sqlalchemy import Column as DB_Column, ForeignKey, String, Integer, DateTime
 from sqlalchemy.orm import relationship
 from sqlalchemy.orm.session import Session
@@ -13,25 +13,26 @@ pwd_context = CryptContext(schemes=['bcrypt'], deprecated='auto')
 
 
 class TimestampMixin(object):
+    # will need to adjust the ordering of columns in the migration file
+    created_on = DB_Column(DateTime, server_default=func.now())
+    updated_on = DB_Column(
+        DateTime,
+        server_default=func.now(),
+        server_onupdate=func.now()
+    )
     # by using declared_attr here, we can force
     # created_on and updated_on to end of db table
-    @declared_attr
-    def created_on(cls):
-        return DB_Column(DateTime, server_default=func.now())
+    # @declared_attr
+    # def created_on(cls):
+    #     return DB_Column(DateTime, server_default=func.now())
 
-    @declared_attr
-    def updated_on(cls):
-        return DB_Column(
-            DateTime,
-            server_default=func.now(),
-            server_onupdate=func.now()
-        )
-    # created_on = DB_Column(DateTime, server_default=func.now())
-    # updated_on = DB_Column(
-    #     DateTime,
-    #     server_default=func.now(),
-    #     server_onupdate=func.now()
-    # )
+    # @declared_attr
+    # def updated_on(cls):
+    #     return DB_Column(
+    #         DateTime,
+    #         server_default=func.now(),
+    #         server_onupdate=func.now()
+    #     )
 
 
 class User(Base, TimestampMixin):

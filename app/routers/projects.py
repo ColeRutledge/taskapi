@@ -1,6 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Body
-from app.db import get_db
 from app import crud, schemas, models
+from app.db import get_db
+from fastapi import APIRouter, Depends, HTTPException, Body, status
 from sqlalchemy.orm.session import Session
 
 
@@ -45,7 +45,7 @@ def get_project_columns(project_id: int, db: Session = Depends(get_db)):
     return db_project.columns
 
 
-@router.post('/', response_model=schemas.Project)
+@router.post('/', response_model=schemas.Project, status_code=status.HTTP_201_CREATED)
 def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
     return crud.create(db=db, body=project, model=models.Project)
 
