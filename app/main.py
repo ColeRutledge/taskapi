@@ -1,6 +1,7 @@
 from app import config, models
 from app.db import engine
 from app.routers import users, teams, projects, columns, tasks
+from app.tag_meta import tags_metadata
 from fastapi import FastAPI, Depends
 from functools import lru_cache
 
@@ -14,6 +15,7 @@ app = FastAPI(
     title='Asana FastAPI',
     version='2.5.0',
     description='FastAPI Python server for an Asana clone',
+    openapi_tags=tags_metadata,
 )
 app_config = get_settings()
 models.Base.metadata.create_all(bind=engine)
