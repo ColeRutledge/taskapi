@@ -12,7 +12,6 @@ def get_settings():
 
 app = FastAPI(
     title='Asana FastAPI',
-    version='2.5.0',
     description='FastAPI Python server for an Asana clone',
     openapi_tags=tags_metadata,
 )

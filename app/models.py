@@ -62,11 +62,8 @@ class User(Base, TimestampMixin):
     def authenticate_user(username: str, password: str,
                           db: Session = Depends(get_db)):
         user: User = User.get_user_by_email(db=db, email=username)
-        if not user:
-            return False
-        if not pwd_context.verify(password, user.hashed_password):
-            return False
-        return user
+        return user if user and \
+            pwd_context.verify(password, user.hashed_password) else False
 
 
 class Team(Base, TimestampMixin):

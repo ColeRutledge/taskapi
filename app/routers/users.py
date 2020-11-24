@@ -1,11 +1,11 @@
 from app import crud, schemas, models
+from app.auth.auth_utils import get_current_user as gcu
 from app.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Body, status
 from sqlalchemy.orm.session import Session
 
 
 router = APIRouter()
-from app.auth.auth_utils import get_current_user as gcu
 
 
 @router.get('/', response_model=list[schemas.User], dependencies=[Depends(gcu)])

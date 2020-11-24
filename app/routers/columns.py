@@ -14,7 +14,7 @@ def get_all_columns(db: Session = Depends(get_db)):
 
 @router.get('/{column_id}', response_model=schemas.Column)
 def get_column(column_id: int, db: Session = Depends(get_db)):
-    db_column: models.Column = crud.get_column(db, column_id=column_id)
+    db_column: models.Column = crud.read(db=db, id=column_id, model=models.Column)
     if db_column is None:
         raise HTTPException(
             status_code=404,
