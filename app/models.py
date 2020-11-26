@@ -59,8 +59,11 @@ class User(Base, TimestampMixin):
     # utility function to authenticate and return a user. OAuth spec
     # requires username vs email while crud is looking up a user via email
     @staticmethod
-    def authenticate_user(username: str, password: str,
-                          db: Session = Depends(get_db)):
+    def authenticate_user(
+        username: str,
+        password: str,
+        db: Session = Depends(get_db)
+    ):
         user: User = User.get_user_by_email(db=db, email=username)
         return user if user and \
             pwd_context.verify(password, user.hashed_password) else False
