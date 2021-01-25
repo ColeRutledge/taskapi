@@ -1,9 +1,11 @@
+from typing import Union
+
+from sqlalchemy.orm import Session
+
 from app.models import User, Team, Project, Column, Task
 from app.schemas import (
     ColumnBase, ProjectBase, TaskBase, TeamBase, UserCreate, UserUpdate
 )
-from sqlalchemy.orm import Session
-from typing import Union
 
 
 # creating custom union types for all needed db models and pydantic schemas

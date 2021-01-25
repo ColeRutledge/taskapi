@@ -1,13 +1,15 @@
-from app import schemas
-from app.models import User
 from datetime import datetime, timedelta
 from typing import Optional
+
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm.session import Session
+
+from app import schemas
 from app.config import get_settings
 from app.db import get_db
+from app.models import User
 
 
 SECRET_KEY = get_settings().secret_key

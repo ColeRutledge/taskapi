@@ -1,13 +1,15 @@
+from datetime import timedelta
+
+from fastapi.exceptions import HTTPException
+from fastapi.security import OAuth2PasswordRequestForm as OAuthForm
+from fastapi import APIRouter, Depends, status
+from sqlalchemy.orm.session import Session
+
 from app.config import get_settings
 from app import schemas
 from app.auth.auth_utils import create_access_token, get_current_user
 from app.db import get_db
 from app.models import User
-from datetime import timedelta
-from fastapi import APIRouter, Depends, status
-from fastapi.exceptions import HTTPException
-from fastapi.security import OAuth2PasswordRequestForm as OAuthForm
-from sqlalchemy.orm.session import Session
 
 
 TOKEN_EXPIRES = get_settings().access_token_expires_minutes

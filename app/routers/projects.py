@@ -1,7 +1,8 @@
-from app import crud, schemas, models
-from app.db import get_db
 from fastapi import APIRouter, Depends, HTTPException, Body, status
 from sqlalchemy.orm.session import Session
+
+from app import crud, schemas, models
+from app.db import get_db
 
 
 router = APIRouter()

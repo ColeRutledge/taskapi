@@ -1,7 +1,8 @@
+from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
+
 from app import config, models
 from app.db import engine
 from app.tag_meta import tags_metadata
-from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
 from app.auth import auth_router
 from app.auth.auth_utils import get_current_user
 from app.routers import users, teams, projects, columns, tasks
