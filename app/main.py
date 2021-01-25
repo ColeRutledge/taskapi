@@ -1,7 +1,7 @@
 from app import config, models
 from app.db import engine
 from app.tag_meta import tags_metadata
-from fastapi import FastAPI, Depends
+from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
 from functools import lru_cache
 
 
@@ -17,11 +17,25 @@ app = FastAPI(
 )
 app_config = get_settings()
 models.Base.metadata.create_all(bind=engine)
+templates = templating.Jinja2Templates(directory='app/templates')
 
 
 from app.auth import auth_router
 from app.auth.auth_utils import get_current_user
 from app.routers import users, teams, projects, columns, tasks
+
+
+app.mount('/static', staticfiles.StaticFiles(directory='app/static'), name='static')
+
+
+@app.get('/', response_class=responses.HTMLResponse)
+async def user_login(request: Request):
+    return templates.TemplateResponse('index.html', {'request': request})
+
+
+@app.get("/items/{id}", response_class=responses.HTMLResponse)
+async def read_item(request: Request, id: str):
+    return templates.TemplateResponse("item.html", {"request": request, "id": id})
 
 
 app.include_router(auth_router.router, tags=['Auth'])
