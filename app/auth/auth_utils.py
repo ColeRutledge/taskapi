@@ -6,12 +6,12 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 from jose import JWTError, jwt
 from sqlalchemy.orm.session import Session
+from app.config import get_settings
 from app.db import get_db
-from app.main import app_config
 
 
-SECRET_KEY = app_config.secret_key
-ALGORITHM = app_config.algorithm
+SECRET_KEY = get_settings().secret_key
+ALGORITHM = get_settings().algorithm
 
 oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 

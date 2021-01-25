@@ -1,4 +1,4 @@
-from app.main import app_config
+from app.config import get_settings
 from app import schemas
 from app.auth.auth_utils import create_access_token, get_current_user
 from app.db import get_db
@@ -10,7 +10,7 @@ from fastapi.security import OAuth2PasswordRequestForm as OAuthForm
 from sqlalchemy.orm.session import Session
 
 
-TOKEN_EXPIRES = app_config.access_token_expires_minutes
+TOKEN_EXPIRES = get_settings().access_token_expires_minutes
 router = APIRouter()
 
 
