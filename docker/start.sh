@@ -21,17 +21,9 @@ elif [ -f /docker/gunicorn_conf.py ]; then
 else
     DEFAULT_GUNICORN_CONF=/gunicorn_conf.py
 fi
+
 export GUNICORN_CONF=${GUNICORN_CONF:-$DEFAULT_GUNICORN_CONF}
 export WORKER_CLASS=${WORKER_CLASS:-"uvicorn.workers.UvicornWorker"}
-
-# ls ../
-# echo $DEFAULT_MODULE_NAME
-# echo $MODULE_NAME
-# echo $VARIABLE_NAME
-# echo $APP_MODULE
-# echo $DEFAULT_GUNICORN_CONF
-# echo $GUNICORN_CONF
-# echo $WORKER_CLASS
 
 # If there's a prestart.sh script in the /app directory or other path specified, run it before starting
 PRE_START_PATH=${PRE_START_PATH:-/app/prestart.sh}

@@ -19,13 +19,16 @@
 # COPY . /app
 
 
-FROM python:3.9
+FROM python:3.9-slim-buster
 
 # some of the additional packages required if using a slim build
-# RUN apt-get update && apt-get install curl -y && apt-get install gcc -y
+RUN apt-get update \
+    && apt-get -y install curl build-essential \
+    && apt-get clean
 
 # Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | POETRY_HOME=/opt/poetry python && \
+RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | \
+    POETRY_HOME=/opt/poetry python && \
     cd /usr/local/bin && \
     ln -s /opt/poetry/bin/poetry && \
     poetry config virtualenvs.create false
@@ -42,10 +45,7 @@ COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
 COPY ./docker/start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
 
-COPY ./asana_fastapi.py /asana_fastapi.py
-
 COPY ./app /app
-# WORKDIR /app/         # removed so context is correct in container
 
 ENV PYTHONPATH=/app
 
