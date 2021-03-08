@@ -21,7 +21,6 @@
 
 FROM python:3.9
 
-
 # some of the additional packages required if using a slim build
 # RUN apt-get update && apt-get install curl -y && apt-get install gcc -y
 
@@ -43,8 +42,10 @@ COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
 COPY ./docker/start-reload.sh /start-reload.sh
 RUN chmod +x /start-reload.sh
 
+COPY ./asana_fastapi.py /asana_fastapi.py
+
 COPY ./app /app
-WORKDIR /app/
+# WORKDIR /app/         # removed so context is correct in container
 
 ENV PYTHONPATH=/app
 
