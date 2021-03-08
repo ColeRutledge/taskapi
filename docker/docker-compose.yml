@@ -3,7 +3,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-    command: ["/start.sh"]
+    command: ["poetry", "run", "/start.sh"]
     # volumes:
     #   - .:/app
     ports:
