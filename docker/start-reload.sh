@@ -3,7 +3,7 @@ set -e
 
 if [ -f /app/app/main.py ]; then
     DEFAULT_MODULE_NAME=app.main
-elif [ -f ./app/main.py ]; then                         # added
+elif [ -f /app/main.py ]; then
     DEFAULT_MODULE_NAME=main
 fi
 
@@ -17,7 +17,7 @@ PORT=${PORT:-80}
 LOG_LEVEL=${LOG_LEVEL:-info}
 
 # If there's a prestart.sh script in the /app directory or other path specified, run it before starting
-PRE_START_PATH=${PRE_START_PATH:-./app/prestart.sh}     # added
+PRE_START_PATH=${PRE_START_PATH:-/app/prestart.sh}
 echo "Checking for script in $PRE_START_PATH"
 if [ -f $PRE_START_PATH ] ; then
     echo "Running script $PRE_START_PATH"

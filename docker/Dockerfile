@@ -35,7 +35,8 @@ RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-
 
 # Copy using poetry.lock* in case it doesn't exist yet
 COPY ./pyproject.toml ./poetry.lock* ./
-RUN poetry install --no-root --no-dev
+RUN poetry install --no-dev
+# RUN poetry install --no-root --no-dev
 
 COPY ./docker/start.sh /start.sh
 RUN chmod +x /start.sh
@@ -53,4 +54,4 @@ EXPOSE 80
 
 # Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
 # And then will start Gunicorn with Uvicorn
-CMD ["/start.sh"]
+CMD ["start.sh"]
