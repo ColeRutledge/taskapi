@@ -1,55 +1,78 @@
-#### DOCKER COMMANDS ####
+########
+# BASE #
+########
 
-# command to build image setting build context with -f
-# docker build -t fastapi -f .\docker\Dockerfile .
+FROM python:3.9-slim as base
 
-# command to start container with image in detached mode. will remove on fail/exit
-# docker run -d --rm --name asana_api -p 80:80 fastapi
+ENV PYTHONUNBUFFERED=1 \
+    PYTHONDONTWRITEBYTECODE=1 \
+    PIP_NO_CACHE_DIR=off \
+    PIP_DISABLE_PIP_VERSION_CHECK=on \
+    PIP_DEFAULT_TIMEOUT=100 \
+    POETRY_HOME="/opt/poetry" \
+    POETRY_VIRTUALENVS_IN_PROJECT=true \
+    POETRY_NO_INTERACTION=1 \
+    PYSETUP_PATH="/opt/pysetup" \
+    VENV_PATH="/opt/pysetup/.venv"
 
-# FROM python:3.6 as base
-# COPY requirements.txt /
-# RUN pip wheel --no-cache-dir --no-deps --wheel-dir /wheels -r requirements.txt
-
-
-# FROM python:3.6-alpine
-# COPY --from=base /wheels /wheels
-# COPY --from=base requirements.txt .
-# RUN pip install --no-cache /wheels/* # flask, gunicorn, pycrypto
-# WORKDIR /app
-# COPY . /app
+ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 
-FROM python:3.9-slim-buster
+###########
+# Builder #
+###########
 
-# some of the additional packages required if using a slim build
+FROM base as builder
+
 RUN apt-get update \
-    && apt-get -y install curl build-essential \
+    && apt-get -y --no-install-recommends install curl build-essential \
     && apt-get clean
 
-# Install Poetry
-RUN curl -sSL https://raw.githubusercontent.com/python-poetry/poetry/master/get-poetry.py | \
-    POETRY_HOME=/opt/poetry python && \
-    cd /usr/local/bin && \
-    ln -s /opt/poetry/bin/poetry
-# poetry config virtualenvs.create false
+ENV POETRY_VERSION=1.1.5
+RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
+WORKDIR $PYSETUP_PATH
 COPY ./pyproject.toml ./poetry.lock ./
-RUN poetry install --no-dev --no-root
+RUN poetry install --no-dev
 
-COPY ./docker/start.sh /start.sh
-RUN chmod +x /start.sh
 
-COPY ./docker/gunicorn_conf.py /gunicorn_conf.py
+###############
+# Development #
+###############
 
-COPY ./docker/start-reload.sh /start-reload.sh
-RUN chmod +x /start-reload.sh
+FROM base as development
 
-COPY ./app /app
+ENV FASTAPI_ENV=development
 
-ENV PYTHONPATH=/app
+COPY --from=builder $POETRY_HOME $POETRY_HOME
+COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 
-EXPOSE 80
+WORKDIR $PYSETUP_PATH
+RUN poetry install
 
-# Run the start script, it will check for an /app/prestart.sh script (e.g. for migrations)
-# And then will start Gunicorn with Uvicorn
-CMD ["start.sh"]
+WORKDIR /app
+COPY . .
+RUN chmod +x ./docker/start-reload.sh
+
+EXPOSE 8000
+
+CMD ["./docker/start-reload.sh"]
+
+
+##############
+# Production #
+##############
+
+FROM base as production
+
+ENV FASTAPI_ENV=production
+
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+WORKDIR /app
+COPY . .
+RUN chmod +x ./docker/start.sh
+
+EXPOSE 8000
+
+CMD ["./docker/start.sh"]

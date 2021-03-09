@@ -4,7 +4,7 @@ services:
     image: asana_fastapi
     build:
       context: ..
-      dockerfile: ./docker/Dockerfile.prod
+      dockerfile: ./docker/Dockerfile
       target: development
     ports:
       - 8000:80
