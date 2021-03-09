@@ -54,8 +54,6 @@ WORKDIR /app
 COPY . .
 RUN chmod +x ./docker/start-reload.sh
 
-EXPOSE 8000
-
 CMD ["./docker/start-reload.sh"]
 
 
@@ -76,7 +74,5 @@ RUN chmod +x ./docker/start.sh
 RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app .
 USER app
-
-EXPOSE 8000
 
 CMD ["./docker/start.sh"]
