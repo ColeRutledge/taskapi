@@ -5,7 +5,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-      target: dev
+      target: prod
     ports:
       - 8000:80
     environment:
