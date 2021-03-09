@@ -5,9 +5,9 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile
-      target: prod
+      target: dev
     ports:
-      - 8000:80
+      - "8000:80"
     environment:
       ADMIN_EMAIL: ${ADMIN_EMAIL}
       APP_NAME: ${APP_NAME}
