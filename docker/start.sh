@@ -1,6 +1,7 @@
 #! /usr/bin/env sh
 set -e
 
+# activate virtual env
 . /opt/pysetup/.venv/bin/activate
 
 if [ -f /app/app/main.py ]; then
@@ -18,7 +19,7 @@ if [ -f /app/gunicorn_conf.py ]; then
     DEFAULT_GUNICORN_CONF=/app/gunicorn_conf.py
 elif [ -f /app/app/gunicorn_conf.py ]; then
     DEFAULT_GUNICORN_CONF=/app/app/gunicorn_conf.py
-elif [ -f /app/docker/gunicorn_conf.py ]; then
+elif [ -f /app/docker/gunicorn_conf.py ]; then              # added
     DEFAULT_GUNICORN_CONF=/app/docker/gunicorn_conf.py
 else
     DEFAULT_GUNICORN_CONF=/gunicorn_conf.py

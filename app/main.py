@@ -1,7 +1,6 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
 
-from app import config, models
-from app.db import engine
+from app import config
 from app.tag_meta import tags_metadata
 from app.auth import auth_router
 from app.auth.auth_utils import get_current_user
@@ -14,7 +13,6 @@ app = FastAPI(
     openapi_tags=tags_metadata,
 )
 app_config = config.get_settings()
-models.Base.metadata.create_all(bind=engine)
 templates = templating.Jinja2Templates(directory='app/templates')
 
 
@@ -35,7 +33,6 @@ app.include_router(auth_router.router, tags=['Auth'])
 app.include_router(
     users.router,
     tags=['Users'], prefix='/users',
-    # dependencies=[Depends(get_current_user)],
 )
 app.include_router(
     teams.router,

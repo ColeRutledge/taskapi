@@ -52,8 +52,26 @@ RUN poetry install
 
 WORKDIR /app
 COPY . .
-RUN chmod +x ./docker/start.sh
 RUN chmod +x ./docker/start-reload.sh
+
+EXPOSE 8000
+
+CMD ["./docker/start-reload.sh"]
+
+
+##############
+# Production #
+##############
+
+FROM base as production
+
+ENV FASTAPI_ENV=production
+
+COPY --from=builder $VENV_PATH $VENV_PATH
+
+WORKDIR /app
+COPY . .
+RUN chmod +x ./docker/start.sh
 
 EXPOSE 8000
 

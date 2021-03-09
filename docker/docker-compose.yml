@@ -1,9 +1,12 @@
 services:
   web:
+    container_name: asana_fastapi
+    image: asana_fastapi
     build:
       context: ..
       dockerfile: ./docker/Dockerfile.prod
-    command: ["./docker/start.sh"]
+      target: production
+    # command: ["./docker/start.sh"]
     ports:
       - 8000:80
     environment:
