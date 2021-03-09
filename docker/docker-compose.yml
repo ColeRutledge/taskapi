@@ -5,8 +5,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile.prod
-      target: production
-    # command: ["./docker/start.sh"]
+      target: development
     ports:
       - 8000:80
     environment:
