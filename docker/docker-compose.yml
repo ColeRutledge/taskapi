@@ -3,9 +3,7 @@ services:
     build:
       context: ..
       dockerfile: ./docker/Dockerfile.prod
-    command: ["poetry", "run", "/start.sh"]
-    # volumes:
-    #   - .:/app
+    command: ["./docker/start.sh"]
     ports:
       - 8000:80
     environment:
