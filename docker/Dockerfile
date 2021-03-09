@@ -40,7 +40,7 @@ RUN poetry install --no-dev
 # Development #
 ###############
 
-FROM base as development
+FROM base as dev
 
 ENV FASTAPI_ENV=development
 
@@ -63,7 +63,7 @@ CMD ["./docker/start-reload.sh"]
 # Production #
 ##############
 
-FROM base as production
+FROM base as prod
 
 ENV FASTAPI_ENV=production
 

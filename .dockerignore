@@ -1,8 +1,11 @@
 .venv
+venv
 .vscode
 *.db
 README.md
+
 __pycache__
+.pytest_cache/
 *.pyc
 *.pyo
 *.pyd
@@ -11,6 +14,6 @@ __pycache__
 .coverage
 .coverage.*
 .cache
-*,cover
 *.log
 .git*
+.dockerignore
