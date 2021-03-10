@@ -1,11 +1,10 @@
-<!DOCTYPE html>
-<html lang="en">
-  <head>
-    <title>Login</title>
-    <link href="{{ url_for('static', path='/styles.css') }}" rel="stylesheet" />
-  </head>
-  <body>
-    <h1>Login</h1>
-    <p>{{ request }}</p>
-  </body>
-</html>
+{% extends "base.html" %} 
+
+{% block styling %}
+<link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet" />
+{% endblock %} 
+
+{% block content %}
+<h1>Login</h1>
+<p>{{ request }}</p>
+{% endblock %}

@@ -24,7 +24,7 @@ async def user_login(request: Request):
     return templates.TemplateResponse('index.html', {'request': request})
 
 
-@app.get("/items/{id}", response_class=responses.HTMLResponse)
+@app.get('/items/{id}', response_class=responses.HTMLResponse)
 async def read_item(request: Request, id: str):
     return templates.TemplateResponse("item.html", {"request": request, "id": id})
 
