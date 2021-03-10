@@ -40,4 +40,4 @@ else
 fi
 
 # Start Gunicorn -- TODO: REMOVE --forwarded-allow-ips after adding TLS proxy
-exec gunicorn -k "$WORKER_CLASS" -c "$GUNICORN_CONF" "$APP_MODULE" --forwarded-allow-ips "104.12.252.103"
+exec gunicorn -k "$WORKER_CLASS" -c "$GUNICORN_CONF" "$APP_MODULE" --forwarded-allow-ips "*"
