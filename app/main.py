@@ -21,7 +21,9 @@ app.mount('/static', staticfiles.StaticFiles(directory='app/static'), name='stat
 
 @app.get('/', response_class=responses.HTMLResponse)
 async def user_login(request: Request):
-    return templates.TemplateResponse('index.html', {'request': request})
+    return templates.TemplateResponse(
+        'index.html', {'request': request, 'request_headers': request._headers._list}
+    )
 
 
 @app.get('/items/{id}', response_class=responses.HTMLResponse)

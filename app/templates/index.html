@@ -2,11 +2,15 @@
 
 {% block styling %}
 <link href="{{ url_for('static', path='styles.css') }}" rel="stylesheet" />
-<!-- <link href="http://asana-fastapi.herokuapp.com/static/styles.css" rel="stylesheet"> -->
-<!-- <link href='static/styles.css' rel='stylesheet' /> -->
 {% endblock %} 
 
 {% block content %}
 <h1>Login</h1>
 <p>{{ request }}</p>
+<ul>
+  {% for header in request_headers %}
+  <li>{{ header }}</li>
+  {% endfor %}
+</ul>
+
 {% endblock %}
