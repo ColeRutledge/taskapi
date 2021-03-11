@@ -19,6 +19,7 @@ aiofiles = "^0.6.0"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
+pytest = "^6.2.2"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

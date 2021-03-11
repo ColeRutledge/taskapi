@@ -3,7 +3,23 @@ name: Deploy to Heroku
 on: workflow_dispatch
 
 jobs:
+  push_to_registry:
+    name: Push Docker image to GitHub Packages
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out the repo
+        uses: actions/checkout@v2
+      - name: Push to GitHub Packages
+        uses: docker/build-push-action@v1
+        with:
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+          registry: docker.pkg.github.com
+          repository: ColeRutledge/asana_fastapi/asana_fastapi
+          tag_with_ref: true
+
   build:
+    name: Deploy Docker image to Heroku
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
