@@ -2,6 +2,9 @@ name: Deploy to Heroku
 
 on: workflow_dispatch
 
+env:
+  IMAGE: ghcr.io/$(echo ${{ github.repository }} | tr '[:upper:]' '[:lower:]')/web
+
 jobs:
   push_to_registry:
     name: Push Docker image to GitHub Packages
@@ -22,10 +25,8 @@ jobs:
           # context: .
           # platforms: linux/amd64,linux/arm64
           push: true
-          tags: |
-            ghcr.io/${{ github.repository }}:${{ github.ref }}
-            ghcr.io/${{ github.repository }}:latest
-
+          tags: ghcr.io/colerutledge/asana_fastapi:latest
+          # ghcr.io/${{ github.repository }}:${{ github.ref }}
           # username: ${{ github.actor }}
           # password: ${{ secrets.GITHUB_TOKEN }}
           # registry: ghcr.io
