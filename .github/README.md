@@ -2,4 +2,4 @@
 
 <a href='https://asana-fastapi.herokuapp.com/docs'>Live Link</a>
 
-![Deploy to Heroku](https://github.com/ColeRutledge/asana_fastapi/actions/workflows/main.yml/badge.svg?branch=master)
+![Continuous Integration and Delivery](https://github.com/ColeRutledge/asana_fastapi/actions/workflows/main.yml/badge.svg?branch=master)
