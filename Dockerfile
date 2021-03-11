@@ -40,21 +40,21 @@ RUN poetry install --no-dev
 # Development #
 ###############
 
-FROM base as dev
+# FROM base as dev
 
-ENV FASTAPI_ENV=development
+# ENV FASTAPI_ENV=development
 
-COPY --from=builder $POETRY_HOME $POETRY_HOME
-COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
+# COPY --from=builder $POETRY_HOME $POETRY_HOME
+# COPY --from=builder $PYSETUP_PATH $PYSETUP_PATH
 
-WORKDIR $PYSETUP_PATH
-RUN poetry install
+# WORKDIR $PYSETUP_PATH
+# RUN poetry install
 
-WORKDIR /app
-COPY . .
-RUN chmod +x ./docker/start-reload.sh
+# WORKDIR /app
+# COPY . .
+# RUN chmod +x ./docker/start-reload.sh
 
-CMD ["./docker/start-reload.sh"]
+# CMD ["./docker/start-reload.sh"]
 
 
 ##############
