@@ -9,12 +9,23 @@ jobs:
     steps:
       # - name: Check out the repo
       #   uses: actions/checkout@v2
+      - name: Login to GitHub Container Registry
+        uses: docker/login-action@v1
+        with:
+          registry: ghcr.io
+          username: ${{ github.repository_owner }}
+          password: ${{ secrets.CR_PAT }}
       - name: Push to GitHub Packages
         id: docker_build
         uses: docker/build-push-action@v2
         with:
+          # username: ${{ github.actor }}
+          # password: ${{ secrets.GITHUB_TOKEN }}
+          registry: ghcr.io
+          # repository: colerutledge/asana_fastapi/asana_fastapi
+          # tag_with_ref: true
           push: true
-          tags: asana_fastapi:latest
+          # tags: asana_fastapi:latest
         # uses: docker/build-push-action@v1
         # with:
         #   username: ${{ github.actor }}
