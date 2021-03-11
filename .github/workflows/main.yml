@@ -19,14 +19,16 @@ jobs:
         id: docker_build
         uses: docker/build-push-action@v2
         with:
-          context: .
+          # context: .
           # platforms: linux/amd64,linux/arm64
           push: true
-          tags: asana_fastapi:latest
+          tags: |
+            ghcr.io/${{ github.repository }}:${{ github.ref }}
+            ghcr.io/${{ github.repository }}:latest
 
           # username: ${{ github.actor }}
           # password: ${{ secrets.GITHUB_TOKEN }}
-          registry: ghcr.io
+          # registry: ghcr.io
           # repository: colerutledge/asana_fastapi/asana_fastapi
           # tag_with_ref: true
           # tags: asana_fastapi:latest
