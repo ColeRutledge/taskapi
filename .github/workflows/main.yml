@@ -1,0 +1,24 @@
+name: Deploy
+
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v2
+      - uses: akhileshns/heroku-deploy@v3.12.12
+        with:
+          heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+          heroku_app_name: "asana-fastapi"
+          heroku_email: "colerutledge@gmail.com"
+          usedocker: true
+        env:
+          HD_ADMIN_EMAIL: "colerutledge@gmail.com"
+          HD_APP_NAME: "asana_fastapi"
+          HD_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+          HD_ALGORITHM: ${{ secrets.ALGORITHM }}
+          HD_ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
