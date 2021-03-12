@@ -3,7 +3,9 @@
 from pathlib import Path
 
 
-
+# print(Path.glob(''))
+print(Path.cwd())
+print('hello world!')
 # command = "echo hello"
 # result = subprocess.run(
 #     command.split(' '),
@@ -26,9 +28,9 @@ from pathlib import Path
 
 # cp = sp.run(['wsl', 'ls', '-lh', 'foo bar baz'], check=True)
 # with open('subprocess.txt', 'w') as file:
-    # cp = sp.run(['wsl', 'tr', '--help'], stdout=file, check=True)
-    # cp = sp.run(['wsl', 'tr', 'a-z', 'A-Z'], stdin=file)
-    # print(cp)
+#     cp = sp.run(['wsl', 'tr', '--help'], stdout=file, check=True)
+#     cp = sp.run(['wsl', 'tr', 'a-z', 'A-Z'], stdin=file)
+#     print(cp)
 
 
 # cwd = Path.cwd()
