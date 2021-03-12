@@ -70,6 +70,7 @@ COPY --from=builder $VENV_PATH $VENV_PATH
 WORKDIR /app
 COPY . .
 RUN chmod +x ./docker/start.sh
+RUN chmod +x ./docker/startup.py
 
 RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app .
