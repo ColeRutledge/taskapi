@@ -72,9 +72,9 @@ COPY . .
 RUN chmod +x ./docker/start.sh
 RUN chmod +x ./docker/startup.py
 
-RUN addgroup --system app && adduser --system --group app
-RUN chown -R app:app .
-USER app
+# RUN addgroup --system app && adduser --system --group app
+# RUN chown -R app:app .
+# USER app
 
 CMD ["./docker/startup.py"]
 # CMD ["./docker/start.sh"]
