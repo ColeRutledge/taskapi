@@ -75,4 +75,5 @@ RUN addgroup --system app && adduser --system --group app
 RUN chown -R app:app .
 USER app
 
-CMD ["./docker/start.sh"]
+CMD ["./docker/startup.py"]
+# CMD ["./docker/start.sh"]

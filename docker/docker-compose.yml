@@ -7,8 +7,9 @@ services:
       dockerfile: ./docker/Dockerfile
       target: dev
     volumes:
-      - ../:/app
-      - ./dev/null:/app/.venv
+      - ..:/app
+      # linking blank dir in .venv to container .venv to prevent errors
+      - ../.venv/dev/null:/app/.venv
     ports:
       - "8000:80"
     env_file: "../.env"

@@ -1,76 +1,48 @@
 #!/usr/bin/env python3
 
+import os
+import subprocess
+
 from pathlib import Path
 
 
-# print(Path.glob(''))
-print(Path.cwd())
-print('hello world!')
-# command = "echo hello"
-# result = subprocess.run(
-#     command.split(' '),
-#     stdout=subprocess.PIPE,
-#     stderr=subprocess.PIPE,
-#     shell=True,
-#     encoding='utf-8',
-# )
-# print(result.stdout)
-# print(result.stderr)
-
-# subprocess.call([shutil.which('powershell'), '-c', 'echo hello'])
-# subprocess.call(["powershell", "-c", "echo hello"])
-
-# try:
-#     for line in sys.stdin:
-#         print(line)
-# except KeyboardInterrupt:
-#     print('goodbye!')
-
-# cp = sp.run(['wsl', 'ls', '-lh', 'foo bar baz'], check=True)
-# with open('subprocess.txt', 'w') as file:
-#     cp = sp.run(['wsl', 'tr', '--help'], stdout=file, check=True)
-#     cp = sp.run(['wsl', 'tr', 'a-z', 'A-Z'], stdin=file)
-#     print(cp)
+print('***** STARTUP inside startup.py *****')
 
 
-# cwd = Path.cwd()
-# proc = sp.run(['wsl', 'ls', f'{cwd}'], stdout=sp.PIPE, text=True)
-# print(proc.stdout)
+if Path('/app/app/main.py').exists():
+    DEFAULT_MODULE_NAME = 'app.main'
+elif Path('/app/main.py').exists():
+    DEFAULT_MODULE_NAME = 'main'
 
+MODULE_NAME = DEFAULT_MODULE_NAME
+VARIABLE_NAME = 'app'
 
-# cp = sp.run(
-#     args=['wsl', 'tr', 'a-z', 'A-Z'],
-#     input='foo bar baz',
-#     check=True,
-#     text=True,
-#     stdout=sp.PIPE,
-# )
-# print(cp)
+os.environ['APP_MODULE'] = f'{MODULE_NAME}:{VARIABLE_NAME}'
 
-# proc = sp.run(
-#     args=['wsl', 'ls', '.', 'foo bar baz'],
-#     # stdout=sp.PIPE,
-#     # stderr=sp.DEVNULL,
-#     capture_output=True,
-#     text=True,
-# )
-# print(proc)
-# print(proc.stderr)
+if Path('/app/gunicorn_conf.py').exists():
+    DEFAULT_GUNICORN_CONF = '/app/gunicorn_conf.py'
+elif Path('/app/app/gunicorn_conf.py').exists():
+    DEFAULT_GUNICORN_CONF = '/app/app/gunicorn_conf.py'
+elif Path('/app/docker/gunicorn_conf.py').exists():
+    DEFAULT_GUNICORN_CONF = '/app/docker/gunicorn_conf.py'
+else:
+    DEFAULT_GUNICORN_CONF = '/gunicorn_conf.py'
 
+os.environ['GUNICORN_CONF'] = DEFAULT_GUNICORN_CONF
+os.environ['WORKER_CLASS'] = 'uvicorn.workers.UvicornWorker'
 
-# branch_proc = sp.Popen(
-#     args=['powershell', 'git', 'branch'],
-#     stdout=sp.PIPE,
-#     # stderr=sp.DEVNULL,
-#     universal_newlines=True,
-# )
-# # print(vars(branch_proc))
-# print(list(branch_proc.stdout))
+prestart_script = '/app/app/prestart.sh'
 
-# for line in branch_proc.stdout:
-#     print(line)
+if Path(prestart_script).exists():
+    print('Running script prestart.sh')
+    subprocess.run([f'{prestart_script}'])
+else:
+    print('There is no script prestart.sh')
 
-
-# import time
-
-# print(time.strftime('%m-%d-%Y %H:%M:%S'))
+subprocess.run(
+    ['gunicorn',
+     '-k', os.environ.get('WORKER_CLASS'),
+     '-c', os.environ.get('GUNICORN_CONF'),
+     os.environ.get('APP_MODULE'),
+     '--forwarded-allow-ips', '*']
+)

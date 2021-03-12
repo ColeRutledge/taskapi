@@ -52,9 +52,11 @@ RUN poetry install
 
 WORKDIR /app
 COPY . .
+RUN chmod +x ./docker/startup.py
 RUN chmod +x ./docker/start-reload.sh
 
-CMD ["./docker/start-reload.sh"]
+CMD ["./docker/startup.py"]
+# CMD ["./docker/start-reload.sh"]
 
 
 ##############
