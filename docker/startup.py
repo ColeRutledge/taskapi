@@ -1,48 +1,67 @@
 #!/usr/bin/env python3
 
-import os
 import subprocess
 
-from pathlib import Path
+
+print(f"{' STARTUP ':*^25}")
+
+APP_MODULE = 'app.main:app'
+GUNICORN_CONF = '/app/docker/gunicorn_conf.py'
+WORKER_CLASS = 'uvicorn.workers.UvicornWorker'
+
+print("Running alembic migrations...")
+subprocess.run(['alembic', '-c', 'migrations/alembic.ini', 'upgrade', 'head'])
+subprocess.run([
+    'gunicorn',
+    '-k', WORKER_CLASS,
+    '-c', GUNICORN_CONF,
+    '--forwarded-allow-ips', '*',
+    APP_MODULE,
+])
 
 
-print('***** STARTUP inside startup.py *****')
+# #### replaced start.sh #####
 
+# #! /usr/bin/env sh
+# set -e
 
-if Path('/app/app/main.py').exists():
-    DEFAULT_MODULE_NAME = 'app.main'
-elif Path('/app/main.py').exists():
-    DEFAULT_MODULE_NAME = 'main'
+# # activate virtual env
+# . /opt/pysetup/.venv/bin/activate
 
-MODULE_NAME = DEFAULT_MODULE_NAME
-VARIABLE_NAME = 'app'
+# if [ -f /app/app/main.py ]; then
+#     DEFAULT_MODULE_NAME=app.main
+# elif [ -f /app/main.py ]; then
+#     DEFAULT_MODULE_NAME=main
+# fi
 
-os.environ['APP_MODULE'] = f'{MODULE_NAME}:{VARIABLE_NAME}'
+# MODULE_NAME=${MODULE_NAME:-$DEFAULT_MODULE_NAME}
+# VARIABLE_NAME=${VARIABLE_NAME:-app}
 
-if Path('/app/gunicorn_conf.py').exists():
-    DEFAULT_GUNICORN_CONF = '/app/gunicorn_conf.py'
-elif Path('/app/app/gunicorn_conf.py').exists():
-    DEFAULT_GUNICORN_CONF = '/app/app/gunicorn_conf.py'
-elif Path('/app/docker/gunicorn_conf.py').exists():
-    DEFAULT_GUNICORN_CONF = '/app/docker/gunicorn_conf.py'
-else:
-    DEFAULT_GUNICORN_CONF = '/gunicorn_conf.py'
+# export APP_MODULE=${APP_MODULE:-"$MODULE_NAME:$VARIABLE_NAME"}
 
-os.environ['GUNICORN_CONF'] = DEFAULT_GUNICORN_CONF
-os.environ['WORKER_CLASS'] = 'uvicorn.workers.UvicornWorker'
+# if [ -f /app/gunicorn_conf.py ]; then
+#     DEFAULT_GUNICORN_CONF=/app/gunicorn_conf.py
+# elif [ -f /app/app/gunicorn_conf.py ]; then
+#     DEFAULT_GUNICORN_CONF=/app/app/gunicorn_conf.py
+# elif [ -f /app/docker/gunicorn_conf.py ]; then              # added
+#     DEFAULT_GUNICORN_CONF=/app/docker/gunicorn_conf.py
+# else
+#     DEFAULT_GUNICORN_CONF=/gunicorn_conf.py
+# fi
 
-prestart_script = '/app/app/prestart.sh'
+# export GUNICORN_CONF=${GUNICORN_CONF:-$DEFAULT_GUNICORN_CONF}
+# export WORKER_CLASS=${WORKER_CLASS:-"uvicorn.workers.UvicornWorker"}
 
-if Path(prestart_script).exists():
-    print('Running script prestart.sh')
-    subprocess.run([f'{prestart_script}'])
-else:
-    print('There is no script prestart.sh')
+# # If there's a prestart.sh script in the /app directory or other path specified, run it before starting
+# PRE_START_PATH=${PRE_START_PATH:-/app/app/prestart.sh}
 
-subprocess.run(
-    ['gunicorn',
-     '-k', os.environ.get('WORKER_CLASS'),
-     '-c', os.environ.get('GUNICORN_CONF'),
-     os.environ.get('APP_MODULE'),
-     '--forwarded-allow-ips', '*']
-)
+# echo "Checking for script in $PRE_START_PATH"
+# if [ -f $PRE_START_PATH ] ; then
+#     echo "Running script $PRE_START_PATH"
+#     . "$PRE_START_PATH"
+# else
+#     echo "There is no script $PRE_START_PATH"
+# fi
+
+# # Start Gunicorn -- TODO: REMOVE --forwarded-allow-ips after adding TLS proxy
+# exec gunicorn -k "$WORKER_CLASS" -c "$GUNICORN_CONF" "$APP_MODULE" --forwarded-allow-ips "*"
