@@ -1,143 +1,187 @@
 name: Build, Test, and Deploy
 
-on: workflow_dispatch
+on: [push]
 
 jobs:
-  build_and_test:
-    name: Continuous Integration and Delivery
+  ci:
+    name: continuous integration and delivery
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout master
+      - name: checkout master
         uses: actions/checkout@v2
 
-      - name: Build with Cache Action
-        uses: whoan/docker-build-with-cache-action@v5
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v1
+
+      - name: login to gitHub container registry
+        uses: docker/login-action@v1
         with:
+          registry: ghcr.io
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
-          registry: ghcr.io
-          image_tag: latest
-          dockerfile: docker/Dockerfile
-          image_name: colerutledge/asana_fastapi
-          push_image_and_stages: |
-            docker run \
-              --name asana_fastapi \
-              --rm -d -p 8000:8001 \
-              ghcr.io/colerutledge/asana_fastapi-stages:3
-            docker exec asana_fastapi python -m pytest .
 
-      # - name: Set up Docker Buildx
-      #   uses: docker/setup-buildx-action@v1
+      - name: cache docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
 
-      # - name: Cache Docker layers
-      #   uses: actions/cache@v2
-      #   with:
-      #     path: /tmp/.buildx-cache
-      #     key: ${{ runner.os }}-buildx-${{ github.sha }}
-      #     restore-keys: ${{ runner.os }}-buildx-
+      - name: build
+        uses: docker/build-push-action@v2
+        with:
+          file: ./docker/Dockerfile
+          target: dev
+          # push: true
+          tags: ghcr.io/colerutledge/asana_fastapi:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-      # - name: Login to GitHub Container Registry
-      #   uses: docker/login-action@v1
-      #   with:
-      #     registry: ghcr.io
-      #     username: ${{ github.repository_owner }}
-      #     password: ${{ secrets.CR_PAT }}
+      - name: move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # - name: Pull image from Container Registry
-      #   run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
-
-      - name: Check current images
+      - name: check current images
         run: docker images
+# on: workflow_dispatch
 
-      # - name: Build Image -- Dev/Test
-      #   run: |
-      #     docker buildx build \
-      #     --target dev \
-      #     --cache-from ghcr.io/colerutledge/asana_fastapi \
-      #     --file ./docker/Dockerfile \
-      #     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
-      #     "."
+# jobs:
+#   build_and_test:
+#     name: Continuous Integration and Delivery
+#     runs-on: ubuntu-latest
+#     steps:
+#       - name: Checkout master
+#         uses: actions/checkout@v2
 
-      # - name: Build and push
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     file: ./docker/Dockerfile
-      #     target: dev
-      #     push: true
-      #     tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache-new
+#       - name: Build with Cache Action
+#         uses: whoan/docker-build-with-cache-action@v5
+#         with:
+#           username: ${{ github.repository_owner }}
+#           password: ${{ secrets.CR_PAT }}
+#           registry: ghcr.io
+#           image_tag: latest
+#           dockerfile: docker/Dockerfile
+#           image_name: colerutledge/asana_fastapi
+#           push_image_and_stages: |
+#             docker run \
+#               --name asana_fastapi \
+#               --rm -d -p 8000:8001 \
+#               ghcr.io/colerutledge/asana_fastapi-stages:3
+#             docker exec asana_fastapi python -m pytest .
 
-      # Temp fix
-      # https://github.com/docker/build-push-action/issues/252
-      # https://github.com/moby/buildkit/issues/1896
-      # - name: Move cache
-      #   run: |
-      #     rm -rf /tmp/.buildx-cache
-      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+# - name: Set up Docker Buildx
+#   uses: docker/setup-buildx-action@v1
 
-      # - name: Build Builder Image
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     file: ./docker/Dockerfile
-      #     target: dev
-      #     push: true
-      #     cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
-      #     tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
+# - name: Cache Docker layers
+#   uses: actions/cache@v2
+#   with:
+#     path: /tmp/.buildx-cache
+#     key: ${{ runner.os }}-buildx-${{ github.sha }}
+#     restore-keys: ${{ runner.os }}-buildx-
 
-      # - name: Check current images
-      #   run: docker images
+# - name: Login to GitHub Container Registry
+#   uses: docker/login-action@v1
+#   with:
+#     registry: ghcr.io
+#     username: ${{ github.repository_owner }}
+#     password: ${{ secrets.CR_PAT }}
 
-      # - name: Run Container -- Dev/Test
-      #   run: |
-      #     docker run \
-      #     --name asana_fastapi \
-      #     --rm -d -p 8000:8001 \
-      #     ghcr.io/colerutledge/asana_fastapi_builder-stages:3
+# - name: Pull image from Container Registry
+#   run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
 
-      # - name: Run Tests and Stop Container
-      #   run: docker exec asana_fastapi python -m pytest .
+# - name: Check current images
+#   run: docker images
 
-      # - name: Run Linting
-      #   run: docker exec asana_fastapi python -m flake8 ./app
+# - name: Build Image -- Dev/Test
+#   run: |
+#     docker buildx build \
+#     --target dev \
+#     --cache-from ghcr.io/colerutledge/asana_fastapi \
+#     --file ./docker/Dockerfile \
+#     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
+#     "."
 
-      # - name: Stop Container
-      #   run: docker stop asana_fastapi
+# - name: Build and push
+#   uses: docker/build-push-action@v2
+#   with:
+#     file: ./docker/Dockerfile
+#     target: dev
+#     push: true
+#     tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
+#     cache-from: type=local,src=/tmp/.buildx-cache
+#     cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-      # - name: Build Image -- Prod
-      #   run: |
-      #     docker build \
-      #     --target prod \
-      #     --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
-      #     --file ./docker/Dockerfile \
-      #     --tag ghcr.io/colerutledge/asana_fastapi:latest \
-      #     "."
+# Temp fix
+# https://github.com/docker/build-push-action/issues/252
+# https://github.com/moby/buildkit/issues/1896
+# - name: Move cache
+#   run: |
+#     rm -rf /tmp/.buildx-cache
+#     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
 
-      # - name: Push to GitHub Container Registry
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     file: ./docker/Dockerfile
-      #     target: prod
-      #     push: true
-      #     tags: ghcr.io/colerutledge/asana_fastapi:latest
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache-new
+# - name: Build Builder Image
+#   uses: docker/build-push-action@v2
+#   with:
+#     file: ./docker/Dockerfile
+#     target: dev
+#     push: true
+#     cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
+#     tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
 
-      # - name: Move cache
-      #   run: |
-      #     rm -rf /tmp/.buildx-cache
-      #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+# - name: Check current images
+#   run: docker images
 
-      # - name: Deploy to Heroku
-      # - uses: akhileshns/heroku-deploy@v3.12.12
-      #   with:
-      #     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
-      #     heroku_app_name: "asana-fastapi"
-      #     heroku_email: "colerutledge@gmail.com"
-      #     usedocker: true
-      #   env:
-      #     HD_ADMIN_EMAIL: "colerutledge@gmail.com"
-      #     HD_APP_NAME: "asana_fastapi"
-      #     HD_SECRET_KEY: ${{ secrets.SECRET_KEY }}
-      #     HD_ALGORITHM: ${{ secrets.ALGORITHM }}
-      #     HD_ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
+# - name: Run Container -- Dev/Test
+#   run: |
+#     docker run \
+#     --name asana_fastapi \
+#     --rm -d -p 8000:8001 \
+#     ghcr.io/colerutledge/asana_fastapi_builder-stages:3
+
+# - name: Run Tests and Stop Container
+#   run: docker exec asana_fastapi python -m pytest .
+
+# - name: Run Linting
+#   run: docker exec asana_fastapi python -m flake8 ./app
+
+# - name: Stop Container
+#   run: docker stop asana_fastapi
+
+# - name: Build Image -- Prod
+#   run: |
+#     docker build \
+#     --target prod \
+#     --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+#     --file ./docker/Dockerfile \
+#     --tag ghcr.io/colerutledge/asana_fastapi:latest \
+#     "."
+
+# - name: Push to GitHub Container Registry
+#   uses: docker/build-push-action@v2
+#   with:
+#     file: ./docker/Dockerfile
+#     target: prod
+#     push: true
+#     tags: ghcr.io/colerutledge/asana_fastapi:latest
+#     cache-from: type=local,src=/tmp/.buildx-cache
+#     cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+# - name: Move cache
+#   run: |
+#     rm -rf /tmp/.buildx-cache
+#     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+# - name: Deploy to Heroku
+# - uses: akhileshns/heroku-deploy@v3.12.12
+#   with:
+#     heroku_api_key: ${{ secrets.HEROKU_API_KEY }}
+#     heroku_app_name: "asana-fastapi"
+#     heroku_email: "colerutledge@gmail.com"
+#     usedocker: true
+#   env:
+#     HD_ADMIN_EMAIL: "colerutledge@gmail.com"
+#     HD_APP_NAME: "asana_fastapi"
+#     HD_SECRET_KEY: ${{ secrets.SECRET_KEY }}
+#     HD_ALGORITHM: ${{ secrets.ALGORITHM }}
+#     HD_ACCESS_TOKEN_EXPIRES_MINUTES: ${{ secrets.ACCESS_TOKEN_EXPIRES_MINUTES }}
