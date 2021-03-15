@@ -47,8 +47,8 @@ jobs:
         with:
           file: ./docker/Dockerfile
           target: dev
-          push: false
-          cache-from: ghcr.io/colerutledge/asana_fastapi:latest
+          push: true
+          cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
           tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
 
       - name: Run Container -- Dev/Test
