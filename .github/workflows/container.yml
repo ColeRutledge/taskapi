@@ -27,8 +27,8 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Pull image from Container Registry
-        run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
+      # - name: Pull image from Container Registry
+      #   run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
 
       - name: Check current images
         run: docker images
@@ -51,12 +51,18 @@ jobs:
           cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
           tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
 
+      - name: Check current images
+        run: docker images
+
       - name: Run Container -- Dev/Test
         run: |
           docker run \
           --name asana_fastapi \
           --rm -d -p 8000:8001 \
           ghcr.io/colerutledge/asana_fastapi_builder:latest
+
+      - name: Check current images
+        run: docker images
 
       - name: Run Tests
         run: docker exec asana_fastapi python -m pytest .
