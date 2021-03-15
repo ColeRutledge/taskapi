@@ -100,8 +100,7 @@ jobs:
         with:
           file: ./docker/Dockerfile
           target: prod
-          # push: true
-          tags: ghcr.io/colerutledge/asana_fastapi:prod,registry.heroku.com/asana-fastapi/web:latest
+          tags: registry.heroku.com/asana-fastapi/web:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
