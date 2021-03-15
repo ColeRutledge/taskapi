@@ -28,9 +28,9 @@ jobs:
         run: |
           docker buildx build \
           --target dev \
-          --cache-from=type=registry,ref=ghcr.io/colerutledge/asana_fastapi:latest
+          --cache-from=type=registry,ref=ghcr.io/colerutledge/asana_fastapi:latest \
           --file ./docker/Dockerfile \
-          --build-arg BUILDKIT_INLINE_CACHE=1
+          --build-arg BUILDKIT_INLINE_CACHE=1 \
           --tag ghcr.io/colerutledge/asana_fastapi:latest \
           "."
 
