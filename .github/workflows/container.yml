@@ -11,14 +11,19 @@ jobs:
     name: Continuous Integration and Delivery
     runs-on: ubuntu-latest
     steps:
-      - name: Check current images
-        run: docker images
-
       - name: Checkout master
         uses: actions/checkout@v2
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v1
+
+      - name: Cache Docker layers
+        uses: actions/cache@v2
+        with:
+          path: /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: |
+            ${{ runner.os }}-buildx-
 
       - name: Login to GitHub Container Registry
         uses: docker/login-action@v1
@@ -42,14 +47,32 @@ jobs:
       #     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
       #     "."
 
-      - name: Build Builder Image
+      - name: Build and push
         uses: docker/build-push-action@v2
         with:
           file: ./docker/Dockerfile
           target: dev
           push: true
-          cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
           tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
+          cache-from: type=local,src=/tmp/.buildx-cache
+          cache-to: type=local,dest=/tmp/.buildx-cache-new
+
+      # Temp fix
+      # https://github.com/docker/build-push-action/issues/252
+      # https://github.com/moby/buildkit/issues/1896
+      - name: Move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
+      # - name: Build Builder Image
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: ./docker/Dockerfile
+      #     target: dev
+      #     push: true
+      #     cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
+      #     tags: ghcr.io/colerutledge/asana_fastapi_builder:latest
 
       - name: Check current images
         run: docker images
@@ -82,14 +105,14 @@ jobs:
       #     --tag ghcr.io/colerutledge/asana_fastapi:latest \
       #     "."
 
-      - name: Push to GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          file: ./docker/Dockerfile
-          target: prod
-          push: true
-          cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
-          tags: ghcr.io/colerutledge/asana_fastapi:latest
+      # - name: Push to GitHub Container Registry
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: ./docker/Dockerfile
+      #     target: prod
+      #     push: true
+      #     cache-from: ghcr.io/colerutledge/asana_fastapi_builder:latest
+      #     tags: ghcr.io/colerutledge/asana_fastapi:latest
 
       # - name: Deploy to Heroku
       # - uses: akhileshns/heroku-deploy@v3.12.12
