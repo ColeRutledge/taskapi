@@ -24,9 +24,9 @@ ENV PATH="$POETRY_HOME/bin:$VENV_PATH/bin:$PATH"
 
 FROM base as builder
 
-RUN apt-get update \
-    && apt-get -y --no-install-recommends install curl build-essential \
-    && apt-get clean
+RUN apt-get -qq update \
+    && apt-get -qq -y --no-install-recommends install curl build-essential \
+    && apt-get -qq clean
 
 ENV POETRY_VERSION=1.1.5
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
