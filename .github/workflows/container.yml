@@ -6,7 +6,7 @@ jobs:
   pull_and_run:
     name: Login to Github Container Registry
     runs-on: ubuntu-latest
-     steps:
+    steps:
       # - name: Checkout master
       #   uses: actions/checkout@v2
       - name: Set up Docker Buildx
