@@ -20,15 +20,17 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: Pull image from Container Registry
-        run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
+      # - name: Pull image from Container Registry
+      #   run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
+      # --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
 
       - name: Build Image -- Dev/Test
         run: |
-          docker build \
+          docker buildx build \
           --target dev \
-          --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+          --cache-from=type=registry,ref=ghcr.io/colerutledge/asana_fastapi:latest
           --file ./docker/Dockerfile \
+          --build-arg BUILDKIT_INLINE_CACHE=1
           --tag ghcr.io/colerutledge/asana_fastapi:latest \
           "."
 
