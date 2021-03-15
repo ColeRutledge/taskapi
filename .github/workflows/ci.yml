@@ -23,7 +23,9 @@ jobs:
       - name: cache docker layers
         uses: actions/cache@v2
         with:
-          path: /tmp/.buildx-cache
+          path: |
+            /tmp/.buildx-dev-cache
+            /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
 
@@ -58,6 +60,11 @@ jobs:
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
+      - name: move cache
+        run: |
+          rm -rf /tmp/.buildx-cache
+          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
+
   cd:
     name: continuous delivery
     runs-on: ubuntu-latest
@@ -65,6 +72,15 @@ jobs:
     steps:
       - name: checkout master
         uses: actions/checkout@v2
+
+      - name: enable caching
+        uses: actions/cache@v2
+        with:
+          path: |
+            /tmp/.buildx-dev-cache
+            /tmp/.buildx-cache
+          key: ${{ runner.os }}-buildx-${{ github.sha }}
+          restore-keys: ${{ runner.os }}-buildx-
 
       - name: login to gitHub container registry
         uses: docker/login-action@v1
