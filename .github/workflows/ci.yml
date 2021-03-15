@@ -73,6 +73,9 @@ jobs:
       - name: checkout master
         uses: actions/checkout@v2
 
+      - name: set up docker buildx
+        uses: docker/setup-buildx-action@v1
+
       - name: enable caching
         uses: actions/cache@v2
         with:
@@ -98,7 +101,7 @@ jobs:
           file: ./docker/Dockerfile
           target: prod
           # push: true
-          tags: ghcr.io/colerutledge/asana_fastapi:latest,registry.heroku.com/asana-fastapi/web:latest
+          tags: ghcr.io/colerutledge/asana_fastapi:prod,registry.heroku.com/asana-fastapi/web:latest
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
