@@ -91,10 +91,12 @@ jobs:
 
       - name: Run Tests and Stop Container
         run: docker exec asana_fastapi python -m pytest .
-        run: docker stop asana_fastapi
 
       # - name: Run Linting
       #   run: docker exec asana_fastapi python -m flake8 ./app
+
+      - name: Stop Container
+        run: docker stop asana_fastapi
 
       # - name: Build Image -- Prod
       #   run: |
