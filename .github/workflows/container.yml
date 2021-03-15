@@ -2,11 +2,18 @@ name: Build, Test, and Deploy
 
 on: [push]
 
+env:
+  BUILDKIT_INLINE_CACHE: 1
+  DOCKER_BUILDKIT: 1
+
 jobs:
   build_and_test:
     name: Continuous Integration and Delivery
     runs-on: ubuntu-latest
     steps:
+      - name: Check current images
+        run: docker images
+
       - name: Checkout master
         uses: actions/checkout@v2
 
@@ -20,53 +27,54 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      # - name: Pull image from Container Registry
-      #   run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
-      # --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+      - name: Pull image from Container Registry
+        run: docker pull ghcr.io/colerutledge/asana_fastapi:latest
+
+      - name: Check current images
+        run: docker images
 
       - name: Build Image -- Dev/Test
         run: |
           docker buildx build \
           --target dev \
-          --cache-from=type=registry,ref=ghcr.io/colerutledge/asana_fastapi:latest \
-          --file ./docker/Dockerfile \
-          --build-arg BUILDKIT_INLINE_CACHE=1 \
-          --tag ghcr.io/colerutledge/asana_fastapi:latest \
-          "."
-
-      - name: Run Container -- Dev/Test
-        run: |
-          docker run \
-          --name asana_fastapi \
-          --rm -d -p 8000:8001 \
-          ghcr.io/colerutledge/asana_fastapi:latest
-
-      - name: Run Tests
-        run: docker exec asana_fastapi python -m pytest .
-
-      - name: Run Linting
-        run: docker exec asana_fastapi python -m flake8 ./app
-
-      - name: Stop Container
-        run: docker stop asana_fastapi
-
-      - name: Build Image -- Prod
-        run: |
-          docker build \
-          --target prod \
-          --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+          --cache-from ghcr.io/colerutledge/asana_fastapi \
           --file ./docker/Dockerfile \
           --tag ghcr.io/colerutledge/asana_fastapi:latest \
           "."
 
-      - name: Push to GitHub Container Registry
-        uses: docker/build-push-action@v2
-        with:
-          file: ./docker/Dockerfile
-          target: prod
-          push: true
-          cache-from: ghcr.io/colerutledge/asana_fastapi:latest
-          tags: ghcr.io/colerutledge/asana_fastapi:latest
+      # - name: Run Container -- Dev/Test
+      #   run: |
+      #     docker run \
+      #     --name asana_fastapi \
+      #     --rm -d -p 8000:8001 \
+      #     ghcr.io/colerutledge/asana_fastapi:latest
+
+      # - name: Run Tests
+      #   run: docker exec asana_fastapi python -m pytest .
+
+      # - name: Run Linting
+      #   run: docker exec asana_fastapi python -m flake8 ./app
+
+      # - name: Stop Container
+      #   run: docker stop asana_fastapi
+
+      # - name: Build Image -- Prod
+      #   run: |
+      #     docker build \
+      #     --target prod \
+      #     --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+      #     --file ./docker/Dockerfile \
+      #     --tag ghcr.io/colerutledge/asana_fastapi:latest \
+      #     "."
+
+      # - name: Push to GitHub Container Registry
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: ./docker/Dockerfile
+      #     target: prod
+      #     push: true
+      #     cache-from: ghcr.io/colerutledge/asana_fastapi:latest
+      #     tags: ghcr.io/colerutledge/asana_fastapi:latest
 
       # - name: Deploy to Heroku
       # - uses: akhileshns/heroku-deploy@v3.12.12
