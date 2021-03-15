@@ -23,7 +23,7 @@ jobs:
             docker run \
               --name asana_fastapi \
               --rm -d -p 8000:8001 \
-              ghcr.io/colerutledge/asana_fastapi_builder-stages:3
+              ghcr.io/colerutledge/asana_fastapi-stages:3
             docker exec asana_fastapi python -m pytest .
 
       # - name: Set up Docker Buildx
