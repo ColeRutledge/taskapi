@@ -16,8 +16,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
           registry: ghcr.io
-          image_name: ghcr.io/colerutledge/asana_fastapi_builder
-          image_tag: ghcr.io/colerutledge/asana_fastapi:latest
+          image_tag: latest
           dockerfile: ./docker/Dockerfile
 
       # - name: Checkout master
