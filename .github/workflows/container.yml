@@ -87,7 +87,7 @@ jobs:
           docker run \
           --name asana_fastapi \
           --rm -d -p 8000:8001 \
-          ghcr.io/colerutledge/asana_fastapi_builder:latest
+          ghcr.io/colerutledge/asana_fastapi_builder:3
 
       - name: Run Tests and Stop Container
         run: docker exec asana_fastapi python -m pytest .
