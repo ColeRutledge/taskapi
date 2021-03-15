@@ -46,7 +46,7 @@ jobs:
         run: docker exec asana_fastapi python -m flake8 ./app
 
       - name: Stop Container
-        run: docker stop
+        run: docker stop asana_fastapi
 
       - name: Build Image -- Prod
         run: |
