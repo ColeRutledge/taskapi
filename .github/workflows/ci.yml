@@ -95,14 +95,20 @@ jobs:
       - name: pull image from container registry
         run: docker pull ghcr.io/colerutledge/asana_fastapi:prod
 
-      - name: build prod
-        uses: docker/build-push-action@v2
-        with:
-          file: ./docker/Dockerfile
-          target: prod
-          tags: registry.heroku.com/asana-fastapi/web:latest
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
+      - name: retag production image for deploy
+        run: |
+          docker image tag \
+          ghcr.io/colerutledge/asana_fastapi:prod \
+          registry.heroku.com/asana-fastapi/web:latest
+
+      # - name: build prod
+      #   uses: docker/build-push-action@v2
+      #   with:
+      #     file: ./docker/Dockerfile
+      #     target: prod
+      #     tags: registry.heroku.com/asana-fastapi/web:latest
+      #     cache-from: type=local,src=/tmp/.buildx-cache
+      #     cache-to: type=local,dest=/tmp/.buildx-cache-new
 
       - name: check current images
         run: docker images
