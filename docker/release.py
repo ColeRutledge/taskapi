@@ -25,3 +25,5 @@ req = request.Request(
     headers=headers)
 
 print(req)
+print(vars(req))
+print(dir(req))
