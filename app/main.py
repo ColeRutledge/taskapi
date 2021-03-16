@@ -45,3 +45,8 @@ async def user_login(request: Request):
 @app.get('/items/{id}', response_class=responses.HTMLResponse)
 async def read_item(request: Request, id: str):
     return templates.TemplateResponse("item.html", {"request": request, "id": id})
+
+
+@app.get('/request')
+async def request_works():
+    return {'success': 'requests works!'}
