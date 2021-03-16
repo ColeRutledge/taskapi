@@ -8,7 +8,8 @@ services:
       target: dev
     volumes:
       - ..:/app
-      # linking blank dir in .venv to container .venv to prevent errors
+      # linking blank static dir in local .venv to
+      # container .venv to prevent package conflicts
       - ../.venv/dev/null:/app/.venv
     ports:
       - "8000:80"
