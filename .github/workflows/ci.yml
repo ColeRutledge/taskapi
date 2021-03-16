@@ -2,6 +2,10 @@ name: Build, Test, and Deploy
 
 on: [push]
 
+env:
+  GH_REPO: colerutledge/asana_fastapi
+  HEROKU_APP_NAME: asana-fastapi
+
 jobs:
   ci:
     name: continuous integration
@@ -37,7 +41,7 @@ jobs:
           file: ./docker/Dockerfile
           target: dev
           push: true
-          tags: ghcr.io/colerutledge/asana_fastapi:dev
+          tags: ghcr.io/${GH_REPO}:dev
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           # cache-from: type=local,src=/tmp/.buildx-dev-cache
@@ -59,7 +63,7 @@ jobs:
           file: ./docker/Dockerfile
           target: prod
           push: true
-          tags: ghcr.io/colerutledge/asana_fastapi:prod
+          tags: ghcr.io/${GH_REPO}:prod
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -84,13 +88,13 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: pull image from container registry
-        run: docker pull ghcr.io/colerutledge/asana_fastapi:prod
+        run: docker pull ghcr.io/${GH_REPO}:prod
 
       - name: retag production image for deploy
         run: |
           docker image tag \
-          ghcr.io/colerutledge/asana_fastapi:prod \
-          registry.heroku.com/asana-fastapi/web:latest
+          ghcr.io/${GH_REPO}:prod \
+          registry.heroku.com/${HEROKU_APP_NAME}/web:latest
 
       - name: login to heroku container registry
         run: docker login --username=_ --password=${HEROKU_AUTH_TOKEN} registry.heroku.com
