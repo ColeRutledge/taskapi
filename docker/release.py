@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from urllib import request, parse, error
+from urllib import request, error
 
 import json
 import os
