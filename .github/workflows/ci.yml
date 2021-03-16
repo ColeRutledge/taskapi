@@ -113,20 +113,20 @@ jobs:
       - name: check current images
         run: docker images
 
+      - name: login to heroku container registry
+        run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com
+        env:
+          HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: push to heroku container registry
+        run: docker push registry.heroku.com/asana-fastapi/web:latest
+
+      # - name: release image
+      #   run: heroku container:release web --app asana-fastapi
+
       - name: run release.py
         run: |
           chmod +x docker/release.py
           docker/release.py
         env:
           HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
-
-      # - name: login to heroku container registry
-      #   run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com
-      #   env:
-      #     HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
-
-      # - name: push to heroku container registry
-      #   run: docker push registry.heroku.com/asana-fastapi/web:latest
-
-      # - name: release image
-      #   run: heroku container:release web --app asana-fastapi
