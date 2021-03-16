@@ -2,7 +2,7 @@
 
 set -e
 
-IMAGE_ID=$(docker inspect ${HEROKU_REGISTRY_IMAGE} --format={{.Id}})
+IMAGE_ID=$(docker inspect registry.heroku.com/asana-fastapi/web:latest --format={{.Id}})
 PAYLOAD='{"updates": [{"type": "web", "docker_image": "'"$IMAGE_ID"'"}]}'
 
 curl -n -X PATCH https://api.heroku.com/apps/asana-fastapi/formation \
