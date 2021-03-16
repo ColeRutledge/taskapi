@@ -3,7 +3,6 @@
 from urllib import request, parse, error
 
 import os
-import json
 import subprocess
 
 HEROKU_AUTH_TOKEN = os.environ.get('HEROKU_AUTH')
@@ -14,7 +13,7 @@ WEB_DOCKER_IMAGE_ID = subprocess.run([
     '--format={{.Id}}'], capture_output=True, encoding='utf-8').stdout
 
 data = {"updates": [{"type": "web", "docker_image": f"{WEB_DOCKER_IMAGE_ID}"}]}
-data = parse.urlencode(json.dump(data))
+data = parse.urlencode(data)
 data = data.encode('ascii')
 headers = {
     "Content-Type": "application/json",
