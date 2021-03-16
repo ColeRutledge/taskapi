@@ -41,7 +41,7 @@ jobs:
           file: ./docker/Dockerfile
           target: dev
           push: true
-          tags: ghcr.io/${GH_REPO}:dev
+          tags: ghcr.io/${{ GH_REPO }}:dev
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
           # cache-from: type=local,src=/tmp/.buildx-dev-cache
