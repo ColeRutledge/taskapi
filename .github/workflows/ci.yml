@@ -101,18 +101,6 @@ jobs:
           ghcr.io/colerutledge/asana_fastapi:prod \
           registry.heroku.com/asana-fastapi/web:latest
 
-      # - name: build prod
-      #   uses: docker/build-push-action@v2
-      #   with:
-      #     file: ./docker/Dockerfile
-      #     target: prod
-      #     tags: registry.heroku.com/asana-fastapi/web:latest
-      #     cache-from: type=local,src=/tmp/.buildx-cache
-      #     cache-to: type=local,dest=/tmp/.buildx-cache-new
-
-      # - name: check current images
-      #   run: docker images
-
       - name: login to heroku container registry
         run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com
         env:
@@ -121,21 +109,19 @@ jobs:
       - name: push to heroku container registry
         run: docker push registry.heroku.com/asana-fastapi/web:latest
 
-      # - name: Set environment variables
-      #   run: |
-      #     echo "HEROKU_REGISTRY_IMAGE=registry.heroku.com/asana-fastapi/web:latest" >> $GITHUB_ENV
-      #     echo "HEROKU_AUTH_TOKEN=${{ secrets.HEROKU_API_KEY }}" >> $GITHUB_ENV
+      - name: install requests
+        run: pip install requests
 
-      # - name: run release.py
-      #   run: |
-      #     chmod +x docker/release.py
-      #     docker/release.py
-      #   env:
-      #     HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
-
-      - name: Release
+      - name: run release.py
         run: |
-          chmod +x docker/release.sh
-          docker/release.sh
+          chmod +x docker/release.py
+          docker/release.py
         env:
-          HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
+
+      # - name: Release
+      #   run: |
+      #     chmod +x docker/release.sh
+      #     docker/release.sh
+      #   env:
+      #     HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_API_KEY }}
