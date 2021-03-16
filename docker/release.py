@@ -17,7 +17,7 @@ WEB_DOCKER_IMAGE_ID = subprocess.run([
     '--format={{.Id}}'], capture_output=True, encoding='utf-8').stdout.strip()
 
 data = {"updates": [{"type": "web", "docker_image": f"{WEB_DOCKER_IMAGE_ID}"}]}
-# data = parse.urlencode(json.dumps(data))
+# data = parse.urlencode(data)
 # data = data.encode('ascii')
 headers = {
     "Content-Type": "application/json",
@@ -32,7 +32,7 @@ headers = {
 
 res = request.Request(
     url="https://api.heroku.com/apps/asana-fastapi/formation",
-    data=json.dumps(data),
+    data=json.dumps(data).encode('utf-8'),
     method='PATCH',
     headers=headers)
 
