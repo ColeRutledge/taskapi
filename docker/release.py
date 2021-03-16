@@ -1,5 +1,6 @@
 #! /usr/bin/env python3
 
+import json
 import os
 import subprocess
 
@@ -23,7 +24,7 @@ headers = {
 
 
 r = requests.patch(
-    data=data,
+    data=json.dumps(data),
     headers=headers,
     url="https://api.heroku.com/apps/asana-fastapi/formation")
 

@@ -109,9 +109,6 @@ jobs:
       - name: push to heroku container registry
         run: docker push registry.heroku.com/asana-fastapi/web:latest
 
-      - name: install requests
-        run: pip install requests
-
       - name: run release.py
         run: |
           chmod +x docker/release.py
