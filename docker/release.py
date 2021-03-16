@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 
-from urllib import request
+from urllib import request, parse
 
 import os
 import subprocess
@@ -13,6 +13,8 @@ WEB_DOCKER_IMAGE_ID = subprocess.run([
     '--format={{.Id}}'], capture_output=True, encoding='utf-8').stdout
 
 data = {"updates": [{"type": "web", "docker_image": f"{WEB_DOCKER_IMAGE_ID}"}]}
+data = parse.urlencode(data)
+data = data.encode('ascii')
 headers = {
     "Content-Type": "application/json",
     "Accept": "application/vnd.heroku+json; version=3.docker-releases",
