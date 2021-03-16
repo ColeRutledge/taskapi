@@ -126,9 +126,16 @@ jobs:
       #     echo "HEROKU_REGISTRY_IMAGE=registry.heroku.com/asana-fastapi/web:latest" >> $GITHUB_ENV
       #     echo "HEROKU_AUTH_TOKEN=${{ secrets.HEROKU_API_KEY }}" >> $GITHUB_ENV
 
-      - name: run release.py
+      # - name: run release.py
+      #   run: |
+      #     chmod +x docker/release.py
+      #     docker/release.py
+      #   env:
+      #     HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
+
+      - name: Release
         run: |
-          chmod +x docker/release.py
-          docker/release.py
+          chmod +x docker/release.sh
+          docker/release.sh
         env:
-          HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
+          HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_API_KEY }}
