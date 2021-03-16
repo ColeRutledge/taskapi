@@ -114,7 +114,9 @@ jobs:
         run: docker images
 
       - name: login to heroku container registry
-        run: docker login --username=_ --password=${{ secrets.HEROKU_API_KEY }} registry.heroku.com
+        run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com
+        env:
+          HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
 
       - name: push to heroku container registry
         run: docker push registry.heroku.com/asana-fastapi/web:latest
