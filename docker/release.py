@@ -1,12 +1,12 @@
 #! /usr/bin/env python3
 
-# from urllib import request, parse, error
-import requests
-
 import os
 import subprocess
 
-HEROKU_AUTH_TOKEN = os.environ.get('HEROKU_AUTH')
+import requests
+
+
+HEROKU_AUTH_TOKEN = os.environ.get('HEROKU_AUTH_TOKEN')
 WEB_DOCKER_IMAGE_ID = subprocess.run([
     'docker',
     'inspect',
@@ -27,7 +27,10 @@ r = requests.patch(
     headers=headers,
     url="https://api.heroku.com/apps/asana-fastapi/formation")
 
+print(r.reason)
 print(r)
+print(vars(r))
+print(dir(r))
 
 # res = request.Request(
 #     url="https://api.heroku.com/apps/asana-fastapi/formation",
