@@ -18,12 +18,16 @@ headers = {
     "Accept": "application/vnd.heroku+json; version=3.docker-releases",
     "Authorization": f"Bearer {HEROKU_AUTH_TOKEN}"}
 
-req = request.Request(
+res = request.Request(
     url='https://api.heroku.com/apps/asana-fastapi/formation',
     data=data,
     method='PATCH',
     headers=headers)
 
-print(req)
-print(vars(req))
-print(dir(req))
+with request.urlopen(res) as response:
+    html = response.read()
+    print(html)
+
+print(res)
+print(vars(res))
+print(dir(res))
