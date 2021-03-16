@@ -85,12 +85,12 @@ jobs:
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
 
-      - name: login to gitHub container registry
-        uses: docker/login-action@v1
-        with:
-          registry: ghcr.io
-          username: ${{ github.repository_owner }}
-          password: ${{ secrets.CR_PAT }}
+      # - name: login to gitHub container registry
+      #   uses: docker/login-action@v1
+      #   with:
+      #     registry: ghcr.io
+      #     username: ${{ github.repository_owner }}
+      #     password: ${{ secrets.CR_PAT }}
 
       - name: pull image from container registry
         run: docker pull ghcr.io/colerutledge/asana_fastapi:prod
@@ -110,13 +110,13 @@ jobs:
       #     cache-from: type=local,src=/tmp/.buildx-cache
       #     cache-to: type=local,dest=/tmp/.buildx-cache-new
 
-      - name: check current images
-        run: docker images
+      # - name: check current images
+      #   run: docker images
 
       - name: login to heroku container registry
-        run: heroku container:login
         env:
           HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:login
 
       # - name: Push
       #   run: heroku container:push -a registry.heroku.com/asana-fastapi/web:latest web
@@ -127,9 +127,9 @@ jobs:
         run: docker push registry.heroku.com/asana-fastapi/web:latest
 
       - name: Release
-        run: heroku container:release --app asana-fastapi web
         env:
           HEROKU_API_KEY: ${{ secrets.HEROKU_API_KEY }}
+        run: heroku container:release --app asana-fastapi web
 
       # - name: login to heroku container registry
       #   run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com
