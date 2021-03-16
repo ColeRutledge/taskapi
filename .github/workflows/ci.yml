@@ -28,10 +28,8 @@ jobs:
         uses: actions/cache@v2
         with:
           path: |
+            /tmp/.buildx-dev-cache
             /tmp/.buildx-cache
-          # path: |
-          #   /tmp/.buildx-dev-cache
-          #   /tmp/.buildx-cache
           key: ${{ runner.os }}-buildx-${{ github.sha }}
           restore-keys: ${{ runner.os }}-buildx-
 
@@ -42,20 +40,16 @@ jobs:
           target: dev
           push: true
           tags: ghcr.io/${{ env.GH_REPO }}:dev
-          cache-from: type=local,src=/tmp/.buildx-cache
-          cache-to: type=local,dest=/tmp/.buildx-cache-new
-          # cache-from: type=local,src=/tmp/.buildx-dev-cache
-          # cache-to: type=local,dest=/tmp/.buildx-dev-cache-new
+          cache-from: type=local,src=/tmp/.buildx-dev-cache
+          cache-to: type=local,dest=/tmp/.buildx-dev-cache-new
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
       # https://github.com/moby/buildkit/issues/1896
       - name: move cache
         run: |
-          rm -rf /tmp/.buildx-cache
-          mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-        # rm -rf /tmp/.buildx-dev-cache
-        # mv /tmp/.buildx-dev-cache-new /tmp/.buildx-dev-cache
+          rm -rf /tmp/.buildx-dev-cache
+          mv /tmp/.buildx-dev-cache-new /tmp/.buildx-dev-cache
 
       - name: push to github container registry
         uses: docker/build-push-action@v2
@@ -63,7 +57,7 @@ jobs:
           file: ./docker/Dockerfile
           target: prod
           push: true
-          tags: ghcr.io/${GH_REPO}:prod
+          tags: ghcr.io/${{ env.GH_REPO }}:prod
           cache-from: type=local,src=/tmp/.buildx-cache
           cache-to: type=local,dest=/tmp/.buildx-cache-new
 
@@ -88,13 +82,13 @@ jobs:
           password: ${{ secrets.CR_PAT }}
 
       - name: pull image from container registry
-        run: docker pull ghcr.io/${GH_REPO}:prod
+        run: docker pull ghcr.io/${{ env.GH_REPO }}:prod
 
       - name: retag production image for deploy
         run: |
           docker image tag \
-          ghcr.io/${GH_REPO}:prod \
-          registry.heroku.com/${HEROKU_APP_NAME}/web:latest
+          ghcr.io/${{ env.GH_REPO }}:prod \
+          registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web:latest
 
       - name: login to heroku container registry
         run: docker login --username=_ --password=${HEROKU_AUTH_TOKEN} registry.heroku.com
@@ -102,7 +96,7 @@ jobs:
           HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_API_KEY }}
 
       - name: push to heroku container registry
-        run: docker push registry.heroku.com/asana-fastapi/web:latest
+        run: docker push registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web:latest
 
       - name: run release.py
         run: |
