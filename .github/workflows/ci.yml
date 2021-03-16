@@ -1,6 +1,6 @@
 name: Build, Test, and Deploy
 
-on: [push]
+on: [workflow_dispatch]
 
 env:
   GH_REPO: colerutledge/asana_fastapi
@@ -98,7 +98,7 @@ jobs:
       - name: push to heroku container registry
         run: docker push registry.heroku.com/${{ env.HEROKU_APP_NAME }}/web:latest
 
-      - name: run release.py
+      - name: release container
         run: |
           chmod +x docker/release.py
           docker/release.py
@@ -111,6 +111,7 @@ jobs:
       #     --name asana_fastapi \
       #     --rm -d -p 8000:8001 \
       #     ghcr.io/colerutledge/asana_fastapi-stages:3
+
       # - name: Build Image -- Dev/Test
       #   run: |
       #     docker buildx build \
@@ -119,6 +120,7 @@ jobs:
       #     --file ./docker/Dockerfile \
       #     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
       #     "."
+
       # - name: Run Tests and Stop Container
       #   run: docker exec asana_fastapi python -m pytest .
 
@@ -127,6 +129,7 @@ jobs:
 
       # - name: Stop Container
       #   run: docker stop asana_fastapi
+
       # - name: Build Image -- Prod
       #   run: |
       #     docker build \
