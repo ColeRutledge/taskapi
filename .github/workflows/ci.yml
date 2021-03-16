@@ -117,6 +117,8 @@ jobs:
         run: |
           chmod +x docker/release.py
           docker/release.py
+        env:
+          HEROKU_AUTH: ${{ secrets.HEROKU_API_KEY }}
 
       # - name: login to heroku container registry
       #   run: docker login --username=_ --password=${HEROKU_AUTH} registry.heroku.com

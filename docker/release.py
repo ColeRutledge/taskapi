@@ -5,7 +5,7 @@
 import os
 import subprocess
 
-print(os.environ.get('HEROKU_API_KEY'))
+print(os.environ.get('HEROKU_AUTH'))
 print(os.environ)
 
 WEB_DOCKER_IMAGE_ID = subprocess.run([
