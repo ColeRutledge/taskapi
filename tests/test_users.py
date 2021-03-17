@@ -1,15 +1,8 @@
 from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
-from app import crud, schemas
 
 
-def test_get_all_users(
-        test_app: TestClient,
-        test_db: Session,
-        three_user_schemas: tuple[schemas.UserCreate]):
-
-    for user_schema in three_user_schemas:
-        crud.create_user(test_db, user_schema)
+def test_get_all_users(test_app: TestClient, test_db_with_three_users: Session):
     response = test_app.get('/users/')
     response_data = response.json()
     response_data[0]['hashed_password'] = 'mock_hashed_password'
