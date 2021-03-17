@@ -1,5 +1,6 @@
 # Project Files
 app.db
+app_test.db
 .vscode
 
 # Byte-compiled / optimized / DLL files

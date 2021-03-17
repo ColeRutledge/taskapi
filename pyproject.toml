@@ -1,3 +1,6 @@
+[tool.pytest.ini_options]
+filterwarnings = "ignore:.*int_from_bytes is deprecated.*"
+
 [tool.poetry]
 name = "asana_api"
 version = "0.1.0"
@@ -20,6 +23,7 @@ aiofiles = "^0.6.0"
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
 pytest = "^6.2.2"
+requests = "^2.25.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

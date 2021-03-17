@@ -1,3 +1,3 @@
-def test_user():
-    user = 'user'
-    assert user == 'user'
+def test_user(test_app):
+    response = test_app.get('/')
+    assert response.status_code == 200
