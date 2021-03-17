@@ -35,7 +35,7 @@ def override_get_db():
         db.close()
 
 
-@pytest.fixture()
+@pytest.fixture
 def test_db():
     Base.metadata.create_all(bind=engine)
     yield from override_get_db()
@@ -53,8 +53,8 @@ def test_app():
         yield test_client
 
 
-@pytest.fixture
-def single_user_schema(scope='session'):
+@pytest.fixture(scope='session')
+def single_user_schema():
     return UserCreate(
         first_name='test1',
         last_name='user1',
@@ -62,8 +62,8 @@ def single_user_schema(scope='session'):
         password='password')
 
 
-@pytest.fixture
-def three_user_schemas(scope='session'):
+@pytest.fixture(scope='session')
+def three_user_schemas():
     user_one = UserCreate(
         first_name='test1',
         last_name='user1',
