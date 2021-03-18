@@ -15,6 +15,7 @@ subprocess.run(['alembic', '-c', 'migrations/alembic.ini', 'upgrade', 'head'])
 subprocess.run([
     'uvicorn',
     '--reload',
+    '--reload-dir', 'app',
     '--host', HOST,
     '--port', PORT,
     '--log-level', LOG_LEVEL,
