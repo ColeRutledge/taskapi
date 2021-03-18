@@ -1,3 +1,6 @@
+import logging
+
+from sqlalchemy.exc import IntegrityError, OperationalError
 from sqlalchemy.orm import Session
 
 from app.models import User, Team, Project, Column, Task
@@ -32,10 +35,14 @@ def seed_db(db: Session):
         Task(column_id=7, column_idx=0, task_description='Gather requirements'),
         Task(column_id=7, column_idx=1, task_description='Design specs'),
         Task(column_id=7, column_idx=2, task_description='Hire engineers'),
-        User(first_name='Bob',   last_name='Smith',     email='bob@smith.com',       hashed_password='password', team_id=1),
-        User(first_name='Sally', last_name='McBeth',    email='Sally@123.com',       hashed_password='password', team_id=1),
-        User(first_name='John',  last_name='Applebaum', email='johnnyA@user.com',    hashed_password='password', team_id=1),
-        User(first_name='Bill',  last_name='McSorley',  email='billy-max@rocks.com', hashed_password='password', team_id=2)]
+        User(first_name='Bob', last_name='Smith', email='bob@smith.com', hashed_password='password', team_id=1),
+        User(first_name='Sally', last_name='McBeth', email='Sally@123.com', hashed_password='password', team_id=1),
+        User(first_name='John', last_name='Applebaum', email='johnnyA@user.com', hashed_password='password', team_id=1),
+        User(first_name='Bill', last_name='McSorley', email='billy-max@rocks.com', hashed_password='password', team_id=2)]
 
-    db.add_all(seed_data)
-    db.commit()
+    try:
+        db.add_all(seed_data)
+        db.commit()
+    except (IntegrityError, OperationalError) as e:  # if data already exists
+        logging.debug(e)
+        logging.info('data already exists. skipping seed.')

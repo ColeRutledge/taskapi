@@ -2,7 +2,10 @@
 venv
 .vscode
 *.db
+*.cfg
 README.md
+logs/
+
 
 __pycache__
 .pytest_cache/

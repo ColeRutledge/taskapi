@@ -1,5 +1,4 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
-from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app.db import engine
@@ -41,14 +40,20 @@ app = create_application()
 
 @app.on_event("startup")
 async def startup_event():
+    import logging
+    import os
+
+    os.makedirs('logs', exist_ok=True)
+    logging.basicConfig(
+        filename='logs/debug.log',
+        encoding='utf-8',
+        level=logging.INFO,
+        format='%(asctime)s %(levelname)s [%(module)s] %(message)s ')
+
     Base.metadata.create_all(bind=engine, checkfirst=True)
     db = Session(autocommit=False, autoflush=False, bind=engine)
-    try:
-        seed_db(db)
-    except IntegrityError:
-        pass
-    finally:
-        db.close()
+    seed_db(db)
+    db.close()
 
 
 templates = templating.Jinja2Templates(directory='app/templates')
