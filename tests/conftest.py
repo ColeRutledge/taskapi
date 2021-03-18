@@ -5,13 +5,12 @@ import pytest
 from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
-from app import crud
 from app.auth.auth_utils import get_current_user
 from app.config import get_settings, Settings
 from app.db import get_db
 from app.main import create_application
 from app.models import Base
-from app.schemas import UserCreate
+from tests.seed import seed_db
 
 
 SQLALCHEMY_TEST_DATABASE_URL = 'sqlite:///app_test.db'
@@ -36,42 +35,6 @@ def override_get_db():
         db.close()
 
 
-@pytest.fixture
-def test_db():
-    Base.metadata.create_all(bind=engine)
-    yield from override_get_db()
-    os.remove('app_test.db')
-
-
-three_user_schemas = \
-    UserCreate(
-        first_name='test1',
-        last_name='user1',
-        email='test1@user.com',
-        password='password'), \
-    UserCreate(
-        first_name='test2',
-        last_name='user2',
-        email='test2@user.com',
-        password='password'), \
-    UserCreate(
-        first_name='test3',
-        last_name='user3',
-        email='test3@user.com',
-        password='password')
-
-
-@pytest.fixture
-def test_db_with_three_users():
-    Base.metadata.create_all(bind=engine)
-    test_db = Session(autocommit=False, autoflush=False, bind=engine)
-    for user_schema in three_user_schemas:
-        crud.create_user(test_db, user_schema)
-    yield test_db
-    test_db.close()
-    os.remove('app_test.db')
-
-
 @pytest.fixture(scope='module')
 def test_app():
     app = create_application()
@@ -83,10 +46,18 @@ def test_app():
         yield test_client
 
 
-@pytest.fixture(scope='session')
-def single_user_schema():
-    return UserCreate(
-        first_name='test1',
-        last_name='user1',
-        email='test1@user.com',
-        password='password')
+@pytest.fixture
+def test_db():
+    Base.metadata.create_all(bind=engine)
+    yield from override_get_db()
+    os.remove('app_test.db')
+
+
+@pytest.fixture
+def test_db_with_three_users():
+    Base.metadata.create_all(bind=engine)
+    db_session = Session(autocommit=False, autoflush=False, bind=engine)
+    seed_db(db_session)
+    yield db_session
+    db_session.close()
+    os.remove('app_test.db')
