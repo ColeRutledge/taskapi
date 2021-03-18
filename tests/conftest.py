@@ -1,5 +1,3 @@
-import os
-
 from fastapi.testclient import TestClient
 import pytest
 from sqlalchemy import create_engine
@@ -14,6 +12,7 @@ from tests.seed import seed_db
 
 
 SQLALCHEMY_TEST_DATABASE_URL = 'sqlite:///app_test.db'
+# SQLALCHEMY_TEST_DATABASE_URL = 'sqlite://'
 engine = create_engine(
     SQLALCHEMY_TEST_DATABASE_URL, connect_args={'check_same_thread': False})
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -48,16 +47,16 @@ def test_app():
 
 @pytest.fixture
 def test_db_empty():
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
     yield from override_get_db()
-    os.remove('app_test.db')
+    Base.metadata.drop_all(bind=engine)
 
 
 @pytest.fixture
 def test_db_seeded():
-    Base.metadata.create_all(bind=engine)
+    Base.metadata.create_all(bind=engine, checkfirst=True)
     db_session = Session(autocommit=False, autoflush=False, bind=engine)
     seed_db(db_session)
     yield db_session
     db_session.close()
-    os.remove('app_test.db')
+    Base.metadata.drop_all(bind=engine)
