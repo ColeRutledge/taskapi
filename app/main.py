@@ -1,9 +1,14 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
+from sqlalchemy.exc import IntegrityError
+from sqlalchemy.orm import Session
 
+from app.db import engine
+from app.models import Base
 from app.tag_meta import tags_metadata
 from app.auth import auth_router
 from app.auth.auth_utils import get_current_user
 from app.routers import users, teams, projects, columns, tasks
+from tests.seed import seed_db
 
 
 def create_application() -> FastAPI:
@@ -32,6 +37,19 @@ def create_application() -> FastAPI:
 
 
 app = create_application()
+
+
+@app.on_event("startup")
+async def startup_event():
+    Base.metadata.create_all(bind=engine, checkfirst=True)
+    db = Session(autocommit=False, autoflush=False, bind=engine)
+    try:
+        seed_db(db)
+    except IntegrityError:
+        pass
+    finally:
+        db.close()
+
 
 templates = templating.Jinja2Templates(directory='app/templates')
 
