@@ -47,14 +47,14 @@ def test_app():
 
 
 @pytest.fixture
-def test_db():
+def test_db_empty():
     Base.metadata.create_all(bind=engine)
     yield from override_get_db()
     os.remove('app_test.db')
 
 
 @pytest.fixture
-def test_db_with_three_users():
+def test_db_seeded():
     Base.metadata.create_all(bind=engine)
     db_session = Session(autocommit=False, autoflush=False, bind=engine)
     seed_db(db_session)

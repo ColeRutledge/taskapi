@@ -2,7 +2,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 
-def test_get_all_users(test_app: TestClient, test_db_with_three_users: Session):
+def test_get_all_users(test_app: TestClient, test_db_seeded: Session):
     response = test_app.get('/users/')
     response_data = response.json()
     response_data[0]['hashed_password'] = 'mock_hashed_password'
