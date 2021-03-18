@@ -2,6 +2,7 @@
 app.db
 app_test.db
 .vscode
+test_log.txt
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
