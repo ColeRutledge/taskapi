@@ -52,9 +52,9 @@ class UserUpdate(UserCreate):
 
 class User(UserBase):
     id: int
-    hashed_password: str
     team_id: Optional[int] = None
     disabled: Optional[bool] = None
+    # hashed_password: str
 
     class Config:
         orm_mode = True
