@@ -39,16 +39,13 @@ app = create_application()
 
 
 @app.on_event("startup")
-async def startup_event():
-    import logging
+def startup_event():
     import os
+    from logging.config import dictConfig
+    from app.config import LOGGING_CONFIG
 
     os.makedirs('logs', exist_ok=True)
-    logging.basicConfig(
-        filename='logs/debug.log',
-        encoding='utf-8',
-        level=logging.INFO,
-        format='%(asctime)s %(levelname)s [%(module)s] %(message)s ')
+    dictConfig(LOGGING_CONFIG)
 
     Base.metadata.create_all(bind=engine, checkfirst=True)
     db = Session(autocommit=False, autoflush=False, bind=engine)

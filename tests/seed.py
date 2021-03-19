@@ -43,6 +43,7 @@ def seed_db(db: Session):
     try:
         db.add_all(seed_data)
         db.commit()
+        logging.info('database seed complete.')
     except (IntegrityError, OperationalError) as e:  # if data already exists
-        logging.debug(e)
+        logging.warning(e.orig)
         logging.info('data already exists. skipping seed.')
