@@ -1,13 +1,9 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
-from sqlalchemy.orm import Session
 
-from app.db import engine
-from app.models import Base
 from app.tag_meta import tags_metadata
 from app.auth import auth_router
 from app.auth.auth_utils import get_current_user
 from app.routers import users, teams, projects, columns, tasks
-from tests.seed import seed_db
 
 
 def create_application() -> FastAPI:
@@ -38,19 +34,21 @@ def create_application() -> FastAPI:
 app = create_application()
 
 
-@app.on_event("startup")
+@app.on_event('startup')
 def startup_event():
     import os
     from logging.config import dictConfig
-    from app.config import LOGGING_CONFIG
+    from sqlalchemy.orm import Session
+    from app import db, config, models
+    from tests.seed import seed_db
 
     os.makedirs('logs', exist_ok=True)
-    dictConfig(LOGGING_CONFIG)
+    dictConfig(config.LOGGING_CONFIG)
 
-    Base.metadata.create_all(bind=engine, checkfirst=True)
-    db = Session(autocommit=False, autoflush=False, bind=engine)
-    seed_db(db)
-    db.close()
+    models.Base.metadata.create_all(bind=db.engine, checkfirst=True)
+    session = Session(autocommit=False, autoflush=False, bind=db.engine)
+    seed_db(session)
+    session.close()
 
 
 templates = templating.Jinja2Templates(directory='app/templates')
@@ -64,4 +62,4 @@ async def user_login(request: Request):
 
 @app.get('/items/{id}', response_class=responses.HTMLResponse)
 async def read_item(request: Request, id: str):
-    return templates.TemplateResponse("item.html", {"request": request, "id": id})
+    return templates.TemplateResponse('item.html', {'request': request, 'id': id})
