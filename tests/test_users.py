@@ -48,3 +48,10 @@ def test_get_user_team(user_id: int, test_app: TestClient, test_db_seeded: Sessi
     assert response.json() in [
         {'id': 1, 'team_name': 'Marketing'},
         {'id': 2, 'team_name': 'Engineering'}]
+
+
+def test_get_user_team_not_found(test_app: TestClient, test_db_seeded: Session):
+    invalid_id = 0
+    response = test_app.get(f'/users/{invalid_id}/team')
+    assert response.status_code == 404
+    assert response.json()['detail'] == 'User not found'
