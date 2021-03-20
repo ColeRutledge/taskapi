@@ -7,7 +7,7 @@ from app.auth.auth_utils import get_current_user
 from app.config import get_settings, Settings
 from app.db import get_db
 from app.main import create_application
-from app.models import Base
+from app.models import Base, User
 from migrations.seed import seed_db
 
 
@@ -23,7 +23,13 @@ def override_test_settings():
 
 
 def override_get_current_user():
-    return True  # could return a User
+    return User(
+        id=1,
+        first_name='Bob',
+        last_name='Smith',
+        email='bob@smith.com',
+        team_id=1,
+        hashed_password='password')
 
 
 def override_get_db():
