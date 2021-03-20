@@ -58,18 +58,21 @@ def test_get_user_team_invalid(test_app: TestClient, test_db_seeded: Session):
     assert response.json()['detail'] == 'User not found'
 
 
-def test_update_user(test_app: TestClient, test_db_seeded: Session):
-    user_id = 1
-    put_response = test_app.put(
-        f'/users/{user_id}',
-        data=json.dumps({
-            'user': {
-                'first_name': 'John',       # updating from 'Bob'
-                'last_name': 'Smith',
-                'email': 'john@smith.com',  # updating from 'bob@smith.com'
-                'password': 'password',
-                'team_id': 1,
-                'disabled': False}}))
+@pytest.mark.parametrize(
+    argnames=['user_id', 'first_name', 'email'],
+    argvalues=[
+        (1, 'John', 'john@smith.com'),
+        (2, 'Betty', 'Betty@xyz.com'),
+        (3, 'Rohan', 'rohan@user.com'),
+        (4, 'Rob', 'robby@smith.com')])
+def test_update_user(
+        user_id: int,
+        first_name: str,
+        email: str,
+        test_app: TestClient,
+        test_db_seeded: Session):
+    payload = json.dumps({'user': {'first_name': first_name, 'email': email}})
+    put_response = test_app.put(f'/users/{user_id}', data=payload)
     get_response = test_app.get(f'/users/{user_id}')
     assert put_response.status_code == 200
     assert put_response.json() == get_response.json()
