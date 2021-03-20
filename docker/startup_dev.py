@@ -3,15 +3,20 @@
 import subprocess
 
 
-print(f"{' STARTUP -- DEV ':*^25}")
-
 PORT = '80'
 HOST = '0.0.0.0'
 LOG_LEVEL = 'info'
 APP_MODULE = 'app.main:app'
 
-print("Running alembic migrations...")
+print(f"{' STARTUP -- DEV ':*^25}")
+
+print(f"{' RUNNING MIGRATIONS ':*^25}")
 subprocess.run(['alembic', '-c', 'migrations/alembic.ini', 'upgrade', 'head'])
+
+print(f"{' SEEDING TEST DATA ':*^25}")
+subprocess.run(['python', '-m', 'migrations.seed'])
+
+print(f"{' STARTING SERVER ':*^25}")
 subprocess.run([
     'uvicorn',
     '--reload',

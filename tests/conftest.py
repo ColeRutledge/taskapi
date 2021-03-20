@@ -8,7 +8,7 @@ from app.config import get_settings, Settings
 from app.db import get_db
 from app.main import create_application
 from app.models import Base
-from tests.seed import seed_db
+from migrations.seed import seed_db
 
 
 SQLALCHEMY_TEST_DATABASE_URL = 'sqlite:///app_test.db'

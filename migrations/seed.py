@@ -1,3 +1,4 @@
+#!/usr/bin/env python3
 import logging
 
 from sqlalchemy.exc import IntegrityError, OperationalError
@@ -47,3 +48,16 @@ def seed_db(db: Session):
     except (IntegrityError, OperationalError) as e:  # if data already exists
         logging.warning(e.orig)
         logging.info('data already exists. skipping seed.')
+
+
+if __name__ == '__main__':
+    import os
+    from logging.config import dictConfig
+    from app import db, config
+
+    os.makedirs('logs', exist_ok=True)
+    dictConfig(config.LOGGING_CONFIG)
+
+    db_session = Session(autocommit=False, autoflush=False, bind=db.engine)
+    seed_db(db_session)
+    db_session.close()

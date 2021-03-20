@@ -53,6 +53,7 @@ RUN poetry install
 WORKDIR /app
 COPY . .
 RUN chmod +x ./docker/startup_dev.py
+RUN chmod +x ./migrations/seed.py
 
 CMD ["./docker/startup_dev.py"]
 
