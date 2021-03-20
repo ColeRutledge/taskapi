@@ -3,14 +3,16 @@
 import subprocess
 
 
-print(f"{' STARTUP ':*^25}")
-
 APP_MODULE = 'app.main:app'
 GUNICORN_CONF = '/app/docker/gunicorn_conf.py'
 WORKER_CLASS = 'uvicorn.workers.UvicornWorker'
 
-print("Running alembic migrations...")
+print(f"{' STARTUP ':*^25}")
+
+print(f"{' RUNNING MIGRATIONS ':*^25}")
 subprocess.run(['alembic', '-c', 'migrations/alembic.ini', 'upgrade', 'head'])
+
+print(f"{' STARTING SERVER ':*^25}")
 subprocess.run([
     'gunicorn',
     '-k', WORKER_CLASS,
