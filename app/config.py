@@ -22,6 +22,7 @@ def get_settings():
 
 LOGGING_CONFIG = {
     'version': 1,
+    'disable_existing_loggers': False,
     'formatters': {
         'fmt': {
             'datefmt': '%H:%M:%S %m-%d-%y',
