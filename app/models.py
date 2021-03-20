@@ -48,6 +48,13 @@ class User(Base, TimestampMixin):
 
     team = relationship('Team', back_populates='users')
 
+    def __eq__(self, other):
+        return self.id == other.id \
+            and self.first_name == other.first_name \
+            and self.last_name == other.last_name \
+            and self.email == other.email \
+            and self.team_id == other.team_id
+
     def get_password_hash(self, password):
         return pwd_context.hash(password)
 
