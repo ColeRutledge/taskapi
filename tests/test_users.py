@@ -24,15 +24,17 @@ def test_get_all_users(test_app: TestClient, test_db_seeded: Session):
     argnames=['user_id', 'status_code', 'expected_response'],
     argvalues=[
         (1, status.HTTP_200_OK, {
-            'first_name': 'Bob', 'last_name': 'Smith', 'email': 'bob@smith.com',
-            'id': 1, 'team_id': 1, 'disabled': None}),
-        (2, status.HTTP_200_OK, {
-            'first_name': 'Sally', 'last_name': 'McBeth', 'email': 'Sally@123.com',
-            'id': 2, 'team_id': 1, 'disabled': None}),
+            'first_name': 'Bob', 'last_name': 'Smith',
+            'email': 'bob@smith.com', 'id': 1, 'team_id': 1, 'disabled': None}),
         (4, status.HTTP_200_OK, {
-            'first_name': 'Bill', 'last_name': 'McSorley', 'email': 'billy-max@rocks.com',
-            'id': 4, 'team_id': 2, 'disabled': None}),
-        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'})])
+            'first_name': 'Bill', 'last_name': 'McSorley',
+            'email': 'billy-max@rocks.com', 'id': 4, 'team_id': 2, 'disabled': None}),
+        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
+        ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
+            'detail': [{
+                'loc': ['path', 'user_id'],
+                'msg': 'value is not a valid integer',
+                'type': 'type_error.integer'}]})])
 def test_get_user(
         user_id: int,
         status_code: int,
@@ -48,7 +50,6 @@ def test_get_user(
     argnames=['user_id', 'status_code', 'expected_response'],
     argvalues=[
         (1, status.HTTP_200_OK, {'id': 1, 'team_name': 'Marketing'}),
-        (2, status.HTTP_200_OK, {'id': 1, 'team_name': 'Marketing'}),
         (4, status.HTTP_200_OK, {'id': 2, 'team_name': 'Engineering'}),
         (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
