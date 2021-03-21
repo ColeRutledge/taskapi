@@ -8,6 +8,7 @@ from app.auth.auth_utils import get_current_user as gcu
 from app.db import get_db
 
 
+logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
@@ -46,7 +47,7 @@ def update_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='User not found')
     elif current_user != db_user:
-        logging.warning(
+        logger.warning(
             f'User[{current_user.email}] tried to update User[{db_user.email}]')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
@@ -66,7 +67,7 @@ def delete_user(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='User not found')
     elif current_user != db_user:
-        logging.warning(
+        logger.warning(
             f'User[{current_user.email}] tried to delete User[{db_user.email}]')
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
