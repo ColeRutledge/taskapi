@@ -55,13 +55,23 @@ def update_user(
     return crud.update_user(db, schema=user, model=db_user)
 
 
-@router.delete('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])
-def delete_user(user_id: int, db: Session = Depends(get_db)):
+@router.delete('/{user_id}', response_model=schemas.User)
+def delete_user(
+        user_id: int,
+        current_user: models.User = Depends(gcu),
+        db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db=db, id=user_id, model=models.User)
     if db_user is None:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='User not found')
+    elif current_user != db_user:
+        logging.warning(
+            f'User[{current_user.email}] tried to access User[{db_user.email}]')
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail='Could not validate credentials',
+            headers={'WWW-Authenticate': 'Bearer'})
     return crud.delete(db=db, resource=db_user)
 
 
