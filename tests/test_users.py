@@ -6,7 +6,7 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 
-def test_get_all_users(test_app: TestClient, test_db_seeded: Session):
+def test_get_all_users_returns_all_users(test_app: TestClient, test_db_seeded: Session):
     response = test_app.get('/users/')
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
@@ -35,7 +35,7 @@ def test_get_all_users(test_app: TestClient, test_db_seeded: Session):
                 'loc': ['path', 'user_id'],
                 'msg': 'value is not a valid integer',
                 'type': 'type_error.integer'}]})])
-def test_get_user(
+def test_get_user_responses_with_diff_inputs(
         user_id: int,
         status_code: int,
         expected_response: dict,
@@ -57,7 +57,7 @@ def test_get_user(
                 'loc': ['path', 'user_id'],
                 'msg': 'value is not a valid integer',
                 'type': 'type_error.integer'}]})])
-def test_get_user_team(
+def test_get_user_team_responses_with_diff_inputs(
         user_id: int,
         status_code: int,
         expected_response: dict,
@@ -82,7 +82,7 @@ def test_get_user_team(
                 'loc': ['path', 'user_id'],
                 'msg': 'value is not a valid integer',
                 'type': 'type_error.integer'}]})])
-def test_update_user(
+def test_update_user_responses_with_diff_inputs(
         user_id: int,
         field: str,
         value: str,
@@ -109,7 +109,7 @@ def test_update_user(
                 'loc': ['path', 'user_id'],
                 'msg': 'value is not a valid integer',
                 'type': 'type_error.integer'}]})])
-def test_delete_user(
+def test_delete_user_responses_with_diff_inputs(
         user_id: int,
         status_code: int,
         expected_response: dict,
@@ -139,7 +139,7 @@ def test_delete_user(
                 "loc": ["body", "password"],
                 "msg": "field required",
                 "type": "value_error.missing"}]})])
-def test_create_user(
+def test_create_user_responses_with_diff_inputs(
         first_name: str,
         last_name: str,
         email: str,
