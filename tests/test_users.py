@@ -74,7 +74,7 @@ def test_get_user_team(
         (1, 'first_name', 'John', status.HTTP_200_OK, {
             'first_name': 'John', 'last_name': 'Smith', 'email': 'bob@smith.com',
             'id': 1, 'team_id': 1, 'disabled': None}),
-        (2, 'email', 'Betty@xyz.com', status.HTTP_401_UNAUTHORIZED, {
+        (2, 'email', 'wrong@user.com', status.HTTP_401_UNAUTHORIZED, {
             'detail': 'Could not validate credentials'}),
         (0, 'team_id', 1, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         ('bad_user_id', 'team_id', 1, status.HTTP_422_UNPROCESSABLE_ENTITY, {
@@ -132,9 +132,9 @@ def test_delete_user(
         ('Charlotte', 'Kim', 'ck@mail.com', 'test_password', status.HTTP_201_CREATED, {
             'first_name': 'Charlotte', 'last_name': 'Kim',
             'email': 'ck@mail.com', 'id': 5, 'team_id': None, 'disabled': None}),
-        ('Bill', 'McSorley', 'billy-max@rocks.com', 'password',
+        ('Existing', 'User', 'billy-max@rocks.com', 'password',
          status.HTTP_400_BAD_REQUEST, {'detail': 'Email already registered'}),
-        ('Charlotte', 'Kim', 'ck@mail.com', None, status.HTTP_422_UNPROCESSABLE_ENTITY, {
+        ('Missing', 'Password', 'm@p.com', None, status.HTTP_422_UNPROCESSABLE_ENTITY, {
             "detail": [{
                 "loc": ["body", "password"],
                 "msg": "field required",
