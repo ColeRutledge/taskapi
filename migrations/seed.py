@@ -7,6 +7,9 @@ from sqlalchemy.orm import Session
 from app.models import User, Team, Project, Column, Task
 
 
+logger = logging.getLogger(__name__)
+
+
 def seed_db(db: Session):
     seed_data = [
         Team(team_name='Marketing'),
@@ -44,10 +47,10 @@ def seed_db(db: Session):
     try:
         db.add_all(seed_data)
         db.commit()
-        logging.info('database seed complete.')
+        logger.info('database seed complete.')
     except (IntegrityError, OperationalError) as e:  # if data already exists
-        logging.warning(e.orig)
-        logging.info('data already exists. skipping seed.')
+        logger.warning(e.orig)
+        logger.info('data already exists. skipping seed.')
 
 
 if __name__ == '__main__':

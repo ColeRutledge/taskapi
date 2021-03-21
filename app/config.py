@@ -26,13 +26,12 @@ LOGGING_CONFIG = {
     'formatters': {
         'fmt': {
             'datefmt': '%H:%M:%S %m-%d-%y',
-            'format': '%(asctime)s %(levelname)s %(module)s.'
-                      '%(funcName)s[%(lineno)d] %(message)s'}},
+            'format': '%(asctime)s - %(levelname)s - %(name)s: %(message)s'}},
     'handlers': {
         'rfh': {
             'class': 'logging.handlers.RotatingFileHandler',
             'filename': 'logs/debug.log',
-            'maxBytes': 1024 * 1024,  # 1MB
+            'maxBytes': 1024 * 1024,
             'encoding': 'utf-8',
             'formatter': 'fmt',
             'backupCount': 2,
@@ -42,4 +41,4 @@ LOGGING_CONFIG = {
     'loggers': {
         '': {  # root
             'handlers': ['rfh'],
-            'level': 'INFO'}}}
+            'level': 'DEBUG'}}}
