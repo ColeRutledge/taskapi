@@ -94,3 +94,27 @@ def test_update_user(
     response = test_app.put(f'/users/{user_id}', data=payload)
     assert response.status_code == status_code
     assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    argnames=['user_id', 'status_code', 'expected_response'],
+    argvalues=[
+        (1, status.HTTP_200_OK, {
+            'first_name': 'Bob', 'last_name': 'Smith',
+            'email': 'bob@smith.com', 'id': 1, 'team_id': 1, 'disabled': None}),
+        (2, status.HTTP_401_UNAUTHORIZED, {'detail': 'Could not validate credentials'}),
+        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
+        ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
+            'detail': [{
+                'loc': ['path', 'user_id'],
+                'msg': 'value is not a valid integer',
+                'type': 'type_error.integer'}]})])
+def test_delete_user(
+        user_id: int,
+        status_code: int,
+        expected_response: dict,
+        test_app: TestClient,
+        test_db_seeded: Session):
+    response = test_app.delete(f'/users/{user_id}')
+    assert response.status_code == status_code
+    assert response.json() == expected_response
