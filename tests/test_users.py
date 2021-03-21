@@ -90,7 +90,7 @@ def test_update_user(
         expected_response: dict,
         test_app: TestClient,
         test_db_seeded: Session):
-    payload = json.dumps({'user': {field: value}})
+    payload = json.dumps({'user_schema': {field: value}})
     response = test_app.put(f'/users/{user_id}', data=payload)
     assert response.status_code == status_code
     assert response.json() == expected_response
@@ -116,5 +116,45 @@ def test_delete_user(
         test_app: TestClient,
         test_db_seeded: Session):
     response = test_app.delete(f'/users/{user_id}')
+    assert response.status_code == status_code
+    assert response.json() == expected_response
+
+
+@pytest.mark.parametrize(
+    argnames=[
+        'first_name',
+        'last_name',
+        'email',
+        'password',
+        'status_code',
+        'expected_response'],
+    argvalues=[
+        ('Charlotte', 'Kim', 'ck@mail.com', 'test_password', status.HTTP_201_CREATED, {
+            'first_name': 'Charlotte', 'last_name': 'Kim',
+            'email': 'ck@mail.com', 'id': 5, 'team_id': None, 'disabled': None}),
+        ('Bill', 'McSorley', 'billy-max@rocks.com', 'password',
+         status.HTTP_400_BAD_REQUEST, {'detail': 'Email already registered'}),
+        ('Charlotte', 'Kim', 'ck@mail.com', None, status.HTTP_422_UNPROCESSABLE_ENTITY, {
+            "detail": [{
+                "loc": ["body", "password"],
+                "msg": "field required",
+                "type": "value_error.missing"}]})])
+def test_create_user(
+        first_name: str,
+        last_name: str,
+        email: str,
+        password: str,
+        status_code: int,
+        expected_response: dict,
+        test_app: TestClient,
+        test_db_seeded: Session):
+    payload = {
+        'first_name': first_name,
+        'last_name': last_name,
+        'email': email,
+        'password': password}
+    if payload['password'] is None:
+        del payload['password']
+    response = test_app.post('/users/', data=json.dumps(payload))
     assert response.status_code == status_code
     assert response.json() == expected_response
