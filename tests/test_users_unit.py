@@ -1,12 +1,13 @@
+import pytest
+from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
 
 from app import models, crud
 
 
 def test_get_all_users(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(db: Session, user_model: models.User):
+    def mock_read_all(db, user_model):
         mock_user = models.User(
             id=1, team_id=1, first_name='Bob',
             last_name='Smith', email='bob@smith.com')
@@ -18,3 +19,29 @@ def test_get_all_users(monkeypatch, test_app: TestClient):
     assert response.json() == [{
         'first_name': 'Bob', 'last_name': 'Smith', 'id': 1,
         'email': 'bob@smith.com', 'team_id': 1, 'disabled': None}]
+
+
+@pytest.mark.parametrize(
+    argnames=['user_id', 'mock_user', 'status_code', 'expected_response'],
+    argvalues=[
+        (1, models.User(
+            id=1, team_id=1, first_name='Bob',
+            last_name='Smith', email='bob@smith.com'), 200, {
+                'first_name': 'Bob', 'last_name': 'Smith', 'id': 1,
+                'email': 'bob@smith.com', 'team_id': 1, 'disabled': None}),
+        (0, None, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'})])
+def test_get_user(
+        user_id: int,
+        mock_user: models.User,
+        status_code: int,
+        expected_response: dict,
+        monkeypatch,
+        test_app: TestClient):
+
+    def mock_read(db, user_id, user_model):
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/users/{user_id}')
+    assert response.status_code == status_code
+    assert response.json() == expected_response
