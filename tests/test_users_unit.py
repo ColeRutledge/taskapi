@@ -10,6 +10,8 @@ from app import models, crud
 
 
 HTTP_200_OK = status.HTTP_200_OK
+HTTP_201_CREATED = status.HTTP_201_CREATED
+HTTP_400_BAD_REQUEST = status.HTTP_400_BAD_REQUEST
 HTTP_404_NOT_FOUND = status.HTTP_404_NOT_FOUND
 HTTP_401_UNAUTHORIZED = status.HTTP_401_UNAUTHORIZED
 
@@ -124,5 +126,83 @@ def test_update_user(
 
     payload = json.dumps({'user_schema': {'email': email}})
     response = test_app.put(f'/users/{user_id}', data=payload)
+    assert response.status_code == status_code
+    assert response.json()[field] == value
+
+
+@pytest.mark.parametrize(
+    argnames=['user_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'id', 1),
+        (2, HTTP_401_UNAUTHORIZED, 'detail', 'Could not validate credentials'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'User not found')])
+def test_delete_user(
+        user_id: int,
+        status_code: int,
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=user_id,
+        team_id=1,
+        first_name='Test',
+        last_name='User',
+        email='test@user.com')
+
+    def mock_read(db, uid, user_model):
+        if user_id == 0:
+            return None
+        return mock_user
+
+    def mock_delete(db, db_user):
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
+
+    response = test_app.delete(f'/users/{user_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
+
+
+@pytest.mark.parametrize(
+    argnames=['email', 'status_code', 'field', 'value'],
+    argvalues=[
+        ('new@user.com', HTTP_201_CREATED, 'id', 1),
+        ('exist@user.com', HTTP_400_BAD_REQUEST, 'detail', 'Email already registered')])
+def test_create_user(
+        email: str,
+        status_code: int,
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=1,
+        team_id=1,
+        first_name='Test',
+        last_name='User',
+        email=email)
+
+    def mock_get_user_by_email(*args):
+        if email == 'exist@user.com':
+            return mock_user
+        return None
+
+    def mock_create_user(*args):
+        return mock_user
+
+    monkeypatch.setattr(models.User, 'get_user_by_email', mock_get_user_by_email)
+    monkeypatch.setattr(crud, 'create_user', mock_create_user)
+
+    payload = {
+        'first_name': 'Test',
+        'last_name': 'User',
+        'email': email,
+        'password': 'password'}
+    response = test_app.post('/users/', data=json.dumps(payload))
     assert response.status_code == status_code
     assert response.json()[field] == value
