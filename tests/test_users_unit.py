@@ -17,7 +17,7 @@ HTTP_401_UNAUTHORIZED = 401
 
 def test_get_all_users(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(db, user_model):
+    def mock_read_all(*args):
         mock_user = models.User(
             id=1, team_id=1, first_name='Test',
             last_name='User', email='test@user.com')
@@ -51,7 +51,7 @@ def test_get_user(
         last_name='fill',
         email='expected@email.com')
 
-    def mock_read(db, user_id, user_model):
+    def mock_read(*args):
         if user_id == 0:  # user that does not exist
             return None
         return mock_user
@@ -78,7 +78,7 @@ def test_get_user_team(
     mockUserWithTeam = namedtuple('mockUserWithTeam', field_names=['team'])
     mock_user = mockUserWithTeam(team=models.Team(id=1, team_name='Testing'))
 
-    def mock_read(db, user_id, user_model):
+    def mock_read(*args):
         if user_id == 0:
             return None
         return mock_user
@@ -111,12 +111,12 @@ def test_update_user(
         last_name='fill',
         email=email)
 
-    def mock_read(db, uid, user_model):
+    def mock_read(*args):
         if user_id == 0:
             return None
         return mock_user
 
-    def mock_update_user(db, user_schema, db_user):
+    def mock_update_user(*args):
         mock_user.email = 'post@change.com'
         return mock_user
 
@@ -150,12 +150,12 @@ def test_delete_user(
         last_name='User',
         email='test@user.com')
 
-    def mock_read(db, uid, user_model):
+    def mock_read(*args):
         if user_id == 0:
             return None
         return mock_user
 
-    def mock_delete(db, db_user):
+    def mock_delete(*args):
         return mock_user
 
     monkeypatch.setattr(crud, 'read', mock_read)
