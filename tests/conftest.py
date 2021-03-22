@@ -25,9 +25,9 @@ def override_test_settings():
 def override_get_current_user():
     return User(
         id=1,
-        first_name='Bob',
-        last_name='Smith',
-        email='bob@smith.com',
+        first_name='Test',
+        last_name='User',
+        email='test@user.com',
         team_id=1,
         hashed_password='password')
 
