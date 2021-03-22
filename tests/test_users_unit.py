@@ -1,19 +1,18 @@
-from collections import namedtuple
 import json
+from collections import namedtuple
 from typing import Union
 
 import pytest
-from fastapi import status
 from fastapi.testclient import TestClient
 
 from app import models, crud
 
 
-HTTP_200_OK = status.HTTP_200_OK
-HTTP_201_CREATED = status.HTTP_201_CREATED
-HTTP_400_BAD_REQUEST = status.HTTP_400_BAD_REQUEST
-HTTP_404_NOT_FOUND = status.HTTP_404_NOT_FOUND
-HTTP_401_UNAUTHORIZED = status.HTTP_401_UNAUTHORIZED
+HTTP_200_OK = 200
+HTTP_201_CREATED = 201
+HTTP_400_BAD_REQUEST = 400
+HTTP_404_NOT_FOUND = 404
+HTTP_401_UNAUTHORIZED = 401
 
 
 def test_get_all_users(monkeypatch, test_app: TestClient):
