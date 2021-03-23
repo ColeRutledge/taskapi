@@ -1,5 +1,5 @@
-# import json
-# from collections import namedtuple
+import json
+from collections import namedtuple
 from typing import Union
 
 import pytest
@@ -100,51 +100,46 @@ def test_get_project_data(
     assert eval(f'response.json(){fields}') == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['project_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 1, {
-#             'id': 2, 'first_name': 'Test2', 'last_name': 'User2',
-#             'email': 'test2@user.com', 'project_id': 1, 'disabled': None}),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'Project not found')])
-# def test_get_project_users(
-#         project_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['project_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 1, {
+            'id': 2, 'column_name': 'Column2', 'column_pos': 1, 'project_id': 1}),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Project not found')])
+def test_get_project_columns(
+        project_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     MockprojectWithUsers = namedtuple('MockprojectWithUsers', ['users'])
-#     mock_project = MockprojectWithUsers(users=[
-#         models.User(
-#             id=1, first_name='Test1', last_name='User1',
-#             email='test1@user.com', project_id=1),
-#         models.User(
-#             id=2, first_name='Test2', last_name='User2',
-#             email='test2@user.com', project_id=1)])
+    MockProjectWithColumns = namedtuple('MockProjectWithColumns', ['columns'])
+    mock_project = MockProjectWithColumns(columns=[
+        models.Column(id=1, column_name='Column1', column_pos=0, project_id=1),
+        models.Column(id=2, column_name='Column2', column_pos=1, project_id=1)])
 
-#     def mock_read(*args):
-#         if project_id == 0:
-#             return None
-#         return mock_project
+    def mock_read(*args):
+        if project_id == 0:
+            return None
+        return mock_project
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     response = test_app.get(f'/projects/{project_id}/users')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/projects/{project_id}/columns')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
-# def test_create_project(monkeypatch, test_app: TestClient):
+def test_create_project(monkeypatch, test_app: TestClient):
 
-#     def mock_create(*args):
-#         return models.project(id=1, project_name='Engineering')
+    def mock_create(*args):
+        return models.Project(id=1, project_name='UnitTest', team_id=1)
 
-#     monkeypatch.setattr(crud, 'create', mock_create)
-#     payload = json.dumps({'project_name': 'Engineering'})
-#     response = test_app.post('/projects/', data=payload)
-#     assert response.status_code == HTTP_201_CREATED
-#     assert response.json() == {'id': 1, 'project_name': 'Engineering'}
+    monkeypatch.setattr(crud, 'create', mock_create)
+    payload = json.dumps({'project_name': 'UnitTest', 'team_id': 1})
+    response = test_app.post('/projects/', data=payload)
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {'id': 1, 'project_name': 'UnitTest', 'team_id': 1}
 
 
 # @pytest.mark.parametrize(
