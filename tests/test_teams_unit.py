@@ -146,7 +146,7 @@ def test_update_team(
         test_app: TestClient):
 
     def mock_read(*args):
-        if team_id == 0:  # team that does not exist
+        if team_id == 0:
             return None
         return models.Team(id=team_id, team_name='Pre-Change')
 
@@ -158,5 +158,36 @@ def test_update_team(
 
     payload = json.dumps({'team': {'team_name': team_name}})
     response = test_app.put(f'/teams/{team_id}', data=payload)
+    assert response.status_code == status_code
+    assert response.json()[field] == value
+
+
+@pytest.mark.parametrize(
+    argnames=['team_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'team_name', 'Engineering'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Team not found')])
+def test_delete_team(
+        team_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_team = models.Team(id=team_id, team_name='Engineering')
+
+    def mock_read(*args):
+        if team_id == 0:
+            return None
+        return mock_team
+
+    def mock_delete(*args):
+        return mock_team
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
+
+    response = test_app.delete(f'/teams/{team_id}')
     assert response.status_code == status_code
     assert response.json()[field] == value
