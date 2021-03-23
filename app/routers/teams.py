@@ -29,7 +29,7 @@ def get_team_projects(team_id: int, db: Session = Depends(get_db)):
     if db_team is None:
         raise HTTPException(
             status_code=404,
-            detail='Project not found')
+            detail='Team not found')
     return db_team.projects
 
 
@@ -39,7 +39,7 @@ def get_team_users(team_id: int, db: Session = Depends(get_db)):
     if db_team is None:
         raise HTTPException(
             status_code=404,
-            detail='Project not found')
+            detail='Team not found')
     return db_team.users
 
 
