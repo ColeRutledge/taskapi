@@ -82,3 +82,38 @@ def test_get_team_projects(
     response = test_app.get(f'/teams/{team_id}/projects')
     assert response.status_code == status_code
     assert response.json()[field] == value
+
+
+@pytest.mark.parametrize(
+    argnames=['team_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 1, {
+            'id': 2, 'first_name': 'Test2', 'last_name': 'User2',
+            'email': 'test2@user.com', 'team_id': 1, 'disabled': None}),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Team not found')])
+def test_get_team_users(
+        team_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
+
+    MockTeamWithUsers = namedtuple('MockTeamWithUsers', ['users'])
+    mock_team = MockTeamWithUsers(users=[
+        models.User(
+            id=1, first_name='Test1', last_name='User1',
+            email='test1@user.com', team_id=1),
+        models.User(
+            id=2, first_name='Test2', last_name='User2',
+            email='test2@user.com', team_id=1)])
+
+    def mock_read(*args):
+        if team_id == 0:
+            return None
+        return mock_team
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/teams/{team_id}/users')
+    assert response.status_code == status_code
+    assert response.json()[field] == value

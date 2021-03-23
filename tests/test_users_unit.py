@@ -75,8 +75,8 @@ def test_get_user_team(
         monkeypatch,
         test_app: TestClient):
 
-    mockUserWithTeam = namedtuple('mockUserWithTeam', field_names=['team'])
-    mock_user = mockUserWithTeam(team=models.Team(id=1, team_name='Testing'))
+    MockUserWithTeam = namedtuple('MockUserWithTeam', field_names=['team'])
+    mock_user = MockUserWithTeam(team=models.Team(id=1, team_name='Testing'))
 
     def mock_read(*args):
         if user_id == 0:
