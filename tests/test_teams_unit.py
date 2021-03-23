@@ -129,3 +129,34 @@ def test_create_team(monkeypatch, test_app: TestClient):
     response = test_app.post('/teams/', data=payload)
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {'id': 1, 'team_name': 'Engineering'}
+
+
+@pytest.mark.parametrize(
+    argnames=['team_id', 'team_name', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, 'Engineering', HTTP_200_OK, 'team_name', 'Engineering'),
+        (0, 'Bad Team ID', HTTP_404_NOT_FOUND, 'detail', 'Team not found')])
+def test_update_team(
+        team_id: int,
+        team_name: str,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
+
+    def mock_read(*args):
+        if team_id == 0:  # team that does not exist
+            return None
+        return models.Team(id=team_id, team_name='Pre-Change')
+
+    def mock_update_team(*args):
+        return models.Team(id=team_id, team_name=team_name)
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'update_team', mock_update_team)
+
+    payload = json.dumps({'team': {'team_name': team_name}})
+    response = test_app.put(f'/teams/{team_id}', data=payload)
+    assert response.status_code == status_code
+    assert response.json()[field] == value
