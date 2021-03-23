@@ -1,6 +1,6 @@
 # import json
-# from collections import namedtuple
-# from typing import Union
+from collections import namedtuple
+from typing import Union
 
 import pytest
 from fastapi.testclient import TestClient
@@ -51,5 +51,34 @@ def test_get_team(
 
     monkeypatch.setattr(crud, 'read', mock_read)
     response = test_app.get(f'/teams/{team_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
+
+
+@pytest.mark.parametrize(
+    argnames=['team_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 1, {'id': 2, 'project_name': 'Two', 'team_id': 1}),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Team not found')])
+def test_get_team_projects(
+        team_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
+
+    MockTeamWithProjects = namedtuple('MockTeamWithProjects', ['projects'])
+    mock_team = MockTeamWithProjects(projects=[
+        models.Project(id=1, project_name='One', team_id=1),
+        models.Project(id=2, project_name='Two', team_id=1)])
+
+    def mock_read(*args):
+        if team_id == 0:
+            return None
+        return mock_team
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/teams/{team_id}/projects')
     assert response.status_code == status_code
     assert response.json()[field] == value
