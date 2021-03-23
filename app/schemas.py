@@ -118,14 +118,32 @@ class Task(TaskBase):
         orm_mode = True
 
 
-# class ColumnTasks(BaseModel):
-#     Column.column_name: create_model('')
+class ProjectData(BaseModel):
+    project_data: dict[str, list[Task]]
 
-
-# class ProjectData(Project):
-#     data: list[ColumnTasks]
-
-
-# class Plant(BaseModel):
-#     daytime: Optional[create_model('DayTime', sunrise=(int, ...), sunset=(int, ...))] = None  # noqa
-#     type: str
+    class Config:
+        schema_extra = {
+            'example': {
+                'project_data': {
+                    "Pending": [{
+                            "id": 1,
+                            "task_description": "Research",
+                            "column_id": 1,
+                            "column_idx": 0,
+                            "due_date": "2021-03-23T20:37:32.493Z"}, {
+                            "id": 2,
+                            "task_description": "Due diligence",
+                            "column_id": 1,
+                            "column_idx": 1,
+                            "due_date": "2021-03-23T20:37:32.493Z"}],
+                    "Done": [{
+                            "id": 3,
+                            "task_description": "A+B Testing",
+                            "column_id": 2,
+                            "column_idx": 0,
+                            "due_date": "2021-03-23T20:37:32.493Z"}, {
+                            "id": 4,
+                            "task_description": "Sampling",
+                            "column_id": 2,
+                            "column_idx": 1,
+                            "due_date": "2021-03-23T20:37:32.493Z"}]}}}
