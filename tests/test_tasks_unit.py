@@ -116,32 +116,32 @@ def test_update_task(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['task_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 'task_description', 'UnitTest'),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'task not found')])
-# def test_delete_task(
-#         task_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['task_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'task_description', 'UnitTest'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Task not found')])
+def test_delete_task(
+        task_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_task = models.task(id=1, task_description='UnitTest', task_pos=0, project_id=1)
+    mock_task = models.Task(id=1, task_description='UnitTest', column_idx=0, column_id=1)
 
-#     def mock_read(*args):
-#         if task_id == 0:
-#             return None
-#         return mock_task
+    def mock_read(*args):
+        if task_id == 0:
+            return None
+        return mock_task
 
-#     def mock_delete(*args):
-#         return mock_task
+    def mock_delete(*args):
+        return mock_task
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(crud, 'delete', mock_delete)
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
 
-#     response = test_app.delete(f'/tasks/{task_id}')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    response = test_app.delete(f'/tasks/{task_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
