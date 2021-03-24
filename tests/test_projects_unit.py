@@ -173,32 +173,32 @@ def test_update_project(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['project_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 'project_name', 'Engineering'),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'project not found')])
-# def test_delete_project(
-#         project_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['project_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'project_name', 'UnitTest'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Project not found')])
+def test_delete_project(
+        project_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_project = models.project(id=project_id, project_name='Engineering')
+    mock_project = models.Project(id=project_id, project_name='UnitTest', team_id=1)
 
-#     def mock_read(*args):
-#         if project_id == 0:
-#             return None
-#         return mock_project
+    def mock_read(*args):
+        if project_id == 0:
+            return None
+        return mock_project
 
-#     def mock_delete(*args):
-#         return mock_project
+    def mock_delete(*args):
+        return mock_project
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(crud, 'delete', mock_delete)
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
 
-#     response = test_app.delete(f'/projects/{project_id}')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    response = test_app.delete(f'/projects/{project_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
