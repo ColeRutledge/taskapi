@@ -1,4 +1,4 @@
-# import json
+import json
 from collections import namedtuple
 from typing import Union
 
@@ -91,46 +91,17 @@ def test_get_column_tasks(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['column_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 1, {
-#             'id': 2, 'column_name': 'Column2', 'column_pos': 1, 'column_id': 1}),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'column not found')])
-# def test_get_column_columns(
-#         column_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+def test_create_column(monkeypatch, test_app: TestClient):
 
-#     MockcolumnWithColumns = namedtuple('MockcolumnWithColumns', ['columns'])
-#     mock_column = MockcolumnWithColumns(columns=[
-#         models.Column(id=1, column_name='Column1', column_pos=0, column_id=1),
-#         models.Column(id=2, column_name='Column2', column_pos=1, column_id=1)])
+    def mock_create(*args):
+        return models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
 
-#     def mock_read(*args):
-#         if column_id == 0:
-#             return None
-#         return mock_column
-
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     response = test_app.get(f'/columns/{column_id}/columns')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
-
-
-# def test_create_column(monkeypatch, test_app: TestClient):
-
-#     def mock_create(*args):
-#         return models.Column(id=1, column_name='UnitTest', project_id=1)
-
-#     monkeypatch.setattr(crud, 'create', mock_create)
-#     payload = json.dumps({'column_name': 'UnitTest', 'project_id': 1})
-#     response = test_app.post('/columns/', data=payload)
-#     assert response.status_code == HTTP_201_CREATED
-#     assert response.json() == {'id': 1, 'column_name': 'UnitTest', 'project_id': 1}
+    monkeypatch.setattr(crud, 'create', mock_create)
+    payload = json.dumps({'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1})
+    response = test_app.post('/columns/', data=payload)
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {
+        'id': 1, 'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1}
 
 
 # @pytest.mark.parametrize(
