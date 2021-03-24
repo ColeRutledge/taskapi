@@ -1,6 +1,6 @@
 # import json
-# from collections import namedtuple
-# from typing import Union
+from collections import namedtuple
+from typing import Union
 
 import pytest
 from fastapi.testclient import TestClient
@@ -56,48 +56,39 @@ def test_get_column(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['column_id', 'status_code', 'fields', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, '["column_data"]["Column2"]', [{
-#             'id': 3, 'task_description': 'task3',
-#             'column_idx': 0, 'column_id': 2, 'due_date': None}]),
-#         (0, HTTP_404_NOT_FOUND, '["detail"]', 'column not found')])
-# def test_get_column_data(
-#         column_id: int,
-#         status_code: int,
-#         fields: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['column_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 1, {
+            'id': 2, 'task_description': 'SmokeTest',
+            'column_idx': 1, 'column_id': 1, 'due_date': None}),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Column not found')])
+def test_get_column_tasks(
+        column_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_column = models.Column(id=1, column_name='Deploy', project_id=1)
+    MockColumnWithTasks = namedtuple('MockColumnWithTasks', ['tasks'])
+    mock_column = MockColumnWithTasks(tasks=[
+        models.Task(
+            id=1, task_description='UnitTest',
+            due_date=None, column_idx=0, column_id=1),
+        models.Task(
+            id=2, task_description='SmokeTest',
+            due_date=None, column_idx=1, column_id=1)])
 
-#     def mock_read(*args):
-#         if column_id == 0:
-#             return None
-#         return mock_column
+    def mock_read(*args):
+        if column_id == 0:
+            return None
+        return mock_column
 
-#     def mock_get_column_data(*args):
-#         return {
-#             'column_data': {
-#                 'Column1': [
-#                     models.Task(
-#                         id=1, task_description='task1',
-#                         column_idx=0, column_id=1, due_date=None),
-#                     models.Task(
-#                         id=2, task_description='task2',
-#                         column_idx=1, column_id=1, due_date=None)],
-#                 'Column2': [
-#                     models.Task(
-#                         id=3, task_description='task3',
-#                         column_idx=0, column_id=2, due_date=None)]}}
-
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(models.Column, 'get_column_data', mock_get_column_data)
-#     response = test_app.get(f'/columns/{column_id}/data')
-#     assert response.status_code == status_code
-#     assert eval(f'response.json(){fields}') == value
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/columns/{column_id}/tasks')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
 # @pytest.mark.parametrize(
