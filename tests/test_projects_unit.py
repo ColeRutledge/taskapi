@@ -156,18 +156,21 @@ def test_update_project(
         monkeypatch,
         test_app: TestClient):
 
+    mock_project = models.Project(id=project_id, project_name='Pre-Change', team_id=1)
+
     def mock_read(*args):
         if project_id == 0:
             return None
-        return models.Project(id=project_id, project_name='Pre-Change', team_id=1)
+        return mock_project
 
     def mock_update_project(*args):
-        return models.Project(id=project_id, project_name=project_name, team_id=1)
+        mock_project.project_name = project_name
+        return mock_project
 
     monkeypatch.setattr(crud, 'read', mock_read)
     monkeypatch.setattr(crud, 'update_project', mock_update_project)
 
-    payload = json.dumps({'project': {'project_name': project_name, 'team_id': 1}})
+    payload = json.dumps({'project': {'project_name': project_name}})
     response = test_app.put(f'/projects/{project_id}', data=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value

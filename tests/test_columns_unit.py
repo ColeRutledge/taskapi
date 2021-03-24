@@ -118,19 +118,25 @@ def test_update_column(
         monkeypatch,
         test_app: TestClient):
 
+    mock_column = models.Column(
+        id=1,
+        column_name='Pre-Change',
+        column_pos=0,
+        project_id=1)
+
     def mock_read(*args):
         if column_id == 0:
             return None
-        return models.Column(id=1, column_name='Pre-Change', column_pos=0, project_id=1)
+        return mock_column
 
     def mock_update_column(*args):
-        return models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
+        mock_column.column_name = column_name
+        return mock_column
 
     monkeypatch.setattr(crud, 'read', mock_read)
     monkeypatch.setattr(crud, 'update_column', mock_update_column)
 
-    payload = json.dumps({'column': {
-        'column_name': column_name, 'column_pos': 0, 'project_id': 1}})
+    payload = json.dumps({'column': {'column_name': column_name}})
     response = test_app.put(f'/columns/{column_id}', data=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value
