@@ -67,6 +67,11 @@ class ProjectBase(BaseModel):
     team_id: int
 
 
+class ProjectUpdate(BaseModel):
+    project_name: Optional[str] = None
+    team_id: Optional[int] = None
+
+
 class Project(ProjectBase):
     id: int
 

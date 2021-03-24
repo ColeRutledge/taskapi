@@ -51,7 +51,7 @@ def create_project(project: schemas.ProjectBase, db: Session = Depends(get_db)):
 @router.put('/{project_id}', response_model=schemas.Project)
 def update_project(
         project_id: int,
-        project: schemas.ProjectBase = Body(..., embed=True),
+        project: schemas.ProjectUpdate = Body(..., embed=True),
         db: Session = Depends(get_db)):
     db_project: models.Project = crud.read(db, project_id, models.Project)
     if db_project is None:
