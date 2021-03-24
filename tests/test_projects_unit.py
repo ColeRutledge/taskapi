@@ -142,35 +142,35 @@ def test_create_project(monkeypatch, test_app: TestClient):
     assert response.json() == {'id': 1, 'project_name': 'UnitTest', 'team_id': 1}
 
 
-# @pytest.mark.parametrize(
-#     argnames=['project_id', 'project_name', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, 'Engineering', HTTP_200_OK, 'project_name', 'Engineering'),
-#         (0, 'Bad project ID', HTTP_404_NOT_FOUND, 'detail', 'project not found')])
-# def test_update_project(
-#         project_id: int,
-#         project_name: str,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['project_id', 'project_name', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, 'UnitTest', HTTP_200_OK, 'project_name', 'UnitTest'),
+        (0, 'BadProjectID', HTTP_404_NOT_FOUND, 'detail', 'Project not found')])
+def test_update_project(
+        project_id: int,
+        project_name: str,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     def mock_read(*args):
-#         if project_id == 0:
-#             return None
-#         return models.project(id=project_id, project_name='Pre-Change')
+    def mock_read(*args):
+        if project_id == 0:
+            return None
+        return models.Project(id=project_id, project_name='Pre-Change', team_id=1)
 
-#     def mock_update_project(*args):
-#         return models.project(id=project_id, project_name=project_name)
+    def mock_update_project(*args):
+        return models.Project(id=project_id, project_name=project_name, team_id=1)
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(crud, 'update_project', mock_update_project)
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'update_project', mock_update_project)
 
-#     payload = json.dumps({'project': {'project_name': project_name}})
-#     response = test_app.put(f'/projects/{project_id}', data=payload)
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    payload = json.dumps({'project': {'project_name': project_name, 'team_id': 1}})
+    response = test_app.put(f'/projects/{project_id}', data=payload)
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
 # @pytest.mark.parametrize(
