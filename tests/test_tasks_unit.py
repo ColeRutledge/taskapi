@@ -1,4 +1,4 @@
-# import json
+import json
 # from collections import namedtuple
 # from typing import Union
 
@@ -63,52 +63,19 @@ def test_get_task(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['task_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 1, {
-#             'id': 2, 'task_description': 'SmokeTest',
-#             'task_idx': 1, 'task_id': 1, 'due_date': None}),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'task not found')])
-# def test_get_task_tasks(
-#         task_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+def test_create_task(monkeypatch, test_app: TestClient):
 
-#     MocktaskWithTasks = namedtuple('MocktaskWithTasks', ['tasks'])
-#     mock_task = MocktaskWithTasks(tasks=[
-#         models.Task(
-#             id=1, task_description='UnitTest',
-#             due_date=None, task_idx=0, task_id=1),
-#         models.Task(
-#             id=2, task_description='SmokeTest',
-#             due_date=None, task_idx=1, task_id=1)])
+    def mock_create(*args):
+        return models.Task(id=1, task_description='UnitTest', column_idx=0, column_id=1)
 
-#     def mock_read(*args):
-#         if task_id == 0:
-#             return None
-#         return mock_task
-
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     response = test_app.get(f'/tasks/{task_id}/tasks')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
-
-
-# def test_create_task(monkeypatch, test_app: TestClient):
-
-#     def mock_create(*args):
-#         return models.task(id=1, task_description='UnitTest', task_pos=0, project_id=1)
-
-#     monkeypatch.setattr(crud, 'create', mock_create)
-#     payload = json.dumps({'task_description': 'UnitTest', 'task_pos': 0, 'project_id': 1})
-#     response = test_app.post('/tasks/', data=payload)
-#     assert response.status_code == HTTP_201_CREATED
-#     assert response.json() == {
-#         'id': 1, 'task_description': 'UnitTest', 'task_pos': 0, 'project_id': 1}
+    monkeypatch.setattr(crud, 'create', mock_create)
+    payload = json.dumps({
+        'task_description': 'UnitTest', 'column_idx': 0, 'column_id': 1})
+    response = test_app.post('/tasks/', data=payload)
+    assert response.status_code == HTTP_201_CREATED
+    assert response.json() == {
+        'id': 1, 'task_description': 'UnitTest',
+        'due_date': None, 'column_idx': 0, 'column_id': 1}
 
 
 # @pytest.mark.parametrize(
