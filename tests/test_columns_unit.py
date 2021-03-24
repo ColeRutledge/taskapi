@@ -104,35 +104,36 @@ def test_create_column(monkeypatch, test_app: TestClient):
         'id': 1, 'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1}
 
 
-# @pytest.mark.parametrize(
-#     argnames=['column_id', 'column_name', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, 'UnitTest', HTTP_200_OK, 'column_name', 'UnitTest'),
-#         (0, 'BadcolumnID', HTTP_404_NOT_FOUND, 'detail', 'column not found')])
-# def test_update_column(
-#         column_id: int,
-#         column_name: str,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['column_id', 'column_name', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, 'UnitTest', HTTP_200_OK, 'column_name', 'UnitTest'),
+        (0, 'BadcolumnID', HTTP_404_NOT_FOUND, 'detail', 'Column not found')])
+def test_update_column(
+        column_id: int,
+        column_name: str,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     def mock_read(*args):
-#         if column_id == 0:
-#             return None
-#         return models.Column(id=column_id, column_name='Pre-Change', project_id=1)
+    def mock_read(*args):
+        if column_id == 0:
+            return None
+        return models.Column(id=1, column_name='Pre-Change', column_pos=0, project_id=1)
 
-#     def mock_update_column(*args):
-#         return models.Column(id=column_id, column_name=column_name, project_id=1)
+    def mock_update_column(*args):
+        return models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(crud, 'update_column', mock_update_column)
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'update_column', mock_update_column)
 
-#     payload = json.dumps({'column': {'column_name': column_name, 'project_id': 1}})
-#     response = test_app.put(f'/columns/{column_id}', data=payload)
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    payload = json.dumps({'column': {
+        'column_name': column_name, 'column_pos': 0, 'project_id': 1}})
+    response = test_app.put(f'/columns/{column_id}', data=payload)
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
 # @pytest.mark.parametrize(
