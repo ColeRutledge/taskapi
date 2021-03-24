@@ -136,32 +136,32 @@ def test_update_column(
     assert response.json()[field] == value
 
 
-# @pytest.mark.parametrize(
-#     argnames=['column_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 'column_name', 'UnitTest'),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'column not found')])
-# def test_delete_column(
-#         column_id: int,
-#         status_code: int,
-#         field: str,
-#         value: Union[str, dict],
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['column_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'column_name', 'UnitTest'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Column not found')])
+def test_delete_column(
+        column_id: int,
+        status_code: int,
+        field: str,
+        value: Union[str, dict],
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_column = models.Column(id=column_id, column_name='UnitTest', project_id=1)
+    mock_column = models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
 
-#     def mock_read(*args):
-#         if column_id == 0:
-#             return None
-#         return mock_column
+    def mock_read(*args):
+        if column_id == 0:
+            return None
+        return mock_column
 
-#     def mock_delete(*args):
-#         return mock_column
+    def mock_delete(*args):
+        return mock_column
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     monkeypatch.setattr(crud, 'delete', mock_delete)
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
 
-#     response = test_app.delete(f'/columns/{column_id}')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    response = test_app.delete(f'/columns/{column_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
