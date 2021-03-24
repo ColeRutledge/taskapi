@@ -2,7 +2,7 @@
 # from collections import namedtuple
 # from typing import Union
 
-# import pytest
+import pytest
 from fastapi.testclient import TestClient
 
 from app import models, crud
@@ -30,30 +30,30 @@ def test_get_all_columns(monkeypatch, test_app: TestClient):
         {'id': 2, 'column_name': 'Deploy', 'column_pos': 1, 'project_id': 1}]
 
 
-# @pytest.mark.parametrize(
-#     argnames=['column_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 'column_name', 'Test'),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'column not found')])
-# def test_get_column(
-#         column_id: int,
-#         status_code: int,
-#         field: str,
-#         value: str,
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['column_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'column_name', 'Test'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Column not found')])
+def test_get_column(
+        column_id: int,
+        status_code: int,
+        field: str,
+        value: str,
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_column = models.Column(id=1, column_name='Test', project_id=1)
+    mock_column = models.Column(id=1, column_name='Test', column_pos=0, project_id=1)
 
-#     def mock_read(*args):
-#         if column_id == 0:  # column that does not exist
-#             return None
-#         return mock_column
+    def mock_read(*args):
+        if column_id == 0:  # column that does not exist
+            return None
+        return mock_column
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     response = test_app.get(f'/columns/{column_id}')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/columns/{column_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
 # @pytest.mark.parametrize(
