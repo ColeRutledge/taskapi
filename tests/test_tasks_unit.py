@@ -49,8 +49,6 @@ def test_get_task(
 
     mock_task = models.Task(
         id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
-    # models.Task(
-    #     id=2, task_description='SmokeTest', due_date=None, column_idx=1, column_id=1)
 
     def mock_read(*args):
         if task_id == 0:  # task that does not exist
