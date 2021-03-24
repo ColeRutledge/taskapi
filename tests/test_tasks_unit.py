@@ -2,7 +2,7 @@
 # from collections import namedtuple
 # from typing import Union
 
-# import pytest
+import pytest
 from fastapi.testclient import TestClient
 
 from app import models, crud
@@ -14,9 +14,6 @@ HTTP_400_BAD_REQUEST = 400
 HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
-
-# models.Task(id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
-# models.Task(id=2, task_description='SmokeTest', due_date=None, column_idx=1, column_id=1)
 
 def test_get_all_tasks(monkeypatch, test_app: TestClient):
 
@@ -37,30 +34,33 @@ def test_get_all_tasks(monkeypatch, test_app: TestClient):
          'due_date': None, 'column_idx': 1, 'column_id': 1}]
 
 
-# @pytest.mark.parametrize(
-#     argnames=['task_id', 'status_code', 'field', 'value'],
-#     argvalues=[
-#         (1, HTTP_200_OK, 'task_description', 'Test'),
-#         (0, HTTP_404_NOT_FOUND, 'detail', 'task not found')])
-# def test_get_task(
-#         task_id: int,
-#         status_code: int,
-#         field: str,
-#         value: str,
-#         monkeypatch,
-#         test_app: TestClient):
+@pytest.mark.parametrize(
+    argnames=['task_id', 'status_code', 'field', 'value'],
+    argvalues=[
+        (1, HTTP_200_OK, 'task_description', 'UnitTest'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'Task not found')])
+def test_get_task(
+        task_id: int,
+        status_code: int,
+        field: str,
+        value: str,
+        monkeypatch,
+        test_app: TestClient):
 
-#     mock_task = models.task(id=1, task_description='Test', task_pos=0, project_id=1)
+    mock_task = models.Task(
+        id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
+    # models.Task(
+    #     id=2, task_description='SmokeTest', due_date=None, column_idx=1, column_id=1)
 
-#     def mock_read(*args):
-#         if task_id == 0:  # task that does not exist
-#             return None
-#         return mock_task
+    def mock_read(*args):
+        if task_id == 0:  # task that does not exist
+            return None
+        return mock_task
 
-#     monkeypatch.setattr(crud, 'read', mock_read)
-#     response = test_app.get(f'/tasks/{task_id}')
-#     assert response.status_code == status_code
-#     assert response.json()[field] == value
+    monkeypatch.setattr(crud, 'read', mock_read)
+    response = test_app.get(f'/tasks/{task_id}')
+    assert response.status_code == status_code
+    assert response.json()[field] == value
 
 
 # @pytest.mark.parametrize(
