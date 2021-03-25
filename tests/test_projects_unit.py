@@ -163,12 +163,12 @@ def test_update_project(
             return None
         return mock_project
 
-    def mock_update_project(*args):
+    def mock_update(*args):
         mock_project.project_name = project_name
         return mock_project
 
     monkeypatch.setattr(crud, 'read', mock_read)
-    monkeypatch.setattr(crud, 'update_project', mock_update_project)
+    monkeypatch.setattr(crud, 'update', mock_update)
 
     payload = json.dumps({'project': {'project_name': project_name}})
     response = test_app.put(f'/projects/{project_id}', data=payload)

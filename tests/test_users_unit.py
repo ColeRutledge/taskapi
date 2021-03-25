@@ -116,12 +116,12 @@ def test_update_user(
             return None
         return mock_user
 
-    def mock_update_user(*args):
+    def mock_update(*args):
         mock_user.email = 'post@change.com'
         return mock_user
 
     monkeypatch.setattr(crud, 'read', mock_read)
-    monkeypatch.setattr(crud, 'update_user', mock_update_user)
+    monkeypatch.setattr(crud, 'update', mock_update)
 
     payload = json.dumps({'user_schema': {'email': email}})
     response = test_app.put(f'/users/{user_id}', data=payload)

@@ -152,12 +152,12 @@ def test_update_team(
             return None
         return mock_team
 
-    def mock_update_team(*args):
+    def mock_update(*args):
         mock_team.team_name = team_name
         return mock_team
 
     monkeypatch.setattr(crud, 'read', mock_read)
-    monkeypatch.setattr(crud, 'update_team', mock_update_team)
+    monkeypatch.setattr(crud, 'update', mock_update)
 
     payload = json.dumps({'team': {'team_name': team_name}})
     response = test_app.put(f'/teams/{team_id}', data=payload)

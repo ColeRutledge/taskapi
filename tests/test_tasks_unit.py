@@ -101,12 +101,12 @@ def test_update_task(
             return None
         return mock_task
 
-    def mock_update_task(*args):
+    def mock_update(*args):
         mock_task.task_description = task_description
         return mock_task
 
     monkeypatch.setattr(crud, 'read', mock_read)
-    monkeypatch.setattr(crud, 'update_task', mock_update_task)
+    monkeypatch.setattr(crud, 'update', mock_update)
 
     payload = json.dumps({'task': {'task_description': task_description}})
     response = test_app.put(f'/tasks/{task_id}', data=payload)

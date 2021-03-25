@@ -129,12 +129,12 @@ def test_update_column(
             return None
         return mock_column
 
-    def mock_update_column(*args):
+    def mock_update(*args):
         mock_column.column_name = column_name
         return mock_column
 
     monkeypatch.setattr(crud, 'read', mock_read)
-    monkeypatch.setattr(crud, 'update_column', mock_update_column)
+    monkeypatch.setattr(crud, 'update', mock_update)
 
     payload = json.dumps({'column': {'column_name': column_name}})
     response = test_app.put(f'/columns/{column_id}', data=payload)
