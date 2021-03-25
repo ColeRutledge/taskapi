@@ -19,8 +19,7 @@ class TimestampMixin(object):
     updated_on = DB_Column(
         DateTime,
         server_default=func.now(),
-        server_onupdate=func.now()
-    )
+        server_onupdate=func.now())
     # by using declared_attr here, we can force
     # created_on and updated_on to end of db table
     # @declared_attr
@@ -32,8 +31,7 @@ class TimestampMixin(object):
     #     return DB_Column(
     #         DateTime,
     #         server_default=func.now(),
-    #         server_onupdate=func.now()
-    #     )
+    #         server_onupdate=func.now())
 
 
 class User(Base, TimestampMixin):
@@ -51,7 +49,8 @@ class User(Base, TimestampMixin):
     def __eq__(self, other):
         return isinstance(other, self.__class__) and self.id == other.id
 
-    def get_password_hash(self, password):
+    @staticmethod
+    def get_password_hash(password):
         return pwd_context.hash(password)
 
     @staticmethod
@@ -64,10 +63,9 @@ class User(Base, TimestampMixin):
     # requires username vs email while crud is looking up a user via email
     @staticmethod
     def authenticate_user(
-        username: str,
-        password: str,
-        db: Session = Depends(get_db)
-    ):
+            username: str,
+            password: str,
+            db: Session = Depends(get_db)):
         user: User = User.get_user_by_email(db=db, email=username)
         return user if user and \
             pwd_context.verify(password, user.hashed_password) else False
@@ -83,8 +81,7 @@ class Team(Base, TimestampMixin):
     projects = relationship(
         'Project',
         back_populates='team',
-        cascade='all, delete-orphan',
-    )
+        cascade='all, delete-orphan')
 
 
 class Project(Base, TimestampMixin):
@@ -98,8 +95,7 @@ class Project(Base, TimestampMixin):
     columns = relationship(
         'Column',
         back_populates='project',
-        cascade='all, delete-orphan',
-    )
+        cascade='all, delete-orphan')
 
     def get_project_data(self):
         return {'project_data': {

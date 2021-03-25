@@ -8,29 +8,33 @@ from app.schemas import (
 
 
 # custom types for orm models and pydantic schemas
-Model = Union[User, Team, Project, Column, Task]
+DatabaseModel = Union[User, Team, Project, Column, Task]
 Schema = Union[UserCreate, UserUpdate, TeamBase, ProjectBase, ColumnBase, TaskBase]
 
 
-# ############################ CRUD #################################### #
+def create(db: Session, schema: Schema, Model: DatabaseModel):
+    schema = schema.dict()
+    if Model == User:
+        hashed_password = Model.get_password_hash(schema['password'])
+        schema['hashed_password'] = hashed_password
+        del schema['password']
 
-def create(db: Session, schema: Schema, model: Model):
-    db_model = model(schema.dict())
+    db_model = Model(**schema)
     db.add(db_model)
     db.commit()
     db.refresh(db_model)
     return db_model
 
 
-def read(db: Session, id: int, model: Model):
+def read(db: Session, id: int, model: DatabaseModel):
     return db.query(model).filter(id == model.id).first()
 
 
-def read_all(db: Session, model: Model, skip: int = 0, limit: int = 100):
+def read_all(db: Session, model: DatabaseModel, skip: int = 0, limit: int = 100):
     return db.query(model).offset(skip).limit(limit).all()
 
 
-def update(db: Session, schema: Schema, model: Model):
+def update(db: Session, schema: Schema, model: DatabaseModel):
     schema = schema.dict(exclude_unset=True)
     if isinstance(model, User) and 'password' in schema:
         hashed_password = model.get_password_hash(schema['password'])
@@ -44,21 +48,7 @@ def update(db: Session, schema: Schema, model: Model):
     return model
 
 
-def delete(db: Session, resource: Model):
-    db.delete(resource)
+def delete(db: Session, model: DatabaseModel):
+    db.delete(model)
     db.commit()
-    return resource
-
-
-# ############################ USER ############################### #
-
-def create_user(db: Session, user: UserCreate):
-    db_user = User(
-        first_name=user.first_name,
-        last_name=user.last_name,
-        email=user.email)
-    db_user.hashed_password = db_user.get_password_hash(user.password)
-    db.add(db_user)
-    db.commit()
-    db.refresh(db_user)
-    return db_user
+    return model
