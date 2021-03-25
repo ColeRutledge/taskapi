@@ -58,7 +58,7 @@ def update_project(
         raise HTTPException(
             status_code=404,
             detail='Project not found')
-    return crud.update_project(db, project, db_project)
+    return crud.update(db, project, db_project)
 
 
 @router.delete('/{project_id}', response_model=schemas.Project)

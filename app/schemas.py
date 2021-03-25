@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 
-from pydantic import BaseModel  # create_model
+from pydantic import BaseModel
 
 
 # ######### AUTH ######### #

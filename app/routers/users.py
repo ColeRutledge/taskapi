@@ -53,7 +53,7 @@ def update_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
             headers={'WWW-Authenticate': 'Bearer'})
-    return crud.update_user(db, user_schema, db_user)
+    return crud.update(db, user_schema, db_user)
 
 
 @router.delete('/{user_id}', response_model=schemas.User)

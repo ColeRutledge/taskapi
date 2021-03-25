@@ -38,7 +38,7 @@ def update_Task(
         raise HTTPException(
             status_code=404,
             detail='Task not found')
-    return crud.update_task(db, task, db_task)
+    return crud.update(db, task, db_task)
 
 
 @router.delete('/{task_id}', response_model=schemas.Task)

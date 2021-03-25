@@ -58,7 +58,7 @@ def update_team(
         raise HTTPException(
             status_code=404,
             detail='Team not found')
-    return crud.update_team(db, team, db_team)
+    return crud.update(db, team, db_team)
 
 
 @router.delete('/{team_id}', response_model=schemas.Team)

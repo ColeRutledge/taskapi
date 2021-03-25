@@ -48,7 +48,7 @@ def update_column(
         raise HTTPException(
             status_code=404,
             detail='Column not found')
-    return crud.update_column(db, column, db_column)
+    return crud.update(db, column, db_column)
 
 
 @router.delete('/{column_id}', response_model=schemas.Column)
