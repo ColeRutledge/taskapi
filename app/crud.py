@@ -51,14 +51,14 @@ def create_user(db: Session, user: UserCreate):
 
 
 def update_user(db: Session, schema: UserUpdate, model: User):
-    fake_hashed_password = schema.password + 'notreallyhashed' \
+    hashed_password = model.get_password_hash(schema.password) \
         if schema.password else model.hashed_password
     db.query(User)\
       .filter_by(id=model.id)\
       .update({'first_name': schema.first_name or model.first_name,
                'last_name': schema.last_name or model.last_name,
                'email': schema.email or model.email,
-               'hashed_password': fake_hashed_password,
+               'hashed_password': hashed_password,
                'team_id': schema.team_id or model.team_id},
               synchronize_session=False)
     db.commit()
