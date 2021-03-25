@@ -191,11 +191,11 @@ def test_create_user(
             return mock_user
         return None
 
-    def mock_create_user(*args):
+    def mock_create(*args):
         return mock_user
 
     monkeypatch.setattr(models.User, 'get_user_by_email', mock_get_user_by_email)
-    monkeypatch.setattr(crud, 'create_user', mock_create_user)
+    monkeypatch.setattr(crud, 'create', mock_create)
 
     payload = {
         'first_name': 'Test',

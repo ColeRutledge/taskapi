@@ -83,4 +83,4 @@ def create_user(user: schemas.UserCreate, db: Session = Depends(get_db)):
         raise HTTPException(
             status_code=status.HTTP_400_BAD_REQUEST,
             detail="Email already registered")
-    return crud.create_user(db, user)
+    return crud.create(db, user, models.User)
