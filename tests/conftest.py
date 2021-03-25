@@ -33,11 +33,11 @@ def override_get_current_user():
 
 
 def override_get_db():
-    db = TestSessionLocal()
+    session = TestSessionLocal()
     try:
-        yield db
+        yield session
     finally:
-        db.close()
+        session.close()
 
 
 @pytest.fixture(scope='module')
@@ -52,17 +52,19 @@ def test_app():
 
 
 @pytest.fixture
-def test_db_empty():
+def test_db():
     Base.metadata.create_all(bind=engine, checkfirst=True)
     yield from override_get_db()
     Base.metadata.drop_all(bind=engine)
 
+    # Base.metadata.create_all(bind=engine, checkfirst=True)
+    # db_session = Session(autocommit=False, autoflush=False, bind=engine)
+    # yield db_session
+    # db_session.close()
+    # Base.metadata.drop_all(bind=engine)
+
 
 @pytest.fixture
-def test_db_seeded():
-    Base.metadata.create_all(bind=engine, checkfirst=True)
-    db_session = Session(autocommit=False, autoflush=False, bind=engine)
-    seed_db(db_session)
-    yield db_session
-    db_session.close()
-    Base.metadata.drop_all(bind=engine)
+def test_db_seeded(test_db: Session):
+    seed_db(test_db)
+    yield test_db
