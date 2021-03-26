@@ -148,3 +148,32 @@ def test_update(
     updated_orm_model = crud.update(test_db_seeded, schema, orm_model)
     assert getattr(updated_orm_model, field) == updated_value
     assert all(getattr(updated_orm_model, field, False) for field in attributes)
+
+
+@pytest.mark.parametrize(
+    argnames=['resource_id', 'Model', 'attributes', 'field', 'value'],
+    argvalues=[
+        (
+            1,
+            models.User,
+            ['first_name', 'last_name', 'hashed_password', 'email'],
+            'email',
+            'bob@smith.com'),
+        (
+            2,
+            models.Project,
+            ['project_name', 'team_id'],
+            'project_name',
+            'SEO')])
+def test_delete(
+        resource_id: int,
+        Model: crud.DatabaseModel,
+        attributes: list[str],
+        field: str,
+        value: str,
+        test_db_seeded: Session):
+
+    orm_model = crud.read(test_db_seeded, resource_id, Model)
+    deleted_orm_model = crud.delete(test_db_seeded, orm_model)
+    assert getattr(deleted_orm_model, field) == value
+    assert all(getattr(deleted_orm_model, field, False) for field in attributes)
