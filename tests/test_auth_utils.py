@@ -13,7 +13,6 @@ from app.auth.auth_utils import (
 
 TEST_SECRET_KEY = 'samplekeyfortests'
 TEST_ALGORITHM = 'HS256'
-HTTP_401_UNAUTHORIZED = 401
 
 
 def test_create_access_token(monkeypatch):
@@ -56,10 +55,10 @@ def test_get_current_user_not_existing(data_to_encode, monkeypatch, test_db: Ses
 
 
 def test_get_current_user_jwt_decode_error(monkeypatch, test_db: Session):
+    token = jwt.encode({'sub': 'bad@algo.com'}, TEST_SECRET_KEY, TEST_ALGORITHM)
+
     monkeypatch.setattr(auth_utils, 'SECRET_KEY', TEST_SECRET_KEY)
     monkeypatch.setattr(auth_utils, 'ALGORITHM', 'INVALID_ALGO')
-
-    token = jwt.encode({'sub': 'bad@jwt.com'}, TEST_SECRET_KEY, TEST_ALGORITHM)
 
     with pytest.raises(HTTPException) as exception:
         get_current_user(test_db, token)
