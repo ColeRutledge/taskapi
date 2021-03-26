@@ -54,3 +54,24 @@ def test_read(
     orm_model = crud.read(test_db_seeded, resource_id, Model)
     assert getattr(orm_model, field) == value
     assert all(getattr(orm_model, field, False) for field in attributes)
+
+
+@pytest.mark.parametrize(
+    argnames=['Model', 'attributes', 'field', 'value', 'length'],
+    argvalues=[
+        (models.User, [
+            'first_name', 'last_name', 'hashed_password', 'email'],
+         'email', 'Sally@123.com', 4),
+        (models.Project, ['project_name', 'team_id'], 'project_name', 'SEO', 3)])
+def test_read_all(
+        Model: crud.DatabaseModel,
+        attributes: list[str],
+        field: str,
+        value: str,
+        length: int,
+        test_db_seeded: Session):
+
+    orm_model_list = crud.read_all(test_db_seeded, Model)
+    assert len(orm_model_list) == length
+    assert getattr(orm_model_list[1], field) == value
+    assert all(getattr(orm_model_list[1], field, False) for field in attributes)
