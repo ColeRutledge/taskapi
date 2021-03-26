@@ -2,7 +2,7 @@ from datetime import timedelta
 
 import pytest
 from fastapi import HTTPException
-from jose import jwt, JWTError
+from jose import jwt
 from sqlalchemy.orm import Session
 
 from app import models, schemas
@@ -48,6 +48,18 @@ def test_get_current_user_not_existing(data_to_encode, monkeypatch, test_db: Ses
     monkeypatch.setattr(auth_utils, 'ALGORITHM', TEST_ALGORITHM)
 
     token = jwt.encode(data_to_encode, TEST_SECRET_KEY, TEST_ALGORITHM)
+
+    with pytest.raises(HTTPException) as exception:
+        get_current_user(test_db, token)
+
+    assert exception.value.detail == 'Could not validate credentials'
+
+
+def test_get_current_user_jwt_decode_error(monkeypatch, test_db: Session):
+    monkeypatch.setattr(auth_utils, 'SECRET_KEY', TEST_SECRET_KEY)
+    monkeypatch.setattr(auth_utils, 'ALGORITHM', 'INVALID_ALGO')
+
+    token = jwt.encode({'sub': 'bad@jwt.com'}, TEST_SECRET_KEY, TEST_ALGORITHM)
 
     with pytest.raises(HTTPException) as exception:
         get_current_user(test_db, token)
