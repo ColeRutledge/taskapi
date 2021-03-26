@@ -2,12 +2,13 @@ from datetime import timedelta
 
 import pytest
 from fastapi import HTTPException
-from jose import jwt
+from jose import jwt, JWTError
 from sqlalchemy.orm import Session
 
-from app import models
+from app import models, schemas
 from app.auth import auth_utils
-from app.auth.auth_utils import create_access_token, get_current_user
+from app.auth.auth_utils import (
+    create_access_token, get_current_active_user, get_current_user)
 
 
 TEST_SECRET_KEY = 'samplekeyfortests'
@@ -40,16 +41,43 @@ def test_get_current_user(monkeypatch, test_db_seeded: Session):
 
 
 @pytest.mark.parametrize(
-    argnames=['username'],
-    argvalues=[[None], ['doesnt@exist.com']])
-def test_get_current_user_not_existing(username, monkeypatch, test_db: Session):
+    argnames=['data_to_encode'],
+    argvalues=[[{}], [{'sub': 'doesnt@exist.com'}]])
+def test_get_current_user_not_existing(data_to_encode, monkeypatch, test_db: Session):
     monkeypatch.setattr(auth_utils, 'SECRET_KEY', TEST_SECRET_KEY)
     monkeypatch.setattr(auth_utils, 'ALGORITHM', TEST_ALGORITHM)
 
-    data_to_encode = {'sub': username}
     token = jwt.encode(data_to_encode, TEST_SECRET_KEY, TEST_ALGORITHM)
 
     with pytest.raises(HTTPException) as exception:
         get_current_user(test_db, token)
 
     assert exception.value.detail == 'Could not validate credentials'
+
+
+def test_get_current_active_user():
+    active_user = schemas.User(
+        id=1,
+        first_name='test',
+        last_name='user',
+        email='pass',
+        team_id=1,
+        disabled=False)
+
+    user = get_current_active_user(active_user)
+    assert user == active_user
+
+
+def test_get_current_active_user_disabled():
+    disabled_user = schemas.User(
+        id=1,
+        first_name='test',
+        last_name='user',
+        email='pass',
+        team_id=1,
+        disabled=True)
+
+    with pytest.raises(HTTPException) as exception:
+        get_current_active_user(disabled_user)
+
+    assert exception.value.detail == 'Inactive user'
