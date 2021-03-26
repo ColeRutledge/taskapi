@@ -47,6 +47,7 @@ def get_current_user(db: Session = Depends(get_db), token: str = Depends(oauth2_
     return user
 
 
+# TODO: swap current_user to models.User and add disabled to model
 def get_current_active_user(current_user: schemas.User = Depends(get_current_user)):
     if current_user.disabled:
         raise HTTPException(status_code=400, detail='Inactive user')
