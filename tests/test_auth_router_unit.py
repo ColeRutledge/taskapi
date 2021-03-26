@@ -34,3 +34,15 @@ def test_login(monkeypatch, test_app: TestClient):
     response = test_app.post('/token', data=form_data)
     assert response.status_code == HTTP_200_OK
     assert response.json() == {'access_token': access_token, 'token_type': 'bearer'}
+
+
+def test_login_invalid(monkeypatch, test_app: TestClient):
+    def mock_authenticate_user(*args):
+        return None
+
+    monkeypatch.setattr(models.User, 'authenticate_user', mock_authenticate_user)
+
+    form_data = dict(username='bad@email.com', password='password', scope='')
+    response = test_app.post('/token', data=form_data)
+    assert response.status_code == HTTP_401_UNAUTHORIZED
+    assert response.json()['detail'] == 'Could not validate credentials'
