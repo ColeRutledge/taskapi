@@ -37,7 +37,7 @@ def read_all(db: Session, model: DatabaseModel, skip: int = 0, limit: int = 100)
 def update(db: Session, schema: Schema, model: DatabaseModel):
     schema = schema.dict(exclude_unset=True)
     if isinstance(model, User) and 'password' in schema:
-        hashed_password = model.get_password_hash(schema['password'])
+        hashed_password = User.get_password_hash(schema['password'])
         schema['hashed_password'] = hashed_password
         del schema['password']
 
