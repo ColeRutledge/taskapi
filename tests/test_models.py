@@ -1,4 +1,6 @@
-from app import models
+from sqlalchemy.orm import Session
+
+from app import models, crud
 
 
 def test_authenticate_user(monkeypatch):
@@ -42,3 +44,10 @@ def test_authenticate_user_password_fail(monkeypatch):
     monkeypatch.setattr(models.pwd_context, 'verify', mock_verify)
     user = models.User.authenticate_user('test@user.com', 'password', 'fake_db_session')
     assert user is False
+
+
+def test_get_project_data(test_db_seeded: Session):
+    task_ten = crud.read(test_db_seeded, 10, models.Task)
+    project = crud.read(test_db_seeded, 2, models.Project)
+    expected_return = {"project_data": {"To do": [task_ten]}}
+    assert project.get_project_data() == expected_return
