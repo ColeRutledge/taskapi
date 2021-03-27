@@ -8,10 +8,8 @@ SQLALCHEMY_DATABASE_URL = get_settings().db_url
 
 engine = create_engine(
     SQLALCHEMY_DATABASE_URL,
-    connect_args={'check_same_thread': False},  # TODO: remove for prod
-)
+    connect_args={'check_same_thread': False})  # TODO: remove for prod
 
-# configurable session factory for creating Session objs
 SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 
