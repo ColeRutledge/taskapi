@@ -1,5 +1,6 @@
 [tool.pytest.ini_options]
 filterwarnings = "ignore:.*int_from_bytes is deprecated.*"
+addopts = "--cov=app tests/ --cov-report term-missing --no-cov-on-fail"
 
 [tool.poetry]
 name = "asana_api"
