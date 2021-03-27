@@ -42,7 +42,17 @@ def test_login_invalid(monkeypatch, test_app: TestClient):
 
     monkeypatch.setattr(models.User, 'authenticate_user', mock_authenticate_user)
 
-    form_data = dict(username='bad@email.com', password='password', scope='')
+    form_data = dict(username='bad@email.com', password='password')
     response = test_app.post('/token', data=form_data)
     assert response.status_code == HTTP_401_UNAUTHORIZED
     assert response.json()['detail'] == 'Could not validate credentials'
+
+
+def test_read_users_me(test_app: TestClient):
+    response = test_app.get('/self/me')
+    response_data = response.json()
+    assert response_data['id'] == 1
+    assert response_data['first_name'] == 'Test'
+    assert response_data['last_name'] == 'User'
+    assert response_data['email'] == 'test@user.com'
+    assert response_data['team_id'] == 1
