@@ -1,6 +1,6 @@
 name: Build, Test, and Deploy v2
 
-on: [workflow_dispatch]
+on: [push]
 
 env:
   GH_REPO: colerutledge/asana_fastapi
@@ -42,16 +42,20 @@ jobs:
           --file ./docker/Dockerfile \
           --tag ghcr.io/${{ env.GH_REPO }}:dev \
           "."
-
-      - name: Check Images
-        run: docker images
-
-      - name: Run Container -- Dev/Test
-        run: |
           docker run \
           --name asana_fastapi \
           -p 8000:80 --rm -d \
           ghcr.io/${{ env.GH_REPO }}:dev
+
+      - name: Check Images
+        run: docker images
+
+      # - name: Run Container -- Dev/Test
+      #   run: |
+      #     docker run \
+      #     --name asana_fastapi \
+      #     -p 8000:80 --rm -d \
+      #     ghcr.io/${{ env.GH_REPO }}:dev
 
       # Temp fix
       # https://github.com/docker/build-push-action/issues/252
