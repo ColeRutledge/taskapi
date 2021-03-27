@@ -14,7 +14,9 @@ def determine_color(percentage: int):
 
 
 if __name__ == '__main__':
-    coverage = subprocess.run(['coverage', 'report'], capture_output=True, text=True)
+    coverage = subprocess.run(
+        args=['docker', 'exec', 'asana_fastapi', 'coverage', 'report'],
+        text=True, capture_output=True)
     PERCENTAGE = coverage.stdout.split()[-1][:-1]
     COLOR = determine_color(int(PERCENTAGE))
 
