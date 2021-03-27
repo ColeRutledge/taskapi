@@ -59,8 +59,9 @@ jobs:
           mv /tmp/.buildx-dev-cache-new /tmp/.buildx-dev-cache
 
       - name: Run Tests and Stop Container
-        run: docker exec asana_fastapi python -m pytest .
-        run: docker stop asana_fastapi
+        run: |
+          docker exec asana_fastapi python -m pytest .
+          docker stop asana_fastapi
 
       # - name: push to github container registry
       #   uses: docker/build-push-action@v2
@@ -76,7 +77,6 @@ jobs:
       #   run: |
       #     rm -rf /tmp/.buildx-cache
       #     mv /tmp/.buildx-cache-new /tmp/.buildx-cache
-
 
       # - name: Run Linting
       #   run: docker exec asana_fastapi python -m flake8 ./app
