@@ -1,4 +1,3 @@
-import json
 from collections import namedtuple
 from typing import Union
 
@@ -123,8 +122,8 @@ def test_update_user(
     monkeypatch.setattr(crud, 'read', mock_read)
     monkeypatch.setattr(crud, 'update', mock_update)
 
-    payload = json.dumps({'user_schema': {'email': email}})
-    response = test_app.put(f'/users/{user_id}', data=payload)
+    payload = {'user_schema': {'email': email}}
+    response = test_app.put(f'/users/{user_id}', json=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value
 
@@ -202,6 +201,6 @@ def test_create_user(
         'last_name': 'User',
         'email': email,
         'password': 'password'}
-    response = test_app.post('/users/', data=json.dumps(payload))
+    response = test_app.post('/users/', json=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value

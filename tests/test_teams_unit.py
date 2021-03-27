@@ -1,4 +1,3 @@
-import json
 from collections import namedtuple
 from typing import Union
 
@@ -125,8 +124,8 @@ def test_create_team(monkeypatch, test_app: TestClient):
         return models.Team(id=1, team_name='Engineering')
 
     monkeypatch.setattr(crud, 'create', mock_create)
-    payload = json.dumps({'team_name': 'Engineering'})
-    response = test_app.post('/teams/', data=payload)
+    payload = {'team_name': 'Engineering'}
+    response = test_app.post('/teams/', json=payload)
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {'id': 1, 'team_name': 'Engineering'}
 
@@ -159,8 +158,8 @@ def test_update_team(
     monkeypatch.setattr(crud, 'read', mock_read)
     monkeypatch.setattr(crud, 'update', mock_update)
 
-    payload = json.dumps({'team': {'team_name': team_name}})
-    response = test_app.put(f'/teams/{team_id}', data=payload)
+    payload = {'team': {'team_name': team_name}}
+    response = test_app.put(f'/teams/{team_id}', json=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value
 

@@ -1,5 +1,3 @@
-import json
-# from collections import namedtuple
 from typing import Union
 
 import pytest
@@ -67,9 +65,8 @@ def test_create_task(monkeypatch, test_app: TestClient):
         return models.Task(id=1, task_description='UnitTest', column_idx=0, column_id=1)
 
     monkeypatch.setattr(crud, 'create', mock_create)
-    payload = json.dumps({
-        'task_description': 'UnitTest', 'column_idx': 0, 'column_id': 1})
-    response = test_app.post('/tasks/', data=payload)
+    payload = {'task_description': 'UnitTest', 'column_idx': 0, 'column_id': 1}
+    response = test_app.post('/tasks/', json=payload)
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {
         'id': 1, 'task_description': 'UnitTest',
@@ -108,8 +105,8 @@ def test_update_task(
     monkeypatch.setattr(crud, 'read', mock_read)
     monkeypatch.setattr(crud, 'update', mock_update)
 
-    payload = json.dumps({'task': {'task_description': task_description}})
-    response = test_app.put(f'/tasks/{task_id}', data=payload)
+    payload = {'task': {'task_description': task_description}}
+    response = test_app.put(f'/tasks/{task_id}', json=payload)
     assert response.status_code == status_code
     assert response.json()[field] == value
 

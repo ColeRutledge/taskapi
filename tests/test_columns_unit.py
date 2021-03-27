@@ -97,8 +97,8 @@ def test_create_column(monkeypatch, test_app: TestClient):
         return models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
 
     monkeypatch.setattr(crud, 'create', mock_create)
-    payload = json.dumps({'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1})
-    response = test_app.post('/columns/', data=payload)
+    payload = {'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1}
+    response = test_app.post('/columns/', json=payload)
     assert response.status_code == HTTP_201_CREATED
     assert response.json() == {
         'id': 1, 'column_name': 'UnitTest', 'column_pos': 0, 'project_id': 1}
