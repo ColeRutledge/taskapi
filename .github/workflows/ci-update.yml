@@ -43,6 +43,9 @@ jobs:
           --tag ghcr.io/${{ env.GH_REPO }}:dev \
           "."
 
+      - name: Check Images
+        run: docker images
+
       - name: Run Container -- Dev/Test
         run: |
           docker run \
