@@ -1,160 +1,206 @@
-import json
+from collections import namedtuple
+from typing import Union
 
 import pytest
-from fastapi import status
 from fastapi.testclient import TestClient
-from sqlalchemy.orm import Session
+
+from app import models, crud
 
 
-def test_get_all_users_returns_all_users(test_app: TestClient, test_db_seeded: Session):
+HTTP_200_OK = 200
+HTTP_201_CREATED = 201
+HTTP_400_BAD_REQUEST = 400
+HTTP_404_NOT_FOUND = 404
+HTTP_401_UNAUTHORIZED = 401
+
+
+def test_get_all_users(monkeypatch, test_app: TestClient):
+
+    def mock_read_all(*args):
+        mock_user = models.User(
+            id=1, team_id=1, first_name='Test',
+            last_name='User', email='test@user.com')
+        return [mock_user]
+
+    monkeypatch.setattr(crud, 'read_all', mock_read_all)
     response = test_app.get('/users/')
-    assert response.status_code == status.HTTP_200_OK
-    assert response.json() == [
-        {'first_name': 'Bob', 'last_name': 'Smith', 'email': 'bob@smith.com',
-         'id': 1, 'team_id': 1, 'disabled': None},
-        {'first_name': 'Sally', 'last_name': 'McBeth', 'email': 'Sally@123.com',
-         'id': 2, 'team_id': 1, 'disabled': None},
-        {'first_name': 'John', 'last_name': 'Applebaum', 'email': 'johnnyA@user.com',
-         'id': 3, 'team_id': 1, 'disabled': None},
-        {'first_name': 'Bill', 'last_name': 'McSorley', 'email': 'billy-max@rocks.com',
-         'id': 4, 'team_id': 2, 'disabled': None}]
+    assert response.status_code == HTTP_200_OK
+    assert response.json() == [{
+        'first_name': 'Test', 'last_name': 'User', 'id': 1,
+        'email': 'test@user.com', 'team_id': 1, 'disabled': None}]
 
 
 @pytest.mark.parametrize(
-    argnames=['user_id', 'status_code', 'expected_response'],
+    argnames=['user_id', 'status_code', 'field', 'value'],
     argvalues=[
-        (1, status.HTTP_200_OK, {
-            'first_name': 'Bob', 'last_name': 'Smith',
-            'email': 'bob@smith.com', 'id': 1, 'team_id': 1, 'disabled': None}),
-        (4, status.HTTP_200_OK, {
-            'first_name': 'Bill', 'last_name': 'McSorley',
-            'email': 'billy-max@rocks.com', 'id': 4, 'team_id': 2, 'disabled': None}),
-        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
-        ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
-            'detail': [{
-                'loc': ['path', 'user_id'],
-                'msg': 'value is not a valid integer',
-                'type': 'type_error.integer'}]})])
-def test_get_user_responses_with_diff_inputs(
+        (1, HTTP_200_OK, 'email', 'expected@email.com'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'User not found')])
+def test_get_user(
         user_id: int,
         status_code: int,
-        expected_response: dict,
-        test_app: TestClient,
-        test_db_seeded: Session):
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=user_id,
+        team_id=1,
+        first_name='fill',
+        last_name='fill',
+        email='expected@email.com')
+
+    def mock_read(*args):
+        if user_id == 0:  # user that does not exist
+            return None
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
     response = test_app.get(f'/users/{user_id}')
     assert response.status_code == status_code
-    assert response.json() == expected_response
+    assert response.json()[field] == value
 
 
 @pytest.mark.parametrize(
-    argnames=['user_id', 'status_code', 'expected_response'],
+    argnames=['user_id', 'status_code', 'field', 'value'],
     argvalues=[
-        (1, status.HTTP_200_OK, {'id': 1, 'team_name': 'Marketing'}),
-        (4, status.HTTP_200_OK, {'id': 2, 'team_name': 'Engineering'}),
-        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
-        ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
-            'detail': [{
-                'loc': ['path', 'user_id'],
-                'msg': 'value is not a valid integer',
-                'type': 'type_error.integer'}]})])
-def test_get_user_team_responses_with_diff_inputs(
+        (1, HTTP_200_OK, 'team_name', 'Testing'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'User not found')])
+def test_get_user_team(
         user_id: int,
         status_code: int,
-        expected_response: dict,
-        test_app: TestClient,
-        test_db_seeded: Session):
+        field: Union[int, str],
+        value: Union[int, str],
+        monkeypatch,
+        test_app: TestClient):
+
+    MockUserWithTeam = namedtuple('MockUserWithTeam', field_names=['team'])
+    mock_user = MockUserWithTeam(team=models.Team(id=1, team_name='Testing'))
+
+    def mock_read(*args):
+        if user_id == 0:
+            return None
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
     response = test_app.get(f'/users/{user_id}/team')
     assert response.status_code == status_code
-    assert response.json() == expected_response
+    assert response.json()[field] == value
 
 
 @pytest.mark.parametrize(
-    argnames=['user_id', 'field', 'value', 'status_code', 'expected_response'],
+    argnames=['user_id', 'email', 'status_code', 'field', 'value'],
     argvalues=[
-        (1, 'first_name', 'John', status.HTTP_200_OK, {
-            'first_name': 'John', 'last_name': 'Smith', 'email': 'bob@smith.com',
-            'id': 1, 'team_id': 1, 'disabled': None}),
-        (2, 'email', 'wrong@user.com', status.HTTP_401_UNAUTHORIZED, {
-            'detail': 'Could not validate credentials'}),
-        (0, 'team_id', 1, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
-        ('bad_user_id', 'team_id', 1, status.HTTP_422_UNPROCESSABLE_ENTITY, {
-            'detail': [{
-                'loc': ['path', 'user_id'],
-                'msg': 'value is not a valid integer',
-                'type': 'type_error.integer'}]})])
-def test_update_user_responses_with_diff_inputs(
+        (1, 'before@change.com', HTTP_200_OK, 'email', 'post@change.com'),
+        (2, 'fill', HTTP_401_UNAUTHORIZED, 'detail', 'Could not validate credentials'),
+        (0, 'bad@id.com', HTTP_404_NOT_FOUND, 'detail', 'User not found')])
+def test_update_user(
         user_id: int,
-        field: str,
-        value: str,
+        email: str,
         status_code: int,
-        expected_response: dict,
-        test_app: TestClient,
-        test_db_seeded: Session):
-    payload = json.dumps({'user_schema': {field: value}})
-    response = test_app.put(f'/users/{user_id}', data=payload)
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=user_id,
+        team_id=1,
+        first_name='fill',
+        last_name='fill',
+        email=email)
+
+    def mock_read(*args):
+        if user_id == 0:
+            return None
+        return mock_user
+
+    def mock_update(*args):
+        mock_user.email = 'post@change.com'
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'update', mock_update)
+
+    payload = {'user_schema': {'email': email}}
+    response = test_app.put(f'/users/{user_id}', json=payload)
     assert response.status_code == status_code
-    assert response.json() == expected_response
+    assert response.json()[field] == value
 
 
 @pytest.mark.parametrize(
-    argnames=['user_id', 'status_code', 'expected_response'],
+    argnames=['user_id', 'status_code', 'field', 'value'],
     argvalues=[
-        (1, status.HTTP_200_OK, {
-            'first_name': 'Bob', 'last_name': 'Smith',
-            'email': 'bob@smith.com', 'id': 1, 'team_id': 1, 'disabled': None}),
-        (2, status.HTTP_401_UNAUTHORIZED, {'detail': 'Could not validate credentials'}),
-        (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
-        ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
-            'detail': [{
-                'loc': ['path', 'user_id'],
-                'msg': 'value is not a valid integer',
-                'type': 'type_error.integer'}]})])
-def test_delete_user_responses_with_diff_inputs(
+        (1, HTTP_200_OK, 'id', 1),
+        (2, HTTP_401_UNAUTHORIZED, 'detail', 'Could not validate credentials'),
+        (0, HTTP_404_NOT_FOUND, 'detail', 'User not found')])
+def test_delete_user(
         user_id: int,
         status_code: int,
-        expected_response: dict,
-        test_app: TestClient,
-        test_db_seeded: Session):
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=user_id,
+        team_id=1,
+        first_name='Test',
+        last_name='User',
+        email='test@user.com')
+
+    def mock_read(*args):
+        if user_id == 0:
+            return None
+        return mock_user
+
+    def mock_delete(*args):
+        return mock_user
+
+    monkeypatch.setattr(crud, 'read', mock_read)
+    monkeypatch.setattr(crud, 'delete', mock_delete)
+
     response = test_app.delete(f'/users/{user_id}')
     assert response.status_code == status_code
-    assert response.json() == expected_response
+    assert response.json()[field] == value
 
 
 @pytest.mark.parametrize(
-    argnames=[
-        'first_name',
-        'last_name',
-        'email',
-        'password',
-        'status_code',
-        'expected_response'],
+    argnames=['email', 'status_code', 'field', 'value'],
     argvalues=[
-        ('Charlotte', 'Kim', 'ck@mail.com', 'test_password', status.HTTP_201_CREATED, {
-            'first_name': 'Charlotte', 'last_name': 'Kim',
-            'email': 'ck@mail.com', 'id': 5, 'team_id': None, 'disabled': None}),
-        ('Existing', 'User', 'billy-max@rocks.com', 'password',
-         status.HTTP_400_BAD_REQUEST, {'detail': 'Email already registered'}),
-        ('Missing', 'Password', 'm@p.com', None, status.HTTP_422_UNPROCESSABLE_ENTITY, {
-            "detail": [{
-                "loc": ["body", "password"],
-                "msg": "field required",
-                "type": "value_error.missing"}]})])
-def test_create_user_responses_with_diff_inputs(
-        first_name: str,
-        last_name: str,
+        ('new@user.com', HTTP_201_CREATED, 'id', 1),
+        ('exist@user.com', HTTP_400_BAD_REQUEST, 'detail', 'Email already registered')])
+def test_create_user(
         email: str,
-        password: str,
         status_code: int,
-        expected_response: dict,
-        test_app: TestClient,
-        test_db_seeded: Session):
+        field: Union[str, int],
+        value: Union[str, int],
+        monkeypatch,
+        test_app: TestClient):
+
+    mock_user = models.User(
+        id=1,
+        team_id=1,
+        first_name='Test',
+        last_name='User',
+        email=email)
+
+    def mock_get_user_by_email(*args):
+        if email == 'exist@user.com':
+            return mock_user
+        return None
+
+    def mock_create(*args):
+        return mock_user
+
+    monkeypatch.setattr(models.User, 'get_user_by_email', mock_get_user_by_email)
+    monkeypatch.setattr(crud, 'create', mock_create)
+
     payload = {
-        'first_name': first_name,
-        'last_name': last_name,
+        'first_name': 'Test',
+        'last_name': 'User',
         'email': email,
-        'password': password}
-    if payload['password'] is None:
-        del payload['password']
-    response = test_app.post('/users/', data=json.dumps(payload))
+        'password': 'password'}
+    response = test_app.post('/users/', json=payload)
     assert response.status_code == status_code
-    assert response.json() == expected_response
+    assert response.json()[field] == value
