@@ -18,18 +18,16 @@ router = APIRouter()
 
 @router.post('/token', response_model=schemas.Token)
 async def login(form_data: OAuthForm = Depends(), db: Session = Depends(get_db)):
-    user = User.authenticate_user(form_data.username, form_data.password, db=db)
+    user = User.authenticate_user(form_data.username, form_data.password, db)
     if not user:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
-            headers={'WWW-Authenticate': 'Bearer'},
-        )
+            headers={'WWW-Authenticate': 'Bearer'})
     access_token_expires = timedelta(minutes=TOKEN_EXPIRES)
     access_token = create_access_token(
         data={'sub': user.email},   # 'sub' is a jwt specification
-        expires_delta=access_token_expires,
-    )
+        expires_delta=access_token_expires)
     return {'access_token': access_token, 'token_type': 'bearer'}
 
 
