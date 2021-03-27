@@ -53,6 +53,6 @@ async def user_login(request: Request):
         'index.html', {'request': request, 'request_headers': request._headers._list})
 
 
-@app.get('/items/{id}', response_class=responses.HTMLResponse)
-async def read_item(request: Request, id: str):
-    return templates.TemplateResponse('item.html', {'request': request, 'id': id})
+# @app.get('/items/{id}', response_class=responses.HTMLResponse)
+# async def read_item(request: Request, id: str):
+#     return templates.TemplateResponse('item.html', {'request': request, 'id': id})
