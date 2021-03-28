@@ -1,4 +1,4 @@
-name: Build, Test, and Deploy
+name: Continuous Integration and Delivery
 
 on: [workflow_dispatch]
 

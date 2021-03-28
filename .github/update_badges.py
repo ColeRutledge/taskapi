@@ -4,7 +4,8 @@ import subprocess as sp
 import re
 
 
-def determine_color(percentage: int):
+def determine_badge_color(percentage: int) -> str:
+    ''' determine badge color based on coverage percent '''
     if percentage >= 95:
         return 'brightgreen'
     elif percentage >= 75:
@@ -13,21 +14,23 @@ def determine_color(percentage: int):
         return 'red'
 
 
-if __name__ == '__main__':
+def update_coverage() -> None:
+    ''' gather coverage percent from pytest-cov and update readme '''
     coverage = sp.run(
         args='docker exec asana_fastapi coverage report'.split(),
         text=True, capture_output=True, check=True)
     PERCENTAGE = coverage.stdout.split()[-1][:-1]
-    COLOR = determine_color(int(PERCENTAGE))
-
+    COLOR = determine_badge_color(int(PERCENTAGE))
     path_to_readme = Path() / '.github' / 'README.md'
     readme = open(path_to_readme).read()
-    readme = re.sub(r'-\d+%25', f'-{PERCENTAGE}%25', readme)
-    readme = re.sub(r'%25-\w+', f'%25-{COLOR}', readme)
+    readme = re.sub(r'-\d+%25-\w+', f'-{PERCENTAGE}%25-{COLOR}', readme)
 
     with open(path_to_readme, mode='w') as file:
         file.write(readme)
 
+
+def commit_changes() -> None:
+    ''' config github in runner and commit readme if changes exist '''
     sp.run('git config user.name github-actions'.split(), check=True)
     sp.run('git config user.email github-actions@github.com'.split(), check=True)
     sp.run(['git', 'add', '.'], check=True)
@@ -40,3 +43,8 @@ if __name__ == '__main__':
         sp.run(['git', 'push'], check=True)
     else:
         print('no changes -> skipping')
+
+
+if __name__ == '__main__':
+    update_coverage()
+    commit_changes()
