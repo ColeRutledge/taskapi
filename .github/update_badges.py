@@ -33,7 +33,7 @@ if __name__ == '__main__':
     subprocess.run('git add .', check=True)
     changes_to_commit = subprocess.run(
         args='git status --porcelain',
-        capture_output=True, text=True, check=True)
+        capture_output=True, text=True, check=True).stdout
     if changes_to_commit:
         subprocess.run('git commit -m ":robot: badge update"', check=True)
         subprocess.run('git push', check=True)
