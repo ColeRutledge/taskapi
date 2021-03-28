@@ -1,6 +1,6 @@
 name: Build, Test, and Deploy
 
-on: [push]
+on: [workflow_dispatch]
 
 env:
   GH_REPO: colerutledge/asana_fastapi
