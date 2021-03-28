@@ -3,7 +3,7 @@
 
 <p style="margin: 3%" align='center'>
     <img src="https://github.com/ColeRutledge/asana_fastapi/actions/workflows/ci.yml/badge.svg?branch=master" alt="Continuous Integration and Delivery">
-    <img src="https://img.shields.io/badge/Test%20Coverage-75%25-red" alt="Test Coverage">
+    <img src="https://img.shields.io/badge/Test%20Coverage-100%25-brightgreen" alt="Test Coverage">
 </p>
 
 <p style="margin: 3%">I had a great time making this app over the course of a few weeks. To build on my experience from the App Academy bootcamp, I really tried to expand on my "infrastructure as code" skills by utilizing multistage Docker builds, layered caching, and Github Actions to build a simple CI/CD pipeline. It was immensely satisfying glueing the pieces of it together with the Python skills I've been developing over the prior few months and to see it become a more robust, maintainable project complete with 💯 percent test coverage! (not a great metric, I know, but it was still fun to chase!)</p>
