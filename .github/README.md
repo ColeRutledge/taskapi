@@ -21,7 +21,7 @@
 
 ### Usage:
 
-<p style="margin: 3%">I have prepared a docker-compose file, so after cloning, you should only need to setup a few environment variables. The Pydantic config schema in app.config provides valid defaults for all of these, but the required environment variables are: </p>
+<p style="margin: 3%">I have prepared a docker-compose file, so after cloning, you should only need to setup a few environment variables. The Pydantic <b>Settings</b> schema in app.config provides valid defaults for all of these, so it should run regardless, but the required environment variables are: </p>
 
 ```bash
 APP_NAME="asana_fastapi"
