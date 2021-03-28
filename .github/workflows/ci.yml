@@ -1,6 +1,6 @@
 name: Build, Test, and Deploy
 
-on: [workflow_dispatch]
+on: [push]
 
 env:
   GH_REPO: colerutledge/asana_fastapi
@@ -14,9 +14,8 @@ jobs:
       - name: checkout master
         uses: actions/checkout@v2
 
-      - name: set up docker buildx
+      - name: docker buildx setup
         uses: docker/setup-buildx-action@v1
-
       - name: login to github container registry
         uses: docker/login-action@v1
         with:
@@ -24,7 +23,7 @@ jobs:
           username: ${{ github.repository_owner }}
           password: ${{ secrets.CR_PAT }}
 
-      - name: cache docker layers
+      - name: docker layer caching setup
         uses: actions/cache@v2
         with:
           path: |
@@ -50,6 +49,31 @@ jobs:
         run: |
           rm -rf /tmp/.buildx-dev-cache
           mv /tmp/.buildx-dev-cache-new /tmp/.buildx-dev-cache
+
+      - name: pull & run dev
+        run: |
+          docker run \
+          --name asana_fastapi \
+          -p 8000:80 --rm -d \
+          ghcr.io/${{ env.GH_REPO }}:dev
+
+      - name: run tests
+        run: docker exec asana_fastapi python -m pytest .
+
+      - name: update badges
+        run: |
+          chmod +x ./.github/update_badges.py
+          ./.github/update_badges.py
+          git config user.name github-actions
+          git config user.email github-actions@github.com
+          git add .
+          if [[ -z $(git status --porcelain) ]]
+          then
+              echo "tree is clean -> skipping"
+          else
+              git commit -m ':robot: badge update'
+              git push
+          fi
 
       - name: push to github container registry
         uses: docker/build-push-action@v2
@@ -105,36 +129,36 @@ jobs:
         env:
           HEROKU_AUTH_TOKEN: ${{ secrets.HEROKU_API_KEY }}
 
-      # - name: Run Container -- Dev/Test
-      #   run: |
-      #     docker run \
-      #     --name asana_fastapi \
-      #     --rm -d -p 8000:8001 \
-      #     ghcr.io/colerutledge/asana_fastapi-stages:3
+  # - name: Run Container -- Dev/Test
+  #   run: |
+  #     docker run \
+  #     --name asana_fastapi \
+  #     --rm -d -p 8000:8001 \
+  #     ghcr.io/colerutledge/asana_fastapi-stages:3
 
-      # - name: Build Image -- Dev/Test
-      #   run: |
-      #     docker buildx build \
-      #     --target dev \
-      #     --cache-from ghcr.io/colerutledge/asana_fastapi \
-      #     --file ./docker/Dockerfile \
-      #     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
-      #     "."
+  # - name: Build Image -- Dev/Test
+  #   run: |
+  #     docker buildx build \
+  #     --target dev \
+  #     --cache-from ghcr.io/colerutledge/asana_fastapi \
+  #     --file ./docker/Dockerfile \
+  #     --tag ghcr.io/colerutledge/asana_fastapi_builder:latest \
+  #     "."
 
-      # - name: Run Tests and Stop Container
-      #   run: docker exec asana_fastapi python -m pytest .
+  # - name: Run Tests and Stop Container
+  #   run: docker exec asana_fastapi python -m pytest .
 
-      # - name: Run Linting
-      #   run: docker exec asana_fastapi python -m flake8 ./app
+  # - name: Run Linting
+  #   run: docker exec asana_fastapi python -m flake8 ./app
 
-      # - name: Stop Container
-      #   run: docker stop asana_fastapi
+  # - name: Stop Container
+  #   run: docker stop asana_fastapi
 
-      # - name: Build Image -- Prod
-      #   run: |
-      #     docker build \
-      #     --target prod \
-      #     --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
-      #     --file ./docker/Dockerfile \
-      #     --tag ghcr.io/colerutledge/asana_fastapi:latest \
-      #     "."
+  # - name: Build Image -- Prod
+  #   run: |
+  #     docker build \
+  #     --target prod \
+  #     --cache-from ghcr.io/colerutledge/asana_fastapi:latest \
+  #     --file ./docker/Dockerfile \
+  #     --tag ghcr.io/colerutledge/asana_fastapi:latest \
+  #     "."
