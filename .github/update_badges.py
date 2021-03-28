@@ -1,6 +1,6 @@
 #! /usr/bin/env python3
 from pathlib import Path
-import subprocess
+import subprocess as sp
 import re
 
 
@@ -14,7 +14,7 @@ def determine_color(percentage: int):
 
 
 if __name__ == '__main__':
-    coverage = subprocess.run(
+    coverage = sp.run(
         args='docker exec asana_fastapi coverage report'.split(),
         text=True, capture_output=True, check=True)
     PERCENTAGE = coverage.stdout.split()[-1][:-1]
@@ -28,24 +28,15 @@ if __name__ == '__main__':
     with open(path_to_readme, mode='w') as file:
         file.write(readme)
 
-    subprocess.run('git config user.name github-actions'.split(), check=True)
-    subprocess.run('git config user.email github-actions@github.com'.split(), check=True)
-    subprocess.run(['git', 'add', '.'], check=True)
-    changes_to_commit = subprocess.run(
+    sp.run('git config user.name github-actions'.split(), check=True)
+    sp.run('git config user.email github-actions@github.com'.split(), check=True)
+    sp.run(['git', 'add', '.'], check=True)
+    changes_to_commit = sp.run(
         args=['git', 'status', '--porcelain'],
         capture_output=True, text=True, check=True).stdout
     if changes_to_commit:
-        subprocess.run(['git', 'commit', '-m', '":robot: badge update"'], check=True)
-        subprocess.run(['git', 'push'], check=True)
-
-
-# git config user.name github-actions
-# git config user.email github-actions@github.com
-# git add .
-# if [[ -z $(git status --porcelain) ]]
-# then
-#     echo "tree is clean -> skipping"
-# else
-#     git commit -m ':robot: badge update'
-#     git push
-# fi
+        print('found changes -> committing.')
+        sp.run(['git', 'commit', '-m', '":robot: badge update"'], check=True)
+        sp.run(['git', 'push'], check=True)
+    else:
+        print('no changes -> skipping')
