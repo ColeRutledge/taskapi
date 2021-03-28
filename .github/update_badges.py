@@ -15,7 +15,7 @@ def determine_color(percentage: int):
 
 if __name__ == '__main__':
     coverage = subprocess.run(
-        args='docker exec asana_fastapi coverage report',
+        args='docker exec asana_fastapi coverage report'.split(),
         text=True, capture_output=True, check=True)
     PERCENTAGE = coverage.stdout.split()[-1][:-1]
     COLOR = determine_color(int(PERCENTAGE))
@@ -28,15 +28,15 @@ if __name__ == '__main__':
     with open(path_to_readme, mode='w') as file:
         file.write(readme)
 
-    subprocess.run('git config user.name github-actions', check=True)
-    subprocess.run('git config user.email github-actions@github.com', check=True)
-    subprocess.run('git add .', check=True)
+    subprocess.run('git config user.name github-actions'.split(), check=True)
+    subprocess.run('git config user.email github-actions@github.com'.split(), check=True)
+    subprocess.run(['git', 'add', '.'], check=True)
     changes_to_commit = subprocess.run(
-        args='git status --porcelain',
+        args=['git', 'status', '--porcelain'],
         capture_output=True, text=True, check=True).stdout
     if changes_to_commit:
-        subprocess.run('git commit -m ":robot: badge update"', check=True)
-        subprocess.run('git push', check=True)
+        subprocess.run(['git', 'commit', '-m', '":robot: badge update"'], check=True)
+        subprocess.run(['git', 'push'], check=True)
 
 
 # git config user.name github-actions
