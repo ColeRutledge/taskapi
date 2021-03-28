@@ -15,8 +15,8 @@ def determine_color(percentage: int):
 
 if __name__ == '__main__':
     coverage = subprocess.run(
-        args=['docker', 'exec', 'asana_fastapi', 'coverage', 'report'],
-        text=True, capture_output=True)
+        args='docker exec asana_fastapi coverage report',
+        text=True, capture_output=True, check=True)
     PERCENTAGE = coverage.stdout.split()[-1][:-1]
     COLOR = determine_color(int(PERCENTAGE))
 
@@ -27,3 +27,25 @@ if __name__ == '__main__':
 
     with open(path_to_readme, mode='w') as file:
         file.write(readme)
+
+    subprocess.run('git config user.name github-actions', check=True)
+    subprocess.run('git config user.email github-actions@github.com', check=True)
+    subprocess.run('git add .', check=True)
+    changes_to_commit = subprocess.run(
+        args='git status --porcelain',
+        capture_output=True, text=True, check=True)
+    if changes_to_commit:
+        subprocess.run('git commit -m ":robot: badge update"', check=True)
+        subprocess.run('git push', check=True)
+
+
+# git config user.name github-actions
+# git config user.email github-actions@github.com
+# git add .
+# if [[ -z $(git status --porcelain) ]]
+# then
+#     echo "tree is clean -> skipping"
+# else
+#     git commit -m ':robot: badge update'
+#     git push
+# fi
