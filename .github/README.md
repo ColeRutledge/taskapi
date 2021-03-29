@@ -1,12 +1,14 @@
 <h2 style="margin: 3%" align='center'>Thanks for checking out my project! 👋</h2>
-<h3 style="margin: 3%" align='center'>This is a FastAPI Python server for powering a task management application based on Asana</h3>
+<h3 style="margin: 3%" align='center'>This is an API server for powering a task management application based on Asana</h3>
 
-<p style="margin: 3%" align='center'>
+<p style="margin: 5%" align='center'>
     <img src="https://github.com/ColeRutledge/asana_fastapi/actions/workflows/ci.yml/badge.svg?branch=master" alt="Continuous Integration and Delivery">
     <img src="https://img.shields.io/badge/Test%20Coverage-75%25-red" alt="Test Coverage">
 </p>
 
 <p style="margin: 3%">I had a great time making this app over the course of a few weeks. To build on my experience from the App Academy bootcamp, I really tried to expand on my "infrastructure as code" skills by utilizing multistage Docker builds, layered caching, and Github Actions to build a simple CI/CD pipeline. It was immensely satisfying glueing the pieces of it together with the Python skills I've been developing over the prior few months and to see it become a more robust, maintainable project complete with 💯 percent test coverage! (not a great metric, I know, but it was still fun to chase!)</p>
+
+#
 
 ### Takeaways:
 
@@ -38,8 +40,10 @@ docker run --name ${APP_NAME} -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fast
 docker run --name ${APP_NAME} -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fastapi:prod
 ```
 
+#
+
 <p style="margin-top: 5%" align='center'>
-    <a href='https://asana-fastapi.herokuapp.com/docs' target='_blank'>Link to live API Docs powered by OpenAPI</a><font size='1'><br><i>you may have to give Heroku a minute!<i></font></br>
+    <a href='https://asana-fastapi.herokuapp.com/docs' target='_blank'>Link to live API Docs powered by OpenAPI</a><br><i>you may have to give Heroku a minute!<i></br>
 </p>
 
 ![Swagger UI](swagger.PNG)
