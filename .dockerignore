@@ -1,9 +1,6 @@
 .venv
-venv
 .vscode
 *.db
-*.cfg
-README.md
 logs/
 
 
