@@ -39,7 +39,7 @@ def commit_changes() -> None:
         capture_output=True, text=True, check=True).stdout
     if changes_to_commit:
         print('found changes -> committing.')
-        sp.run(['git', 'commit', '-m', '":robot: badge update"'], check=True)
+        sp.run(['git', 'commit', '-m', ':robot: badge update'], check=True)
         sp.run(['git', 'push'], check=True)
     else:
         print('no changes -> skipping')
