@@ -16,6 +16,7 @@ passlib = {extras = ["bcrypt"], version = "^1.7.4"}
 python-multipart = "^0.0.5"
 Jinja2 = "^2.11.2"
 aiofiles = "^0.6.0"
+psycopg2-binary = "^2.8.6"
 
 [tool.poetry.dev-dependencies]
 flake8 = "^3.8.4"
