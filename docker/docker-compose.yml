@@ -6,11 +6,20 @@ services:
       context: ..
       dockerfile: ./docker/Dockerfile
       target: dev
-    volumes:
-      - ..:/app
-      # linking blank static dir in local .venv to
-      # container .venv to prevent package conflicts
-      - ../.venv/dev/null:/app/.venv
-    ports:
-      - "8000:80"
-    env_file: "../.env"
+    env_file: ../.env
+    links: ["db:postgres"]
+    ports: ["8000:80"]
+    depends_on: ["db"]
+    # linking blank static dir in local .venv to
+    # container .venv to prevent package conflicts
+    volumes: ["..:/app", "../.venv/dev/null:/app/.venv"]
+
+  db:
+    container_name: db
+    image: postgres:13-alpine
+    env_file: ../.env.db
+    restart: always
+    volumes: ["postgres-db:/var/lib/postgresql/data"]
+
+volumes:
+  postgres-db:
