@@ -1,15 +1,10 @@
+import os
+
 from alembic import context
 from logging.config import fileConfig
 from sqlalchemy import engine_from_config
 from sqlalchemy import pool
 
-
-# ######### ADDING ROOT TO SYS PATH FOR MIGRATIONS ######### #
-
-import os
-import sys
-BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
-sys.path.append(BASE_DIR)
 from app.models import Base
 
 
@@ -20,21 +15,20 @@ from app.models import Base
 # alembic -c .\migrations\alembic.ini upgrade head
 
 
-# ######### IMPORTING SETTINGS OBJ TO OVERWRITE DB_URL ######### #
+# #################### RETRIEVE DB_URL #################### #
 
-# this allows us to prevent exposure of the sqlalchemy.url in the .ini
-from app.config import Settings
-db = Settings().db_url
-
-# this is the Alembic Config object, which provides
-# access to the values within the .ini file in use.
-config = context.config
-config.set_main_option('sqlalchemy.url', db)
+# def get_url():
+#     user = os.getenv('POSTGRES_USER', 'postgres')
+#     password = os.getenv('POSTGRES_PASSWORD', '')
+#     host = os.getenv('POSTGRES_HOST', 'db')
+#     db = os.getenv('POSTGRES_DB', 'app')
+#     return f'postgresql://{user}:{password}@{host}/{db}'
 
 
-# ######### LOGGING ######### #
+# ######################## LOGGING ######################## #
 
 # Interpret the config file for Python logging. This line sets up loggers basically.
+config = context.config
 fileConfig(config.config_file_name)
 
 # add your model's MetaData object here for 'autogenerate' support
@@ -53,14 +47,12 @@ def run_migrations_offline():
     script output.
 
     """
-    url = config.get_main_option("sqlalchemy.url")
     context.configure(
-        url=url,
-        target_metadata=target_metadata,
+        url=os.getenv('DB_URL', 'sqlite:///app.db'),    # updated
+        target_metadata=target_metadata,                # updated
         literal_binds=True,
         dialect_opts={"paramstyle": "named"},
-        compare_type=True,
-    )
+        compare_type=True)
 
     with context.begin_transaction():
         context.run_migrations()
@@ -73,16 +65,18 @@ def run_migrations_online():
     and associate a connection with the context.
 
     """
+    # added -> update configuration to include the correct db_url
+    configuration = config.get_section(config.config_ini_section)
+    configuration['sqlalchemy.url'] = os.getenv('DB_URL', 'sqlite:///app.db')
     connectable = engine_from_config(
-        config.get_section(config.config_ini_section),
+        configuration,
         prefix="sqlalchemy.",
-        poolclass=pool.NullPool,
-    )
+        poolclass=pool.NullPool)
 
     with connectable.connect() as connection:
         context.configure(
-            connection=connection, target_metadata=target_metadata
-        )
+            connection=connection,
+            target_metadata=target_metadata)
 
         with context.begin_transaction():
             context.run_migrations()
