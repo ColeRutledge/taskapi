@@ -51,7 +51,11 @@ WORKDIR $PYSETUP_PATH
 RUN poetry install
 
 WORKDIR /app
-COPY . .
+COPY migrations migrations
+COPY docker docker
+COPY setup.cfg .
+COPY tests tests
+COPY app app
 RUN chmod +x ./docker/startup_dev.py
 RUN chmod +x ./migrations/seed.py
 
@@ -69,7 +73,9 @@ ENV FASTAPI_ENV=production
 COPY --from=builder $VENV_PATH $VENV_PATH
 
 WORKDIR /app
-COPY . .
+COPY migrations migrations
+COPY docker docker
+COPY app app
 RUN chmod +x ./docker/startup.py
 
 RUN addgroup --system app && adduser --system --group app
