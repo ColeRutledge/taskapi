@@ -31,6 +31,12 @@ DB_URL="sqlite:///app.db"
 SECRET_KEY="dummykey"
 ALGORITHM="HS256"                   # password hashing algorithm
 ACCESS_TOKEN_EXPIRES_MINUTES=30     # auth token expiration
+
+# the project is setup with some SQLite defaults, but if planning to use
+# PostgreSQL, the docker-compose requires the following in a .env.db file:
+POSTGRES_USER="db_username"
+POSTGRES_PASSWORD="db_password"
+POSTGRES_DB="db_user"
 ```
 
 <p style="margin: 3%">Alternatively, you can just pull the <b>dev</b> or <b>prod</b> <a href='https://github.com/users/ColeRutledge/packages/container/package/asana_fastapi'>image</a> from the GitHub Container Registry for this project, and run it by using one of these commands with the Docker CLI installed: </p>
