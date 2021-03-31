@@ -49,6 +49,10 @@ docker run --name asana_fastapi -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fa
 docker run --name asana_fastapi -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fastapi:prod
 ```
 
+<p>After pulling and running the container, you can reach the interactive API docs powered by Swagger/OpenAPI here: <a href='http://localhost:8000/docs'>http://localhost:8000/docs</a>
+
+Alternative docs powered by ReDoc can be found here: <a href='http://localhost:8000/redoc'>http://localhost:8000/redoc</a></p>
+
 ---
 
 <p style="margin-top: 5%" align='center'>
