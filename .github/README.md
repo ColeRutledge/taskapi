@@ -1,4 +1,4 @@
-<h2 align='center'>Thanks for checking out my project! 👋</h2>
+<h3 align='center'>Thanks for checking out my project! 👋</h3>
 </br>
 <h3 align='center'>This is an API server for powering a task management application based on Asana</h3>
 </br>
