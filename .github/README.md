@@ -49,9 +49,7 @@ docker run --name asana_fastapi -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fa
 docker run --name asana_fastapi -p 8000:80 -d --rm ghcr.io/colerutledge/asana_fastapi:prod
 ```
 
-</br>
-
-#
+---
 
 <p style="margin-top: 5%" align='center'>
     <a href='https://asana-fastapi.herokuapp.com/docs' target='_blank'>Link to live API Docs powered by OpenAPI</a><br><i>you may have to give Heroku a minute!<i></br>
