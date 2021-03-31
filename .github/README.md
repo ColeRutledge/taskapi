@@ -23,7 +23,7 @@
 
 ### Usage:
 
-<p style="margin: 3%">I have prepared a docker-compose file, so after cloning, you should only need to setup a few environment variables. The Pydantic <b>Settings</b> schema in app.config provides valid defaults for all of these, so it should run regardless, but the required environment variables are: </p>
+<p style="margin: 3%">I have prepared a docker-compose file, so after cloning, you should only need to setup a few environment variables. The Pydantic <b>Settings</b> schema in app.config provides valid defaults for all of these, so it should run regardless, but the required environment variables in a .env file are: </p>
 
 ```bash
 APP_NAME="asana_fastapi"
@@ -31,9 +31,11 @@ DB_URL="sqlite:///app.db"
 SECRET_KEY="dummykey"
 ALGORITHM="HS256"                   # password hashing algorithm
 ACCESS_TOKEN_EXPIRES_MINUTES=30     # auth token expiration
+```
 
-# the project is setup with some SQLite defaults, but if planning to use
-# PostgreSQL, the docker-compose requires the following in a .env.db file:
+<p style="margin: 3%">The project is setup with some SQLite defaults, but if planning to use PostgreSQL, the docker-compose requires the following in a .env.db file:</p>
+
+```bash
 POSTGRES_USER="db_username"
 POSTGRES_PASSWORD="db_password"
 POSTGRES_DB="db_user"
