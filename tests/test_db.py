@@ -1,3 +1,7 @@
+import os
+from collections import namedtuple
+
+import pytest
 from sqlalchemy.orm import Session
 
 from app import db, models, crud, schemas
@@ -18,3 +22,27 @@ def test_get_db(monkeypatch):
     assert team_from_create.team_name == team_from_read.team_name
 
     Base.metadata.drop_all(bind=engine)
+
+
+@pytest.mark.parametrize(
+    argnames=['environment', 'expected_url'],
+    argvalues=[
+        ('local', 'sqlite:///app.db'),
+        ('container', 'sqlite:///app_test.db')])
+def test_create_database_engine(environment: str, expected_url: str, monkeypatch):
+    SettingsWithURL = namedtuple('SettingsWithUrl', ['db_url'])
+    mock_settings = SettingsWithURL(db_url='sqlite:///app_test.db')
+
+    def mock_get_settings():
+        return mock_settings
+
+    monkeypatch.setattr(db, 'get_settings', mock_get_settings)
+
+    if environment == 'container':
+        os.environ['FASTAPI_ENV'] = 'development'
+        engine = db.create_database_engine()
+        del os.environ['FASTAPI_ENV']
+    else:
+        engine = db.create_database_engine()
+
+    assert str(engine.url) == expected_url
