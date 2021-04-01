@@ -3,7 +3,7 @@
 </br>
 <p align='center'>
     <img src="https://github.com/ColeRutledge/asana_fastapi/actions/workflows/ci.yml/badge.svg?branch=master" alt="Continuous Integration and Delivery">
-    <img src="https://img.shields.io/badge/Test%20Coverage-99%25-brightgreen" alt="Test Coverage">
+    <img src="https://img.shields.io/badge/Test%20Coverage-100%25-brightgreen" alt="Test Coverage">
 </p>
 
 ---
