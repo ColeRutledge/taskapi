@@ -30,6 +30,9 @@ def test_get_db(monkeypatch):
         ('local', 'sqlite:///app.db'),
         ('container', 'sqlite:///app_test.db')])
 def test_create_database_engine(environment: str, expected_url: str, monkeypatch):
+    if os.getenv('FASTAPI_ENV'):  # if executing inside container (github actions)
+        del os.environ['FASTAPI_ENV']
+
     SettingsWithURL = namedtuple('SettingsWithUrl', ['db_url'])
     mock_settings = SettingsWithURL(db_url='sqlite:///app_test.db')
 
@@ -41,7 +44,6 @@ def test_create_database_engine(environment: str, expected_url: str, monkeypatch
     if environment == 'container':
         os.environ['FASTAPI_ENV'] = 'development'
         engine = db.create_database_engine()
-        del os.environ['FASTAPI_ENV']
     else:
         engine = db.create_database_engine()
 
