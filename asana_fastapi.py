@@ -12,8 +12,9 @@ if __name__ == '__main__':
     os.makedirs('logs', exist_ok=True)
     dictConfig(config.LOGGING_CONFIG)
 
-    models.Base.metadata.create_all(bind=db.engine, checkfirst=True)
-    session = Session(autocommit=False, autoflush=False, bind=db.engine)
+    engine = db.create_database_engine()
+    models.Base.metadata.create_all(bind=engine, checkfirst=True)
+    session = Session(autocommit=False, autoflush=False, bind=engine)
     seed_db(session)
     session.close()
 
