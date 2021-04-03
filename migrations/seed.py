@@ -61,6 +61,7 @@ if __name__ == '__main__':
     os.makedirs('logs', exist_ok=True)
     dictConfig(config.LOGGING_CONFIG)
 
-    db_session = Session(autocommit=False, autoflush=False, bind=db.engine)
+    db_session = Session(
+        autocommit=False, autoflush=False, bind=db.create_database_engine())
     seed_db(db_session)
     db_session.close()
