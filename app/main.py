@@ -1,4 +1,5 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.tag_meta import tags_metadata
 from app.auth import auth_router
@@ -14,6 +15,17 @@ def create_application() -> FastAPI:
     application.mount(
         path='/static', name='static',
         app=staticfiles.StaticFiles(directory='app/static'))
+
+    application.add_middleware(
+        middleware_class=CORSMiddleware,
+        allow_credentials=True,
+        allow_methods=['*'],
+        allow_headers=['*'],
+        allow_origins=[
+            'http://localhost:3000',   # TODO: remove
+            'https://localhost:3000',  # TODO: remove
+            'http://react.colerutledge.dev',
+            'https://react.colerutledge.dev'])
 
     application.include_router(auth_router.router, tags=['Auth'])
     application.include_router(users.router, tags=['Users'], prefix='/users')
