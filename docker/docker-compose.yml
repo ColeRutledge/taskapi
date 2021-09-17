@@ -23,3 +23,4 @@ services:
 
 volumes:
   postgres-db:
+    name: taskapi
