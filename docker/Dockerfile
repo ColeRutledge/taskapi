@@ -28,7 +28,7 @@ RUN apt-get update \
     && apt-get -y --no-install-recommends install curl build-essential \
     && apt-get clean
 
-ENV POETRY_VERSION=1.1.5
+ENV POETRY_VERSION=1.1.8
 RUN curl -sSL https://raw.githubusercontent.com/sdispater/poetry/master/get-poetry.py | python
 
 WORKDIR $PYSETUP_PATH
