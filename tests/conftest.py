@@ -1,11 +1,10 @@
 from fastapi.testclient import TestClient
 import pytest
-from sqlalchemy import create_engine
 from sqlalchemy.orm import sessionmaker, Session
 
 from app.auth.auth_utils import get_current_user
 from app.config import get_settings, Settings
-from app.db import get_db
+from app.db import create_database_engine, get_db
 from app.main import create_application
 from app.models import Base, User
 from migrations.seed import seed_db
@@ -13,8 +12,7 @@ from migrations.seed import seed_db
 
 SQLALCHEMY_TEST_DATABASE_URL = 'sqlite:///app_test.db'
 # SQLALCHEMY_TEST_DATABASE_URL = 'sqlite://'
-engine = create_engine(
-    SQLALCHEMY_TEST_DATABASE_URL, connect_args={'check_same_thread': False})
+engine = create_database_engine(SQLALCHEMY_TEST_DATABASE_URL)
 TestSessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
 
 

@@ -2,6 +2,7 @@ import os
 from collections import namedtuple
 
 import pytest
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import Session
 
 from app import db, models, crud, schemas
@@ -48,3 +49,35 @@ def test_create_database_engine(environment: str, expected_url: str, monkeypatch
         engine = db.create_database_engine()
 
     assert str(engine.url) == expected_url
+
+
+def test_sqlite_engine_enforces_foreign_keys(tmp_path):
+    engine = db.create_database_engine(
+        'sqlite:///' + str(tmp_path / 'foreign_keys.db'))
+    Base.metadata.create_all(bind=engine)
+
+    with engine.connect() as connection:
+        assert connection.exec_driver_sql(
+            'PRAGMA foreign_keys').scalar() == 1
+
+    with pytest.raises(IntegrityError):
+        with Session(engine) as session:
+            session.add(
+                models.Project(
+                    project_name='Orphan',
+                    team_id=999))
+            session.commit()
+
+    with Session(engine) as session:
+        team = models.Team(team_name='Valid team')
+        session.add(team)
+        session.flush()
+        project = models.Project(
+            project_name='Valid project',
+            team_id=team.id)
+        session.add(project)
+        session.commit()
+        assert project.team_id == team.id
+
+    Base.metadata.drop_all(bind=engine)
+    engine.dispose()

@@ -141,6 +141,19 @@ def test_create_project(monkeypatch, test_app: TestClient):
     assert response.json() == {'id': 1, 'project_name': 'UnitTest', 'team_id': 1}
 
 
+def test_create_project_rejects_unknown_team(
+        test_app: TestClient,
+        test_db_seeded):
+    response = test_app.post(
+        '/projects/',
+        json={'project_name': 'Orphan', 'team_id': 999})
+
+    assert response.status_code == 400
+    assert response.json() == {
+        'detail': 'Request violates a database integrity constraint'
+    }
+
+
 @pytest.mark.parametrize(
     argnames=['project_id', 'project_name', 'status_code', 'field', 'value'],
     argvalues=[

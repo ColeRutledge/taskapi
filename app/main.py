@@ -1,5 +1,7 @@
 from fastapi import FastAPI, Depends, templating, responses, Request, staticfiles
 from fastapi.middleware.cors import CORSMiddleware
+from fastapi.responses import JSONResponse
+from sqlalchemy.exc import IntegrityError
 
 from app.tag_meta import tags_metadata
 from app.auth import auth_router
@@ -12,6 +14,15 @@ def create_application() -> FastAPI:
         title='Asana FastAPI',
         openapi_tags=tags_metadata,
         description='FastAPI Python server for an Asana clone')
+
+    @application.exception_handler(IntegrityError)
+    async def handle_integrity_error(request: Request, error: IntegrityError):
+        return JSONResponse(
+            status_code=400,
+            content={
+                'detail': 'Request violates a database integrity constraint'
+            })
+
     application.mount(
         path='/static', name='static',
         app=staticfiles.StaticFiles(directory='app/static'))
