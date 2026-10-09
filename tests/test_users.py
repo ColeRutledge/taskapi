@@ -16,7 +16,7 @@ HTTP_401_UNAUTHORIZED = 401
 
 def test_get_all_users(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(*args):
+    def mock_read_all(*args, **kwargs):
         mock_user = models.User(
             id=1, team_id=1, first_name='Test',
             last_name='User', email='test@user.com')

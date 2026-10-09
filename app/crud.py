@@ -1,4 +1,4 @@
-from typing import Union
+from typing import Optional, Protocol, TypeVar, Union
 
 from sqlalchemy.orm import Session
 
@@ -10,6 +10,13 @@ from app.schemas import (
 # custom types for orm models and pydantic schemas
 DatabaseModel = Union[User, Team, Project, Column, Task]
 Schema = Union[UserCreate, UserUpdate, TeamBase, ProjectBase, ColumnBase, TaskBase]
+
+
+class HasId(Protocol):
+    id: int
+
+
+T = TypeVar('T', bound=HasId)
 
 
 def create(db: Session, schema: Schema, Model: DatabaseModel):
@@ -31,7 +38,20 @@ def read(db: Session, id: int, model: DatabaseModel):
 
 
 def read_all(db: Session, model: DatabaseModel, skip: int = 0, limit: int = 100):
-    return db.query(model).offset(skip).limit(limit).all()
+    return (
+        db.query(model)
+        .order_by(model.id)
+        .offset(skip)
+        .limit(limit)
+        .all()
+    )
+
+
+def paginate(items: list[T], skip: int = 0, limit: Optional[int] = None) -> list[T]:
+    items = sorted(items, key=lambda item: item.id)
+    if limit is None:
+        return items[skip:]
+    return items[skip:skip + limit]
 
 
 def update(db: Session, schema: Schema, model: DatabaseModel):

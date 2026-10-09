@@ -1,4 +1,6 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, status
+from typing import Optional
+
+from fastapi import APIRouter, Depends, HTTPException, Body, Query, status
 from sqlalchemy.orm.session import Session
 
 from app import crud, schemas, models
@@ -9,8 +11,18 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Project])
-def get_all_projects(db: Session = Depends(get_db)):
-    return crud.read_all(db, models.Project)
+def get_all_projects(
+        skip: int = Query(
+            0,
+            ge=0,
+            description='Number of projects to skip'),
+        limit: int = Query(
+            100,
+            ge=1,
+            le=100,
+            description='Maximum number of projects to return'),
+        db: Session = Depends(get_db)):
+    return crud.read_all(db, models.Project, skip=skip, limit=limit)
 
 
 @router.get('/{project_id}', response_model=schemas.Project)
@@ -34,13 +46,24 @@ def get_project_data(project_id: int, db: Session = Depends(get_db)):
 
 
 @router.get('/{project_id}/columns', response_model=list[schemas.Column])
-def get_project_columns(project_id: int, db: Session = Depends(get_db)):
+def get_project_columns(
+        project_id: int,
+        skip: int = Query(
+            0,
+            ge=0,
+            description='Number of columns to skip'),
+        limit: Optional[int] = Query(
+            None,
+            gt=0,
+            le=100,
+            description='Maximum number of columns to return'),
+        db: Session = Depends(get_db)):
     db_project: models.Project = crud.read(db, project_id, models.Project)
     if db_project is None:
         raise HTTPException(
             status_code=404,
             detail='Project not found')
-    return db_project.columns
+    return crud.paginate(db_project.columns, skip, limit)
 
 
 @router.post('/', response_model=schemas.Project, status_code=status.HTTP_201_CREATED)

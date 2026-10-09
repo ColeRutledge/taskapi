@@ -1,6 +1,6 @@
 import logging
 
-from fastapi import APIRouter, Depends, HTTPException, Body, status
+from fastapi import APIRouter, Depends, HTTPException, Body, Query, status
 from sqlalchemy.orm.session import Session
 
 from app import crud, schemas, models
@@ -13,8 +13,18 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.User], dependencies=[Depends(gcu)])
-def get_all_users(db: Session = Depends(get_db)):
-    return crud.read_all(db, models.User)
+def get_all_users(
+        skip: int = Query(
+            0,
+            ge=0,
+            description='Number of users to skip'),
+        limit: int = Query(
+            100,
+            ge=1,
+            le=100,
+            description='Maximum number of users to return'),
+        db: Session = Depends(get_db)):
+    return crud.read_all(db, models.User, skip=skip, limit=limit)
 
 
 @router.get('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])

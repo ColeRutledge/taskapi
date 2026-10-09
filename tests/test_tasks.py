@@ -15,7 +15,7 @@ HTTP_401_UNAUTHORIZED = 401
 
 def test_get_all_tasks(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(*args):
+    def mock_read_all(*args, **kwargs):
         mock_task1 = models.Task(
             id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
         mock_task2 = models.Task(

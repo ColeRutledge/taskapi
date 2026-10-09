@@ -16,7 +16,7 @@ HTTP_401_UNAUTHORIZED = 401
 
 def test_get_all_teams(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(*args):
+    def mock_read_all(*args, **kwargs):
         mock_team1 = models.Team(id=1, team_name='Engineering')
         mock_team2 = models.Team(id=2, team_name='IT')
         return [mock_team1, mock_team2]

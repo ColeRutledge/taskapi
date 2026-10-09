@@ -1,4 +1,4 @@
-from fastapi import APIRouter, Depends, HTTPException, Body, status
+from fastapi import APIRouter, Depends, HTTPException, Body, Query, status
 from sqlalchemy.orm.session import Session
 
 from app import crud, schemas, models
@@ -9,8 +9,18 @@ router = APIRouter()
 
 
 @router.get('/', response_model=list[schemas.Task])
-def get_all_tasks(db: Session = Depends(get_db)):
-    return crud.read_all(db, models.Task)
+def get_all_tasks(
+        skip: int = Query(
+            0,
+            ge=0,
+            description='Number of tasks to skip'),
+        limit: int = Query(
+            100,
+            ge=1,
+            le=100,
+            description='Maximum number of tasks to return'),
+        db: Session = Depends(get_db)):
+    return crud.read_all(db, models.Task, skip=skip, limit=limit)
 
 
 @router.get('/{task_id}', response_model=schemas.Task)

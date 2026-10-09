@@ -17,7 +17,7 @@ HTTP_401_UNAUTHORIZED = 401
 
 def test_get_all_columns(monkeypatch, test_app: TestClient):
 
-    def mock_read_all(*args):
+    def mock_read_all(*args, **kwargs):
         mock_col1 = models.Column(id=1, column_name='Test', column_pos=0, project_id=1)
         mock_col2 = models.Column(id=2, column_name='Deploy', column_pos=1, project_id=1)
         return [mock_col1, mock_col2]
