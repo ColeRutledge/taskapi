@@ -4,6 +4,7 @@ from typing import Union
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from app import models, crud
 
@@ -15,19 +16,13 @@ HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
 
-def test_get_all_columns(monkeypatch, test_app: TestClient):
-
-    def mock_read_all(*args):
-        mock_col1 = models.Column(id=1, column_name='Test', column_pos=0, project_id=1)
-        mock_col2 = models.Column(id=2, column_name='Deploy', column_pos=1, project_id=1)
-        return [mock_col1, mock_col2]
-
-    monkeypatch.setattr(crud, 'read_all', mock_read_all)
+def test_get_all_columns(
+        test_app: TestClient,
+        test_db_seeded: Session):
     response = test_app.get('/columns/')
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [
-        {'id': 1, 'column_name': 'Test', 'column_pos': 0, 'project_id': 1},
-        {'id': 2, 'column_name': 'Deploy', 'column_pos': 1, 'project_id': 1}]
+    assert [column['project_id'] for column in response.json()] == [
+        1, 1, 1, 1, 2]
 
 
 @pytest.mark.parametrize(
@@ -41,11 +36,14 @@ def test_get_column(
         field: str,
         value: str,
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_column = models.Column(id=1, column_name='Test', column_pos=0, project_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if column_id == 0:  # column that does not exist
             return None
         return mock_column
@@ -69,10 +67,13 @@ def test_get_column_tasks(
         field: str,
         value: Union[str, dict],
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
-    MockColumnWithTasks = namedtuple('MockColumnWithTasks', ['tasks'])
-    mock_column = MockColumnWithTasks(tasks=[
+    MockColumnWithTasks = namedtuple(
+        'MockColumnWithTasks',
+        ['tasks', 'project_id'])
+    mock_column = MockColumnWithTasks(project_id=1, tasks=[
         models.Task(
             id=1, task_description='UnitTest',
             due_date=None, column_idx=0, column_id=1),
@@ -81,6 +82,8 @@ def test_get_column_tasks(
             due_date=None, column_idx=1, column_id=1)])
 
     def mock_read(*args):
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if column_id == 0:
             return None
         return mock_column
@@ -91,7 +94,10 @@ def test_get_column_tasks(
     assert response.json()[field] == value
 
 
-def test_create_column(monkeypatch, test_app: TestClient):
+def test_create_column(
+        monkeypatch,
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     def mock_create(*args):
         return models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
@@ -116,7 +122,8 @@ def test_update_column(
         field: str,
         value: Union[str, dict],
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_column = models.Column(
         id=1,
@@ -125,6 +132,8 @@ def test_update_column(
         project_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if column_id == 0:
             return None
         return mock_column
@@ -153,11 +162,14 @@ def test_delete_column(
         field: str,
         value: Union[str, dict],
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_column = models.Column(id=1, column_name='UnitTest', column_pos=0, project_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if column_id == 0:
             return None
         return mock_column

@@ -14,18 +14,13 @@ HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
 
-def test_get_all_teams(monkeypatch, test_app: TestClient):
-
-    def mock_read_all(*args):
-        mock_team1 = models.Team(id=1, team_name='Engineering')
-        mock_team2 = models.Team(id=2, team_name='IT')
-        return [mock_team1, mock_team2]
-
-    monkeypatch.setattr(crud, 'read_all', mock_read_all)
+def test_get_all_teams(
+        test_app: TestClient,
+        test_db_seeded):
     response = test_app.get('/teams/')
     assert response.status_code == HTTP_200_OK
     assert response.json() == [
-        {'id': 1, 'team_name': 'Engineering'}, {'id': 2, 'team_name': 'IT'}]
+        {'id': 1, 'team_name': 'Marketing'}]
 
 
 @pytest.mark.parametrize(

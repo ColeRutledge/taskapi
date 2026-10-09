@@ -5,6 +5,7 @@ from sqlalchemy.orm.session import Session
 
 from app import crud, schemas, models
 from app.auth.auth_utils import get_current_user as gcu
+from app.auth.team_access import require_team_access
 from app.db import get_db
 
 
@@ -12,25 +13,54 @@ logger = logging.getLogger(__name__)
 router = APIRouter()
 
 
-@router.get('/', response_model=list[schemas.User], dependencies=[Depends(gcu)])
-def get_all_users(db: Session = Depends(get_db)):
-    return crud.read_all(db, models.User)
+@router.get('/', response_model=list[schemas.User])
+def get_all_users(
+        current_user: models.User = Depends(gcu),
+        db: Session = Depends(get_db)):
+    if current_user.team_id is None:
+        return []
+    return (
+        db.query(models.User)
+        .filter(models.User.team_id == current_user.team_id)
+        .limit(100)
+        .all()
+    )
 
 
-@router.get('/{user_id}', response_model=schemas.User, dependencies=[Depends(gcu)])
-def get_user(user_id: int, db: Session = Depends(get_db)):
+@router.get('/{user_id}', response_model=schemas.User)
+def get_user(
+        user_id: int,
+        current_user: models.User = Depends(gcu),
+        db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db, user_id, models.User)
     if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User not found')
+    team_id = getattr(db_user, 'team_id', None)
+    if team_id is None and getattr(db_user, 'team', None) is not None:
+        team_id = db_user.team.id
+    if current_user.team_id is None or team_id != current_user.team_id:
         raise HTTPException(
             status_code=status.HTTP_404_NOT_FOUND,
             detail='User not found')
     return db_user
 
 
-@router.get('/{user_id}/team', response_model=schemas.Team, dependencies=[Depends(gcu)])
-def get_user_team(user_id: int, db: Session = Depends(get_db)):
+@router.get('/{user_id}/team', response_model=schemas.Team)
+def get_user_team(
+        user_id: int,
+        current_user: models.User = Depends(gcu),
+        db: Session = Depends(get_db)):
     db_user: models.User = crud.read(db, user_id, models.User)
     if db_user is None:
+        raise HTTPException(
+            status_code=status.HTTP_404_NOT_FOUND,
+            detail='User not found')
+    team_id = getattr(db_user, 'team_id', None)
+    if team_id is None and getattr(db_user, 'team', None) is not None:
+        team_id = db_user.team.id
+    if current_user.team_id is None or team_id != current_user.team_id:
         raise HTTPException(status_code=404, detail='User not found')
     return db_user.team
 
@@ -53,6 +83,14 @@ def update_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail='Could not validate credentials',
             headers={'WWW-Authenticate': 'Bearer'})
+    if (
+        user_schema.team_id is not None
+        and user_schema.team_id != current_user.team_id
+    ):
+        require_team_access(
+            user_schema.team_id,
+            current_user,
+            'Team')
     return crud.update(db, user_schema, db_user)
 
 

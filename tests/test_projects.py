@@ -14,19 +14,12 @@ HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
 
-def test_get_all_projects(monkeypatch, test_app: TestClient):
-
-    def mock_read_all(*args):
-        mock_project1 = models.Project(id=1, project_name='Test', team_id=1)
-        mock_project2 = models.Project(id=2, project_name='Deploy', team_id=1)
-        return [mock_project1, mock_project2]
-
-    monkeypatch.setattr(crud, 'read_all', mock_read_all)
+def test_get_all_projects(
+        test_app: TestClient,
+        test_db_seeded):
     response = test_app.get('/projects/')
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [
-        {'id': 1, 'project_name': 'Test', 'team_id': 1},
-        {'id': 2, 'project_name': 'Deploy', 'team_id': 1}]
+    assert [project['team_id'] for project in response.json()] == [1, 1]
 
 
 @pytest.mark.parametrize(
@@ -113,8 +106,10 @@ def test_get_project_columns(
         monkeypatch,
         test_app: TestClient):
 
-    MockProjectWithColumns = namedtuple('MockProjectWithColumns', ['columns'])
-    mock_project = MockProjectWithColumns(columns=[
+    MockProjectWithColumns = namedtuple(
+        'MockProjectWithColumns',
+        ['columns', 'team_id'])
+    mock_project = MockProjectWithColumns(team_id=1, columns=[
         models.Column(id=1, column_name='Column1', column_pos=0, project_id=1),
         models.Column(id=2, column_name='Column2', column_pos=1, project_id=1)])
 

@@ -2,6 +2,7 @@ from typing import Union
 
 import pytest
 from fastapi.testclient import TestClient
+from sqlalchemy.orm import Session
 
 from app import models, crud
 
@@ -13,23 +14,14 @@ HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
 
-def test_get_all_tasks(monkeypatch, test_app: TestClient):
-
-    def mock_read_all(*args):
-        mock_task1 = models.Task(
-            id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
-        mock_task2 = models.Task(
-            id=2, task_description='SmokeTest', due_date=None, column_idx=1, column_id=1)
-        return [mock_task1, mock_task2]
-
-    monkeypatch.setattr(crud, 'read_all', mock_read_all)
+def test_get_all_tasks(
+        test_app: TestClient,
+        test_db_seeded: Session):
     response = test_app.get('/tasks/')
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [
-        {'id': 1, 'task_description': 'UnitTest',
-         'due_date': None, 'column_idx': 0, 'column_id': 1},
-        {'id': 2, 'task_description': 'SmokeTest',
-         'due_date': None, 'column_idx': 1, 'column_id': 1}]
+    assert len(response.json()) == 10
+    assert {task['column_id'] for task in response.json()} <= {
+        1, 2, 3, 4, 5}
 
 
 @pytest.mark.parametrize(
@@ -43,12 +35,17 @@ def test_get_task(
         field: str,
         value: str,
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_task = models.Task(
         id=1, task_description='UnitTest', due_date=None, column_idx=0, column_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Column:
+            return test_db_seeded.query(models.Column).get(args[1])
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if task_id == 0:  # task that does not exist
             return None
         return mock_task
@@ -59,7 +56,10 @@ def test_get_task(
     assert response.json()[field] == value
 
 
-def test_create_task(monkeypatch, test_app: TestClient):
+def test_create_task(
+        monkeypatch,
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     def mock_create(*args):
         return models.Task(id=1, task_description='UnitTest', column_idx=0, column_id=1)
@@ -85,7 +85,8 @@ def test_update_task(
         field: str,
         value: Union[str, dict],
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_task = models.Task(
         id=1,
@@ -94,6 +95,10 @@ def test_update_task(
         column_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Column:
+            return test_db_seeded.query(models.Column).get(args[1])
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if task_id == 0:
             return None
         return mock_task
@@ -122,11 +127,16 @@ def test_delete_task(
         field: str,
         value: Union[str, dict],
         monkeypatch,
-        test_app: TestClient):
+        test_app: TestClient,
+        test_db_seeded: Session):
 
     mock_task = models.Task(id=1, task_description='UnitTest', column_idx=0, column_id=1)
 
     def mock_read(*args):
+        if args[2] == models.Column:
+            return test_db_seeded.query(models.Column).get(args[1])
+        if args[2] == models.Project:
+            return test_db_seeded.query(models.Project).get(args[1])
         if task_id == 0:
             return None
         return mock_task

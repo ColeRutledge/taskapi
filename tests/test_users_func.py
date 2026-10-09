@@ -6,7 +6,9 @@ from fastapi.testclient import TestClient
 from sqlalchemy.orm import Session
 
 
-def test_get_all_users_returns_all_users(test_app: TestClient, test_db_seeded: Session):
+def test_get_all_users_returns_current_team_users(
+        test_app: TestClient,
+        test_db_seeded: Session):
     response = test_app.get('/users/')
     assert response.status_code == status.HTTP_200_OK
     assert response.json() == [
@@ -15,9 +17,7 @@ def test_get_all_users_returns_all_users(test_app: TestClient, test_db_seeded: S
         {'first_name': 'Sally', 'last_name': 'McBeth', 'email': 'Sally@123.com',
          'id': 2, 'team_id': 1, 'disabled': None},
         {'first_name': 'John', 'last_name': 'Applebaum', 'email': 'johnnyA@user.com',
-         'id': 3, 'team_id': 1, 'disabled': None},
-        {'first_name': 'Bill', 'last_name': 'McSorley', 'email': 'billy-max@rocks.com',
-         'id': 4, 'team_id': 2, 'disabled': None}]
+         'id': 3, 'team_id': 1, 'disabled': None}]
 
 
 @pytest.mark.parametrize(
@@ -26,9 +26,7 @@ def test_get_all_users_returns_all_users(test_app: TestClient, test_db_seeded: S
         (1, status.HTTP_200_OK, {
             'first_name': 'Bob', 'last_name': 'Smith',
             'email': 'bob@smith.com', 'id': 1, 'team_id': 1, 'disabled': None}),
-        (4, status.HTTP_200_OK, {
-            'first_name': 'Bill', 'last_name': 'McSorley',
-            'email': 'billy-max@rocks.com', 'id': 4, 'team_id': 2, 'disabled': None}),
+        (4, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
             'detail': [{
@@ -50,7 +48,7 @@ def test_get_user_responses_with_diff_inputs(
     argnames=['user_id', 'status_code', 'expected_response'],
     argvalues=[
         (1, status.HTTP_200_OK, {'id': 1, 'team_name': 'Marketing'}),
-        (4, status.HTTP_200_OK, {'id': 2, 'team_name': 'Engineering'}),
+        (4, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         (0, status.HTTP_404_NOT_FOUND, {'detail': 'User not found'}),
         ('bad_user_id', status.HTTP_422_UNPROCESSABLE_ENTITY, {
             'detail': [{

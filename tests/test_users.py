@@ -14,20 +14,10 @@ HTTP_404_NOT_FOUND = 404
 HTTP_401_UNAUTHORIZED = 401
 
 
-def test_get_all_users(monkeypatch, test_app: TestClient):
-
-    def mock_read_all(*args):
-        mock_user = models.User(
-            id=1, team_id=1, first_name='Test',
-            last_name='User', email='test@user.com')
-        return [mock_user]
-
-    monkeypatch.setattr(crud, 'read_all', mock_read_all)
+def test_get_all_users(test_app: TestClient, test_db_seeded):
     response = test_app.get('/users/')
     assert response.status_code == HTTP_200_OK
-    assert response.json() == [{
-        'first_name': 'Test', 'last_name': 'User', 'id': 1,
-        'email': 'test@user.com', 'team_id': 1, 'disabled': None}]
+    assert [user['team_id'] for user in response.json()] == [1, 1, 1]
 
 
 @pytest.mark.parametrize(
